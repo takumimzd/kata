@@ -31,11 +31,21 @@ function RichTextEditorPage() {
       lede="Lexical ベースのブロックエディタ。見出し (H1/H2) / 箇条書き / チェックボックス / ネストに対応。外部とは EditorBlock[] でやり取りし、Lexical 依存は内部に閉じている。"
     >
       <Demo>
-        {mounted ? (
-          <RichTextEditor value={blocks} onChange={setBlocks} placeholder="入力してください" />
-        ) : (
-          <div style={{ height: 360 }} />
-        )}
+        {/* エディタ自体は枠を持たないので、デモでは高さ付きの枠ボックスに収める */}
+        <div
+          style={{
+            height: 360,
+            display: 'flex',
+            border: '1px solid var(--line)',
+            borderRadius: 'var(--radius)',
+            overflow: 'hidden',
+            background: 'var(--surface)',
+          }}
+        >
+          {mounted && (
+            <RichTextEditor value={blocks} onChange={setBlocks} placeholder="入力してください" />
+          )}
+        </div>
       </Demo>
       <Code>{`const [blocks, setBlocks] = useState<EditorBlock[]>(() => [
   createEditorBlock('h1', '買い物メモ'),

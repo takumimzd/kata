@@ -1,11 +1,11 @@
-/* コンポーネント全体の枠 (ツールバー + 本文を縦に積む) */
+/* ツールバー + 本文を縦に積み、親コンテナいっぱいに広がる。
+   枠線・高さ・背景は持たず、サイズや装飾は利用側の容器で与える
+   (アプリでは画面いっぱいに、デモでは枠付きボックスに収める)。 */
 .editor {
   display: flex;
   flex-direction: column;
-  height: 360px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 
