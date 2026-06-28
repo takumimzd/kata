@@ -1,10 +1,8 @@
 // ============================================================
-//  kata — Field / Input
-//  Field: ラベル + コントロール + ヒント/エラーのラッパー
-//  Input: フィールド見た目のテキスト入力
+//  kata — Field (ラベル + コントロール + ヒント/エラーのラッパー)
+//  入力欄は Input を組み合わせて使う。
 // ============================================================
-import type { InputHTMLAttributes, ReactNode } from 'react';
-import { cn } from '../../lib/cn';
+import type { ReactNode } from 'react';
 import styles from './Field.module.css';
 
 interface FieldProps {
@@ -34,8 +32,4 @@ export function Field({ label, icon, hint, error, htmlFor, children }: FieldProp
       ) : null}
     </div>
   );
-}
-
-export function Input({ className, ...rest }: InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={cn(styles.input, className)} {...rest} />;
 }

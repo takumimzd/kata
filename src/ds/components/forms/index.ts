@@ -1,6 +1,7 @@
 export { Button, type ButtonVariant } from './Button';
 export { IconButton } from './IconButton';
-export { Field, Input } from './Field';
+export { Field } from './Field';
+export { Input } from './Input';
 export { Textarea } from './Textarea';
 export { Select, type SelectOption } from './Select';
 export { SearchSelect, type SearchSelectOption } from './SearchSelect';
