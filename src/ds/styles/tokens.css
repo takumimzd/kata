@@ -38,9 +38,13 @@
   --fill-1: color-mix(in srgb, var(--text) 5%, transparent);
   --fill-2: color-mix(in srgb, var(--text) 9%, transparent);
 
-  /* ---- 形状 ---- */
-  --radius: 13px;
+  /* ---- 形状 (角丸) ---- */
+  --radius-xs: 6px;
   --radius-sm: 9px;
+  --radius: 13px; /* = md (既定) */
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px; /* ピル/丸 */
 
   /* ---- スペーシング (4px グリッド) ---- */
   --space-1: 4px;

@@ -2,7 +2,7 @@
   width: 46px;
   height: 27px;
   flex: none;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   background: var(--fill-2);
   border: 1px solid var(--line);
   padding: 2px;

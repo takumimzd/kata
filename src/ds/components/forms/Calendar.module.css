@@ -50,7 +50,7 @@
   gap: 3px;
   min-height: 44px;
   padding: var(--space-1) 0;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   color: var(--text);
 }

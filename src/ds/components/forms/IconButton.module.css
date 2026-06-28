@@ -1,7 +1,7 @@
 .iconBtn {
   width: 34px;
   height: 34px;
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   display: grid;
   place-items: center;
   color: var(--text-dim);

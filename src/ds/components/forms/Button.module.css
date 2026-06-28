@@ -65,7 +65,7 @@
   min-height: 36px;
   background: var(--surface-3);
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   padding: 0 var(--space-4);
   font-size: 13px;
 }

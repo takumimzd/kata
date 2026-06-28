@@ -1,0 +1,34 @@
+.body {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.7;
+  color: var(--text);
+}
+.bodyStrong {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.7;
+  color: var(--text);
+}
+.sub {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+.caption {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-faint);
+}
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-dim);
+}
+.num {
+  font-family: var(--num);
+  font-feature-settings: 'tnum' 1;
+  color: var(--text);
+}

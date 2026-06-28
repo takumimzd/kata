@@ -124,7 +124,7 @@
   top: 7px;
   width: 22px;
   height: 22px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 1.8px solid var(--text-faint);
   cursor: pointer;
   transition: all 0.15s ease;

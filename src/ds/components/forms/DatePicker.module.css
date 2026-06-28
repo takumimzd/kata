@@ -112,7 +112,7 @@
   aspect-ratio: 1;
   display: grid;
   place-items: center;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 12.5px;
   font-family: var(--num);
   color: var(--text);
