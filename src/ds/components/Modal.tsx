@@ -6,7 +6,7 @@
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { Icon } from './Icon';
-import { IconButton } from './forms/IconButton';
+import { IconButton } from './IconButton';
 import styles from './Modal.module.css';
 
 interface ModalProps {

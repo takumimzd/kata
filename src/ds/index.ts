@@ -16,11 +16,8 @@ export {
   type Appearance,
 } from './lib/theme';
 
-// --- forms ---
+// --- forms (components/forms/) ---
 export {
-  Button,
-  type ButtonVariant,
-  IconButton,
   Field,
   Input,
   Textarea,
@@ -30,10 +27,7 @@ export {
   type SearchSelectOption,
   Stepper,
   DatePicker,
-  SearchBox,
   Switch,
-  Calendar,
-  PinPad,
 } from './components/forms';
 
 // --- charts (常に ChartCard の枠つき) ---
@@ -58,6 +52,11 @@ export {
 
 // --- 単体 (components/ 直下) ---
 export { Icon, type IconName } from './components/Icon';
+export { Button, type ButtonVariant } from './components/Button';
+export { IconButton } from './components/IconButton';
+export { SearchBox } from './components/SearchBox';
+export { Calendar } from './components/Calendar';
+export { PinPad } from './components/PinPad';
 export { Badge, type BadgeVariant } from './components/Badge';
 export { Chip, ChipGroup } from './components/Chip';
 export { ProgressBar, type ProgressTone } from './components/ProgressBar';

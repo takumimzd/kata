@@ -1,7 +1,7 @@
 // ============================================================
 //  kata — SearchBox (丸型の検索入力)
 // ============================================================
-import { Icon } from '../Icon';
+import { Icon } from './Icon';
 import styles from './SearchBox.module.css';
 
 interface SearchBoxProps {

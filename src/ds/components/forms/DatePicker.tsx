@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { parseYmd, today as todayFn, WEEKDAYS } from '../../lib/date';
 import { cn } from '../../lib/cn';
 import { Icon } from '../Icon';
-import { IconButton } from './IconButton';
+import { IconButton } from '../IconButton';
 import styles from './DatePicker.module.css';
 
 interface DatePickerProps {

@@ -1,4 +1,5 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { COMPONENTS, groupedComponents } from '~/catalog/components-registry';
 import styles from '~/catalog/page.module.css';
 
 export const Route = createFileRoute('/')({
@@ -62,16 +63,19 @@ function OverviewPage() {
 
       <section className={styles.section}>
         <div className={styles.sectionTitle}>
-          <h2>現在の状態</h2>
-          <span>roadmap</span>
+          <h2>コンポーネント</h2>
+          <span>{COMPONENTS.length} components</span>
         </div>
-        <div className={styles.card}>
-          <p style={{ fontSize: 13.5, lineHeight: 1.8, color: 'var(--text-dim)' }}>
-            トークン基盤 (霧 / 墨) と、全 17 コンポーネント (Button 系・入力系・オーバーレイ系・
-            SideNav・チャート 3 種・RichTextEditor) が完成。左メニューの「コンポーネント」で
-            各部品のライブデモ・使い方・props を確認できる。残りはデザインシステムの特徴ページと
-            README の仕上げ。
-          </p>
+        <div className={styles.catGrid}>
+          {groupedComponents().map(({ group, items }) => (
+            <Link key={group.key} to="/components" className={`${styles.card} ${styles.catCard}`}>
+              <div className={styles.catHead}>
+                <h3>{group.label}</h3>
+                <span>{items.length}</span>
+              </div>
+              <p>{items.map((c) => c.name).join(' · ')}</p>
+            </Link>
+          ))}
         </div>
       </section>
     </div>

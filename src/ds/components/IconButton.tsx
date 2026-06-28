@@ -4,7 +4,7 @@
 //  a11y のため label (aria-label) を必須にしている。
 // ============================================================
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../lib/cn';
 import styles from './IconButton.module.css';
 
 interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'aria-label'> {

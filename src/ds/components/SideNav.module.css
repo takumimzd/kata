@@ -11,7 +11,8 @@
   flex: 1;
 }
 
-/* リンク (トップレベル) */
+/* リンク / グループ見出し。インデントは .panel の padding-left で作るので
+   ここでは深さに依存しない一定パディングにする。 */
 .link,
 .groupHeader {
   display: flex;
@@ -25,6 +26,12 @@
   color: var(--text-dim);
   transition: 0.15s;
   text-align: left;
+}
+
+/* 入れ子のグループ見出し (カテゴリなど) は本文を一段小さく */
+.subHeader {
+  font-size: 13px;
+  gap: var(--space-2);
 }
 .link:hover,
 .groupHeader:hover {
@@ -52,30 +59,33 @@
 .chevOpen {
   transform: rotate(90deg);
 }
+/* 子の入れ物。padding-left でインデントを作り (入れ子で累積)、
+   ガイド線はその左の溝に置く。pill (リンク背景) は溝より右なので被らない。 */
 .panel {
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 2px;
   margin: 2px 0 var(--space-1);
+  padding-left: var(--space-4);
 }
-/* 入れ子を示すガイド線 */
+/* 入れ子を示すガイド線 (各パネルの左の溝。深さは padding の累積で表現) */
 .panel::before {
   content: '';
   position: absolute;
-  left: 20px;
+  left: 9px;
   top: 2px;
   bottom: 2px;
   width: 1px;
   background: var(--line);
 }
 
-/* 子リンク (インデント) */
+/* 子リンク。インデントは .panel の padding-left が担うので一定パディング。 */
 .childLink {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-7);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
   font-size: 13px;
   font-weight: 600;

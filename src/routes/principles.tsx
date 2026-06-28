@@ -42,12 +42,14 @@ const TOKENS: Array<{ name: string; use: string }> = [
   { name: '--accent / -2', use: 'アクセント / ホバー' },
   { name: '--on-accent', use: 'アクセント上の文字' },
   { name: '--accent-soft / -line', use: 'アクセントの薄塗り / 罫' },
-  { name: '--danger / -soft', use: '危険操作 (赤)' },
+  { name: '--danger / -soft / -line', use: '危険操作 (赤)' },
   { name: '--clay / -soft', use: '中性の強調色' },
   { name: '--line / -2', use: '罫線 (淡 / 通常)' },
-  { name: '--radius / -sm', use: '角丸 (13 / 9px)' },
+  { name: '--fill-1 / -2', use: '中性の塗り (淡 / 通常)' },
+  { name: '--space-1〜10', use: '余白 (4pxグリッド)' },
+  { name: '--radius-xs〜xl / -full', use: '角丸 (6〜24 / 丸)' },
   { name: '--shadow / -sm', use: '影' },
-  { name: '--ja / --num', use: '本文 / 数字フォント' },
+  { name: '--ja / --num / --display', use: '本文 / 数字 / 表示' },
 ];
 
 function Section({
@@ -112,43 +114,51 @@ function PrinciplesPage() {
 
       <Section title="規約" meta="conventions">
         <p style={{ fontSize: 13.5, lineHeight: 1.8, color: 'var(--text-dim)' }}>
-          コンポーネントは <code>src/ds/components/&lt;Name&gt;/</code> に
-          <code> Name.tsx</code> + <code>Name.module.css</code> + <code>index.ts</code> の 3 点で置く。
+          表示・ナビ・オーバーレイ系は <code>src/ds/components/</code> 直下にフラットで
+          <code> Name.tsx</code> + <code>Name.module.css</code> を置く。<code>forms/</code> /
+          <code> charts/</code> / <code>editor/</code> だけはサブフォルダにまとめ、<code>index.ts</code>
+          バレルで束ねる。公開 API <code>import &#123; X &#125; from &apos;kata&apos;</code> は構成と無関係に不変。
           クラス合成はテンプレートリテラルを直書きせず <code>cn()</code> を使う。
         </p>
         <Code>{`src/ds/
 ├─ components/
-│  └─ Button/
-│     ├─ Button.tsx          // 実装
-│     ├─ Button.module.css   // スタイル (スコープ付き)
-│     └─ index.ts            // re-export
-├─ lib/                      // cn() / date / theme
-├─ styles/                   // reset / tokens / utilities
-└─ index.ts                 // パッケージ公開エントリ
+│  ├─ Button.tsx          // 直下フラット (表示/アクション/ナビ/オーバーレイ)
+│  ├─ Button.module.css
+│  ├─ Card.tsx
+│  ├─ forms/              // 入力系はサブフォルダ + index.ts
+│  │  ├─ Field.tsx
+│  │  └─ index.ts
+│  ├─ charts/             // チャート系
+│  └─ editor/             // RichTextEditor (Lexical)
+├─ lib/                   // cn() / date / theme
+├─ styles/                // reset / tokens / utilities
+└─ index.ts               // パッケージ公開エントリ
 
-// クラス合成
-import { cn } from '../../lib/cn';
+// クラス合成 (直下は ../lib、forms 内は ../../lib)
+import { cn } from '../lib/cn';
 className={cn(styles.btn, styles[variant], block && styles.block)}`}</Code>
       </Section>
 
       <Section title="コンポーネントの追加手順" meta="how to">
         <ol className={styles.steps}>
           <li>
-            <code>src/ds/components/&lt;Name&gt;/</code> に <code>Name.tsx</code> /
-            <code> Name.module.css</code> / <code>index.ts</code> を作る。色・余白は必ずトークン
-            (<code>var(--...)</code>) を使い、生の hex を書かない。
+            <code>src/ds/components/</code> に <code>Name.tsx</code> + <code>Name.module.css</code>
+            を作る (入力系なら <code>forms/</code> 内 + バレルに追記)。色・余白・角丸は必ずトークン
+            (<code>var(--...)</code>) を使い、生の hex や px を直書きしない。
           </li>
           <li>
             <code>src/ds/index.ts</code> から <code>export</code> して公開 API に追加する。
           </li>
           <li>
-            カタログに載せる: <code>src/catalog/components-registry.ts</code> に 1 行追加し、
+            カタログに載せる: <code>src/catalog/components-registry.ts</code> に
+            <code> entry(slug, name, desc, group)</code> を 1 行追加し、
             <code> src/routes/components/&lt;slug&gt;.tsx</code> を作る (Doc + Demo + Code +
             PropsTable)。
           </li>
           <li>
             <code>pnpm typecheck</code> / <code>pnpm lint</code> / <code>pnpm build</code> が
-            通ることを確認する。ナビのアコーディオンと一覧には registry から自動で並ぶ。
+            通ることを確認する。ナビのカテゴリ・アコーディオンと一覧には registry の
+            <code> group</code> から自動で並ぶ。
           </li>
         </ol>
       </Section>

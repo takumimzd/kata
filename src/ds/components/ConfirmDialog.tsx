@@ -5,7 +5,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { cn } from '../lib/cn';
-import { Button } from './forms/Button';
+import { Button } from './Button';
 import { Icon } from './Icon';
 import styles from './ConfirmDialog.module.css';
 

@@ -4,6 +4,10 @@ import type { ReactNode } from 'react';
 import { Chrome } from '~/catalog/Chrome';
 import dsStyles from '~/ds/styles/index.css?url';
 
+// 描画前に保存テーマを data-theme へ適用し、リロード時のちらつき (FOUC) を防ぐ。
+// Chrome 側の localStorage キー (kata.catalog.theme) と一致させること。
+const THEME_INIT_SCRIPT = `try{var t=localStorage.getItem('kata.catalog.theme');if(t==='sumi')document.documentElement.setAttribute('data-theme','sumi');}catch(e){}`;
+
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -17,6 +21,10 @@ export const Route = createRootRoute({
       },
     ],
     links: [
+      { rel: 'icon', href: '/favicon.svg', type: 'image/svg+xml' },
+      { rel: 'icon', href: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+      { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+      { rel: 'manifest', href: '/site.webmanifest' },
       { rel: 'stylesheet', href: dsStyles },
       { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
       { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
@@ -41,8 +49,9 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="ja" suppressHydrationWarning>
+    <html lang="ja" suppressHydrationWarning style={{ scrollBehavior: 'smooth' }}>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
       <body>

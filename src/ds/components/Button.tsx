@@ -3,7 +3,7 @@
 //  variant でスタイルを切り替える。アイコンは children に渡す。
 // ============================================================
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
-import { cn } from '../../lib/cn';
+import { cn } from '../lib/cn';
 import styles from './Button.module.css';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'text' | 'danger' | 'mini';

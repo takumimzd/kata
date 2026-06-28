@@ -1,7 +1,7 @@
-import { Link } from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { cn, Icon, SideNav, type SideNavItem, type SideNavLink, type SideNavRenderCtx } from 'kata';
-import { COMPONENTS } from './components-registry';
+import { COMPONENTS, GROUPS } from './components-registry';
 import styles from './Chrome.module.css';
 
 /** カタログで切り替えられるテーマ (kiri = ライト既定 / data-theme なし, sumi = ダーク) */
@@ -15,32 +15,46 @@ const THEME_LABEL: Record<Theme, string> = {
 
 const THEME_KEY = 'kata.catalog.theme';
 
-const NAV_ITEMS: SideNavItem[] = [
-  { key: 'overview', to: '/', label: '概要', exact: true, icon: <Icon name="home" size={18} /> },
-  { key: 'principles', to: '/principles', label: '特徴', icon: <Icon name="book" size={18} /> },
-  { key: 'tokens', to: '/tokens', label: 'トークン', icon: <Icon name="chart" size={18} /> },
-  {
-    key: 'components',
-    label: 'コンポーネント',
-    icon: <Icon name="note" size={18} />,
-    defaultOpen: true,
-    children: COMPONENTS.map((c): SideNavLink => ({ key: c.slug, to: c.to, label: c.name })),
-  },
-];
+/** 現在のパスから所属カテゴリ key を求める (コンポーネントページ以外は null) */
+function activeGroupKey(pathname: string): string | null {
+  return COMPONENTS.find((c) => c.to === pathname)?.group ?? null;
+}
 
-/** TanStack Router の <Link> で SideNav のリンクを描画する */
-function renderLink(link: SideNavLink, ctx: SideNavRenderCtx): ReactNode {
-  return (
-    <Link
-      to={link.to}
-      className={ctx.className}
-      activeProps={{ className: cn(ctx.className, ctx.activeClassName) }}
-      activeOptions={{ exact: link.exact }}
-    >
-      {ctx.content}
-    </Link>
+/** group 内の各エントリを SideNav のリンクに変換 */
+function linksOf(groupKey: string): SideNavLink[] {
+  return COMPONENTS.filter((c) => c.group === groupKey).map(
+    (c): SideNavLink => ({ key: c.slug, to: c.to, label: c.name }),
   );
 }
+
+/** ナビ項目を組み立てる。src/ds/components/ の構成に対応:
+ *  「コンポーネント」直下に root 部品を並べ、forms/charts/editor をフォルダ(アコーディオン)にする。
+ *  現在のページのフォルダのみ展開する。 */
+function buildNavItems(activeGroup: string | null): SideNavItem[] {
+  const componentChildren: SideNavItem[] = GROUPS.flatMap((g): SideNavItem[] =>
+    g.folder
+      ? [{ key: g.key, label: g.label, defaultOpen: g.key === activeGroup, children: linksOf(g.key) }]
+      : linksOf(g.key),
+  );
+
+  return [
+    { key: 'overview', to: '/', label: '概要', exact: true, icon: <Icon name="home" size={18} /> },
+    { key: 'principles', to: '/principles', label: '特徴', icon: <Icon name="book" size={18} /> },
+    { key: 'tokens', to: '/tokens', label: 'トークン', icon: <Icon name="chart" size={18} /> },
+    {
+      key: 'components',
+      label: 'コンポーネント',
+      icon: <Icon name="note" size={18} />,
+      defaultOpen: activeGroup !== null,
+      children: componentChildren,
+    },
+  ];
+}
+
+/** 本文要素の id。ナビリンクはこの id へのアンカー (hash) を付け、
+ *  モバイルで「サイドメニューの上」ではなく本文へスクロールさせる。
+ *  (scrollRestoration が先頭へ戻すのを、ルーター標準のハッシュスクロールで上書きする) */
+const CONTENT_ID = 'content';
 
 function applyTheme(theme: Theme): void {
   const root = document.documentElement;
@@ -50,6 +64,23 @@ function applyTheme(theme: Theme): void {
 
 export function Chrome({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>('kiri');
+  const pathname = useLocation({ select: (l) => l.pathname });
+  const activeGroup = activeGroupKey(pathname);
+
+  /** TanStack Router の <Link> で SideNav のリンクを描画する (本文へのアンカー付き) */
+  function renderLink(link: SideNavLink, ctx: SideNavRenderCtx): ReactNode {
+    return (
+      <Link
+        to={link.to}
+        hash={CONTENT_ID}
+        className={ctx.className}
+        activeProps={{ className: cn(ctx.className, ctx.activeClassName) }}
+        activeOptions={{ exact: link.exact }}
+      >
+        {ctx.content}
+      </Link>
+    );
+  }
 
   // 初回マウントで保存値を反映 (SSR では既定の kiri)
   useEffect(() => {
@@ -99,10 +130,17 @@ export function Chrome({ children }: { children: ReactNode }) {
           <span className={styles.brandSub}>design system</span>
         </div>
 
-        <SideNav items={NAV_ITEMS} renderLink={renderLink} footer={themePicker} />
+        <SideNav
+          key={activeGroup ?? 'none'}
+          items={buildNavItems(activeGroup)}
+          renderLink={renderLink}
+          footer={themePicker}
+        />
       </aside>
 
-      <main className={styles.content}>{children}</main>
+      <main id={CONTENT_ID} className={styles.content}>
+        {children}
+      </main>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 //  kata — PinPad (PIN/パスコード入力ドット + テンキー)
 //  プレゼンテーション専用。入力ロジックは利用側で持つ。
 // ============================================================
-import { cn } from '../../lib/cn';
+import { cn } from '../lib/cn';
 import styles from './PinPad.module.css';
 
 const DIGITS = ['1', '2', '3', '4', '5', '6', '7', '8', '9'] as const;

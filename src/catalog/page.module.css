@@ -90,6 +90,52 @@
   color: var(--text-dim);
 }
 
+/* 概要: コンポーネントのカテゴリカード */
+.catGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+@media (min-width: 600px) {
+  .catGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.catCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  text-decoration: none;
+  transition: 0.15s ease;
+}
+.catCard:hover {
+  border-color: var(--accent-line);
+  transform: translateY(-2px);
+}
+
+.catHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.catHead h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.catHead span {
+  font-family: var(--num);
+  font-size: 12px;
+  color: var(--text-faint);
+}
+.catCard p {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+
 /* ---- トークン: カラー ---- */
 .swatchGrid {
   display: grid;
@@ -152,15 +198,64 @@
 }
 
 .shapeBox {
-  width: 80px;
-  height: 56px;
+  width: 104px;
+  height: 72px;
   background: var(--surface);
   border: 1px solid var(--line-2);
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  text-align: center;
+  padding: var(--space-2);
+}
+
+.shapeName {
   font-family: var(--num);
   font-size: 11px;
-  color: var(--text-dim);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.shapePx {
+  font-family: var(--num);
+  font-size: 10px;
+  color: var(--text-faint);
+}
+
+/* ---- トークン: スペーシング ---- */
+.spaceRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px dashed var(--line);
+}
+.spaceRow:last-child {
+  border-bottom: none;
+}
+
+.spaceName {
+  font-family: var(--num);
+  font-size: 12px;
+  color: var(--text);
+  width: 92px;
+  flex: none;
+}
+
+.spaceBar {
+  height: 14px;
+  border-radius: var(--radius-xs);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  flex: none;
+}
+
+.spacePx {
+  font-family: var(--num);
+  font-size: 11px;
+  color: var(--text-faint);
 }
 
 .shadowBox {

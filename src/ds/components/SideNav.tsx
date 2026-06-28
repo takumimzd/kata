@@ -1,6 +1,7 @@
 // ============================================================
 //  kata — SideNav (サイドナビ)
 //  フラットなリンクに加え、入れ子のアコーディオン (ディレクトリ) に対応。
+//  グループは何階層でもネストでき、深さに応じて自動でインデントする。
 //  ルーター非依存: リンクの描画は renderLink で委譲する。
 // ============================================================
 import { Fragment, useState, type ReactNode } from 'react';
@@ -24,7 +25,8 @@ export interface SideNavGroup {
   icon?: ReactNode;
   /** 初期状態で開いておくか */
   defaultOpen?: boolean;
-  children: SideNavLink[];
+  /** 子はリンクでもグループでもよい (グループを入れると多階層になる) */
+  children: SideNavItem[];
 }
 
 export type SideNavItem = SideNavLink | SideNavGroup;
@@ -60,58 +62,63 @@ function linkContent(link: SideNavLink): ReactNode {
   );
 }
 
+/** ツリーを走査して全グループの初期開閉状態を集める */
+function collectGroupState(items: SideNavItem[], acc: Record<string, boolean>): void {
+  for (const it of items) {
+    if (isGroup(it)) {
+      acc[it.key] = it.defaultOpen ?? false;
+      collectGroupState(it.children, acc);
+    }
+  }
+}
+
 export function SideNav({ items, renderLink, footer, className }: SideNavProps) {
   const [open, setOpen] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
-    for (const it of items) if (isGroup(it)) init[it.key] = it.defaultOpen ?? false;
+    collectGroupState(items, init);
     return init;
   });
 
+  const toggle = (key: string) => setOpen((o) => ({ ...o, [key]: !o[key] }));
+
+  /** depth=0 が最上位。グループ/リンクを再帰描画する。 */
+  function renderItems(list: SideNavItem[], depth: number): ReactNode {
+    return list.map((it) =>
+      isGroup(it) ? (
+        <div key={it.key} className={styles.group}>
+          <button
+            type="button"
+            className={cn(styles.groupHeader, depth > 0 && styles.subHeader)}
+            aria-expanded={open[it.key] ?? false}
+            onClick={() => toggle(it.key)}
+          >
+            {it.icon}
+            <span className={styles.label}>{it.label}</span>
+            <Icon
+              name="chevron"
+              size={15}
+              className={cn(styles.chev, open[it.key] && styles.chevOpen)}
+            />
+          </button>
+          {open[it.key] && (
+            <div className={styles.panel}>{renderItems(it.children, depth + 1)}</div>
+          )}
+        </div>
+      ) : (
+        <Fragment key={it.key}>
+          {renderLink(it, {
+            className: depth === 0 ? styles.link : styles.childLink,
+            activeClassName: styles.on,
+            content: linkContent(it),
+          })}
+        </Fragment>
+      ),
+    );
+  }
+
   return (
     <div className={cn(styles.root, className)}>
-      <nav className={styles.nav}>
-        {items.map((it) =>
-          isGroup(it) ? (
-            <div key={it.key} className={styles.group}>
-              <button
-                type="button"
-                className={styles.groupHeader}
-                aria-expanded={open[it.key] ?? false}
-                onClick={() => setOpen((o) => ({ ...o, [it.key]: !o[it.key] }))}
-              >
-                {it.icon}
-                <span className={styles.label}>{it.label}</span>
-                <Icon
-                  name="chevron"
-                  size={15}
-                  className={cn(styles.chev, open[it.key] && styles.chevOpen)}
-                />
-              </button>
-              {open[it.key] && (
-                <div className={styles.panel}>
-                  {it.children.map((c) => (
-                    <Fragment key={c.key}>
-                      {renderLink(c, {
-                        className: styles.childLink,
-                        activeClassName: styles.on,
-                        content: linkContent(c),
-                      })}
-                    </Fragment>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <Fragment key={it.key}>
-              {renderLink(it, {
-                className: styles.link,
-                activeClassName: styles.on,
-                content: linkContent(it),
-              })}
-            </Fragment>
-          ),
-        )}
-      </nav>
+      <nav className={styles.nav}>{renderItems(items, 0)}</nav>
       {footer && <div className={styles.foot}>{footer}</div>}
     </div>
   );

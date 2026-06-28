@@ -4,9 +4,9 @@
 //  renderDay で注入する。凡例などドメイン固有の表示は利用側で。
 // ============================================================
 import type { ReactNode } from 'react';
-import { cn } from '../../lib/cn';
-import { WEEKDAYS } from '../../lib/date';
-import { Icon } from '../Icon';
+import { cn } from '../lib/cn';
+import { WEEKDAYS } from '../lib/date';
+import { Icon } from './Icon';
 import { IconButton } from './IconButton';
 import styles from './Calendar.module.css';
 

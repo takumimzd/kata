@@ -14,13 +14,13 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
-    "types": ["@cloudflare/workers-types", "vite/client", "node"],
+    "types": ["vite/client", "node"],
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"],
       "kata": ["./src/ds/index.ts"]
     }
   },
-  "include": ["src", "vite.config.ts", "worker-configuration.d.ts"],
-  "exclude": ["node_modules", "dist", ".wrangler"]
+  "include": ["src", "vite.config.ts"],
+  "exclude": ["node_modules", "dist"]
 }
