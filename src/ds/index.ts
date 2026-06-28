@@ -16,12 +16,47 @@ export {
   type Appearance,
 } from './lib/theme';
 
-// --- components: グループ (forms / charts / editor) ---
-export * from './components/forms';
-export * from './components/charts';
-export * from './components/editor';
+// --- forms ---
+export {
+  Button,
+  type ButtonVariant,
+  IconButton,
+  Field,
+  Input,
+  Textarea,
+  Select,
+  type SelectOption,
+  SearchSelect,
+  type SearchSelectOption,
+  Stepper,
+  DatePicker,
+  SearchBox,
+  Switch,
+  Calendar,
+  PinPad,
+} from './components/forms';
 
-// --- components: 単体 (components/ 直下) ---
+// --- charts (常に ChartCard の枠つき) ---
+export {
+  BarChart,
+  LineChart,
+  Sparkline,
+  BarList,
+  type BarListItem,
+  type ChartPoint,
+  type ChartTab,
+} from './components/charts';
+
+// --- editor ---
+export {
+  RichTextEditor,
+  MAX_INDENT,
+  createEditorBlock,
+  type EditorBlock,
+  type EditorBlockType,
+} from './components/editor';
+
+// --- 単体 (components/ 直下) ---
 export { Icon, type IconName } from './components/Icon';
 export { Badge, type BadgeVariant } from './components/Badge';
 export { Chip, ChipGroup } from './components/Chip';
