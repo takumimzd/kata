@@ -2,6 +2,14 @@
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 20px;
   box-shadow: var(--shadow-sm);
+}
+.padS {
+  padding: 14px;
+}
+.padM {
+  padding: 20px;
+}
+.padL {
+  padding: 28px;
 }

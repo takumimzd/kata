@@ -61,7 +61,7 @@ export { Icon, type IconName } from './components/Icon';
 export { Badge, type BadgeVariant } from './components/Badge';
 export { Chip, ChipGroup } from './components/Chip';
 export { ProgressBar, type ProgressTone } from './components/ProgressBar';
-export { Card } from './components/Card';
+export { Card, type CardPadding } from './components/Card';
 export { SectionTitle } from './components/SectionTitle';
 export { PageTitle } from './components/PageTitle';
 export { Modal } from './components/Modal';
