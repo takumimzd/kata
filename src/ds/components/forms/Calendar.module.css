@@ -2,14 +2,14 @@
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 16px;
+  padding: var(--space-4);
 }
 
 .head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 .title {
   font-size: 15px;
@@ -24,10 +24,10 @@
 .grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
+  gap: var(--space-1);
 }
 .dowRow {
-  margin-bottom: 6px;
+  margin-bottom: var(--space-1);
 }
 .dowc {
   text-align: center;
@@ -49,7 +49,7 @@
   align-items: center;
   gap: 3px;
   min-height: 44px;
-  padding: 5px 0;
+  padding: var(--space-1) 0;
   border-radius: 8px;
   border: 1px solid transparent;
   color: var(--text);

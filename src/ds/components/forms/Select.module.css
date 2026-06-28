@@ -9,7 +9,7 @@
   border: 1px solid var(--line);
   color: var(--text);
   border-radius: var(--radius-sm);
-  padding: 0 38px 0 14px;
+  padding: 0 var(--space-9) 0 var(--space-3);
   font-size: 14.5px;
   /* ネイティブの矢印を消して独自の chevron を出す */
   appearance: none;

@@ -13,8 +13,8 @@
 .sidebar {
   display: flex;
   flex-direction: column;
-  gap: 26px;
-  padding: 24px 18px;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-4);
   background: var(--bg-2);
   border-bottom: 1px solid var(--line);
 }
@@ -32,7 +32,7 @@
 .brand {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .brandMark {
@@ -59,7 +59,7 @@
   margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .themeLabel {
@@ -73,14 +73,14 @@
 .themeGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  gap: var(--space-1);
 }
 
 .themeChip {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 7px 9px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-2);
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
   background: var(--surface);
@@ -112,11 +112,11 @@
 
 .content {
   min-width: 0;
-  padding: 28px 22px 80px;
+  padding: var(--space-7) var(--space-5) 80px;
 }
 
 @media (min-width: 880px) {
   .content {
-    padding: 40px 44px 100px;
+    padding: var(--space-9) 44px 100px;
   }
 }

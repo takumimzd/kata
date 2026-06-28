@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: var(--space-6);
   animation: cfFade 0.18s ease;
 }
 .dialog {
@@ -16,7 +16,7 @@
   border-radius: 16px;
   width: 100%;
   max-width: 360px;
-  padding: 26px 24px 20px;
+  padding: var(--space-6) var(--space-6) var(--space-5);
   text-align: center;
   box-shadow: var(--shadow);
   animation: cfPop 0.2s cubic-bezier(0.3, 0.9, 0.3, 1);
@@ -29,7 +29,7 @@
   border-radius: 50%;
   background: var(--fill-2);
   color: var(--text-dim);
-  margin-bottom: 14px;
+  margin-bottom: var(--space-3);
 }
 .icon.danger {
   background: var(--danger-soft);
@@ -38,17 +38,17 @@
 .title {
   font-size: 16px;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: var(--space-1);
 }
 .message {
   font-size: 13px;
   color: var(--text-dim);
   line-height: 1.6;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
 }
 .actions {
   display: flex;
-  gap: 10px;
+  gap: var(--space-2);
   justify-content: center;
 }
 .actions > * {

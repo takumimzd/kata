@@ -7,14 +7,14 @@
 .trigger {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: var(--space-2);
   width: 100%;
   height: 48px;
   background: var(--surface);
   border: 1px solid var(--line);
   color: var(--text);
   border-radius: var(--radius-sm);
-  padding: 0 12px 0 14px;
+  padding: 0 var(--space-3) 0 var(--space-3);
   font-size: 14.5px;
   transition: border-color 0.15s;
 }
@@ -60,7 +60,7 @@
   border: 1px solid var(--line-2);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 14px;
+  padding: var(--space-3);
   animation: dpIn 0.16s ease;
 }
 @keyframes dpIn {
@@ -74,7 +74,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 .title {
   font-size: 14px;
@@ -90,7 +90,7 @@
   gap: 3px;
 }
 .dowRow {
-  margin-bottom: 6px;
+  margin-bottom: var(--space-1);
 }
 .dowc {
   text-align: center;

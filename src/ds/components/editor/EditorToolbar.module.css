@@ -1,7 +1,7 @@
 .toolbar {
   /* 本文上部に常駐する補助バー。本文が伸びても縮まないよう固定する */
   flex: none;
-  padding: 4px 8px;
+  padding: var(--space-1) var(--space-2);
   background: color-mix(in oklab, var(--surface) 88%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
@@ -53,7 +53,7 @@
 .divider {
   width: 1px;
   align-self: stretch;
-  margin: 4px 2px;
+  margin: var(--space-1) 2px;
   background: var(--line);
 }
 

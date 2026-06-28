@@ -14,7 +14,7 @@ function CardPage() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14 }}>
           <Card padding="s" style={{ width: 150 }}>
             <strong style={{ fontSize: 13 }}>padding s</strong>
-            <p style={{ marginTop: 6, fontSize: 12, color: 'var(--text-dim)' }}>14px</p>
+            <p style={{ marginTop: 6, fontSize: 12, color: 'var(--text-dim)' }}>12px</p>
           </Card>
           <Card padding="m" style={{ width: 150 }}>
             <strong style={{ fontSize: 13 }}>padding m</strong>
@@ -26,10 +26,10 @@ function CardPage() {
           </Card>
         </div>
       </Demo>
-      <Code>{`<Card padding="m">...</Card>   // s=14 / m=20 / l=28px`}</Code>
+      <Code>{`<Card padding="m">...</Card>   // s=12 / m=20 / l=28px`}</Code>
       <PropsTable
         rows={[
-          { name: 'padding', type: `'s' | 'm' | 'l'`, def: `'m'`, desc: '内側の余白 (14 / 20 / 28px)' },
+          { name: 'padding', type: `'s' | 'm' | 'l'`, def: `'m'`, desc: '内側の余白 (12 / 20 / 28px)' },
           { name: 'children', type: 'ReactNode', desc: 'カードの中身' },
           { name: '...rest', type: 'div 属性', desc: 'className / onClick など' },
         ]}

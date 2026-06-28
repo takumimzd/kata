@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: var(--space-2);
   border-radius: var(--radius-sm);
   font-weight: 600;
   font-size: 14.5px;
@@ -22,7 +22,7 @@
   background: var(--text);
   color: var(--bg);
   font-weight: 700;
-  padding: 13px 24px;
+  padding: var(--space-3) var(--space-6);
 }
 .primary:not(:disabled):hover {
   opacity: 0.88;
@@ -33,7 +33,7 @@
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--line-2);
-  padding: 12px 22px;
+  padding: var(--space-3) var(--space-5);
 }
 .secondary:not(:disabled):hover {
   background: var(--surface-2);
@@ -43,7 +43,7 @@
 .text {
   color: var(--text-dim);
   font-size: 14px;
-  padding: 13px 14px;
+  padding: var(--space-3) var(--space-3);
 }
 .text:not(:disabled):hover {
   color: var(--text);
@@ -54,7 +54,7 @@
   background: var(--danger);
   color: #fff;
   font-weight: 700;
-  padding: 13px 24px;
+  padding: var(--space-3) var(--space-6);
 }
 .danger:not(:disabled):hover {
   opacity: 0.88;
@@ -66,7 +66,7 @@
   background: var(--surface-3);
   border: 1px solid var(--line);
   border-radius: 9px;
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   font-size: 13px;
 }
 .mini:not(:disabled):hover {

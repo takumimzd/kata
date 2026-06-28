@@ -9,7 +9,7 @@ import styles from './Card.module.css';
 export type CardPadding = 's' | 'm' | 'l';
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  /** 内側の余白。s=14 / m=20 / l=28px。既定は m */
+  /** 内側の余白 (スペーシングトークン)。s=12 / m=20 / l=28px。既定は m */
   padding?: CardPadding;
   children: ReactNode;
 }

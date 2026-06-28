@@ -1,8 +1,8 @@
 .title {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin: 8px 0 0;
+  gap: var(--space-3);
+  margin: var(--space-2) 0 0;
 }
 .title h3 {
   font-size: 13px;

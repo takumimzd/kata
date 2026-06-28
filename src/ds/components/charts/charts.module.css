@@ -5,7 +5,7 @@
   color: var(--text-faint);
   font-size: 13px;
   text-align: center;
-  padding: 40px 0;
+  padding: var(--space-9) 0;
 }
 .axis {
   fill: var(--text-faint);
@@ -30,7 +30,7 @@
   background: var(--surface-3);
   border: 1px solid var(--line-2);
   border-radius: 8px;
-  padding: 5px 9px;
+  padding: var(--space-1) var(--space-2);
   pointer-events: none;
   white-space: nowrap;
   box-shadow: var(--shadow);

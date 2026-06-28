@@ -5,11 +5,11 @@
   box-shadow: var(--shadow-sm);
 }
 .padS {
-  padding: 14px;
+  padding: var(--space-3);
 }
 .padM {
-  padding: 20px;
+  padding: var(--space-5);
 }
 .padL {
-  padding: 28px;
+  padding: var(--space-7);
 }
