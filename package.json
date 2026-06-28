@@ -4,6 +4,8 @@
   "type": "module",
   "packageManager": "pnpm@10.33.0",
   "description": "型 — 個人開発向けの汎用デザインシステム",
+  "//sideEffects": "JS は副作用なし (積極的に tree-shake)、CSS は到達したものだけ保持する",
+  "sideEffects": ["**/*.css"],
   "scripts": {
     "dev": "vite dev --port 3100",
     "build": "vite build",
