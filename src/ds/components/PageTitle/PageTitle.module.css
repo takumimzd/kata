@@ -1,0 +1,10 @@
+.pageTitle {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+@media (min-width: 880px) {
+  .pageTitle {
+    font-size: 24px;
+  }
+}

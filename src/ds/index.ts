@@ -20,6 +20,7 @@ export {
 export { Button, type ButtonVariant } from './components/Button';
 export { IconButton } from './components/IconButton';
 export { Icon, type IconName } from './components/Icon';
+export { PageTitle } from './components/PageTitle';
 export { Field, Input } from './components/Field';
 export { Stepper } from './components/Stepper';
 export { DatePicker } from './components/DatePicker';

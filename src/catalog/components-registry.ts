@@ -18,6 +18,7 @@ export const COMPONENTS: CompEntry[] = [
   entry('button', 'Button', 'variant 5 種のボタン'),
   entry('icon-button', 'IconButton', '34×34 のアイコンボタン'),
   entry('icon', 'Icon', '38 種のラインアイコン'),
+  entry('page-title', 'PageTitle', 'ページ見出し h1'),
   entry('field', 'Field / Input', 'ラベル付きフォーム要素'),
   entry('stepper', 'Stepper', '±の数値入力'),
   entry('date-picker', 'DatePicker', 'カレンダー入力'),
