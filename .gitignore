@@ -1,0 +1,9 @@
+node_modules
+dist
+.wrangler
+.vite
+.tanstack
+worker-configuration.d.ts
+
+# TanStack Router が dev/build 時に自動生成する
+src/routeTree.gen.ts

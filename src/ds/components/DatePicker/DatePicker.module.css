@@ -1,0 +1,142 @@
+.wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* トリガー (フィールド見た目) */
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  height: 48px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 0 12px 0 14px;
+  font-size: 14.5px;
+  transition: border-color 0.15s;
+}
+.trigger:hover {
+  border-color: var(--line-2);
+}
+.calIcon {
+  color: var(--text-dim);
+  flex: none;
+}
+.value {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-family: var(--num);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chev {
+  color: var(--text-faint);
+  flex: none;
+  transform: rotate(90deg);
+  transition: transform 0.18s ease;
+}
+.chevOpen {
+  transform: rotate(-90deg);
+}
+.flip {
+  transform: rotate(180deg);
+}
+
+/* ポップオーバー (カレンダー) */
+.pop {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 280px;
+  max-width: min(280px, calc(100vw - 32px));
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+  animation: dpIn 0.16s ease;
+}
+@keyframes dpIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.title {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--num);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+.dowRow {
+  margin-bottom: 6px;
+}
+.dowc {
+  text-align: center;
+  font-size: 10px;
+  color: var(--text-faint);
+  font-weight: 600;
+  padding: 2px 0;
+}
+.sun {
+  color: color-mix(in srgb, var(--danger) 70%, var(--text-faint));
+}
+.sat {
+  color: color-mix(in srgb, var(--text) 45%, transparent);
+}
+.empty {
+  aspect-ratio: 1;
+}
+.cell {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-family: var(--num);
+  color: var(--text);
+  border: 1px solid transparent;
+  transition: 0.12s;
+}
+.cell:not(:disabled):hover {
+  background: var(--fill-2);
+}
+.cell:disabled {
+  color: var(--text-faint);
+  opacity: 0.4;
+  cursor: default;
+}
+.today {
+  border-color: var(--accent-line);
+  color: var(--accent);
+  font-weight: 700;
+}
+.selected {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+}
+.selected:not(:disabled):hover {
+  background: var(--accent-2);
+}

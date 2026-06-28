@@ -1,0 +1,73 @@
+/* ============================================================
+   kata — デザイントークン (CSS カスタムプロパティ)
+   既定テーマ = 霧 (kiri)。data-theme で各テーマへ切り替える。
+   - セマンティック命名 (--surface / --text / --text-dim / --line ...)。
+   - 派生トークンは color-mix() で動的生成し、テーマ側では触らない。
+   - --danger は危険操作の赤系、--clay は中性の強調色。
+   ============================================================ */
+
+:root {
+  /* ---- 既定テーマ: 霧 (kiri / 銀鼠グレー + 深緑) ---- */
+  --bg: #e9e9ea;
+  --bg-2: #f1f1f2;
+  --surface: #fbfbfc;
+  --surface-2: #efeff1;
+  --surface-3: #e3e3e6;
+  --text: #232427;
+  --text-dim: #66686e;
+  --text-faint: #9c9ea6;
+  --accent: #3a6157;
+  --accent-2: #487469;
+  --clay: #34363a;
+  --on-accent: #fbfbfc;
+  --danger: #c0564f;
+  --glow: 0.05;
+  --shadow: 0 10px 34px rgba(40, 45, 55, 0.13);
+  --shadow-sm: 0 5px 18px rgba(35, 31, 26, 0.07);
+  color-scheme: light;
+
+  /* ---- 派生トークン (テーマからは触らない) ---- */
+  --accent-soft: color-mix(in srgb, var(--accent) 13%, transparent);
+  --accent-line: color-mix(in srgb, var(--accent) 32%, transparent);
+  --clay-soft: color-mix(in srgb, var(--clay) 12%, transparent);
+  --danger-soft: color-mix(in srgb, var(--danger) 12%, transparent);
+  --danger-line: color-mix(in srgb, var(--danger) 34%, transparent);
+  --line: color-mix(in srgb, var(--text) 8%, transparent);
+  --line-2: color-mix(in srgb, var(--text) 15%, transparent);
+  --glow-c: color-mix(in srgb, var(--accent) calc(var(--glow) * 100%), transparent);
+  --fill-1: color-mix(in srgb, var(--text) 5%, transparent);
+  --fill-2: color-mix(in srgb, var(--text) 9%, transparent);
+
+  /* ---- 形状 ---- */
+  --radius: 13px;
+  --radius-sm: 9px;
+
+  /* ---- タイポグラフィ ---- */
+  --ja: 'Zen Kaku Gothic New', system-ui, sans-serif;
+  --num: 'Space Grotesk', var(--ja);
+  --display: var(--num);
+}
+
+/* ============================================================
+   ダークテーマ: 墨 (sumi)
+   ライトは既定の霧 (kiri = :root)。data-theme は sumi の 1 種のみ。
+   ============================================================ */
+:root[data-theme='sumi'] {
+  --bg: #181715;
+  --bg-2: #1e1d1a;
+  --surface: #232220;
+  --surface-2: #2b2a27;
+  --surface-3: #353330;
+  --text: #ece9e3;
+  --text-dim: #9b968c;
+  --text-faint: #6a655c;
+  --accent: #6f9e82;
+  --accent-2: #83b195;
+  --clay: #b6b0a6;
+  --on-accent: #15201a;
+  --danger: #db7a72;
+  --glow: 0.08;
+  --shadow: 0 16px 42px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 5px 18px rgba(0, 0, 0, 0.32);
+  color-scheme: dark;
+}

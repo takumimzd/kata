@@ -1,0 +1,22 @@
+.iconBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  color: var(--text-dim);
+  transition: 0.15s ease;
+}
+.iconBtn:not(:disabled):hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.iconBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.danger:not(:disabled):hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}

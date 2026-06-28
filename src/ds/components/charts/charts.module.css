@@ -1,0 +1,52 @@
+.wrap {
+  position: relative;
+}
+.empty {
+  color: var(--text-faint);
+  font-size: 13px;
+  text-align: center;
+  padding: 40px 0;
+}
+.axis {
+  fill: var(--text-faint);
+  font-size: 10px;
+  font-family: var(--num);
+}
+.barval {
+  fill: var(--text-dim);
+  font-size: 11px;
+  font-family: var(--num);
+  font-weight: 600;
+}
+.spark {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+}
+.tip {
+  position: absolute;
+  top: -4px;
+  transform: translateX(-50%);
+  background: var(--surface-3);
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  padding: 5px 9px;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+.tipDate {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: var(--num);
+}
+.tipVal {
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--num);
+}
+.tipVal span {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-left: 2px;
+}

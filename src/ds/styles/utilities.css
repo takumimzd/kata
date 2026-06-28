@@ -1,0 +1,28 @@
+/* ============================================================
+   kata — 横断ユーティリティクラス
+   コンポーネント化しにくい純粋なヘルパーのみを置く。
+   ボタン等は <Button> / <IconButton> コンポーネントを使うこと
+   (.btn-* はカタログ互換と移行期のために暫定で残す)。
+   ============================================================ */
+
+/* 数字: 等幅数字 + Space Grotesk */
+.num {
+  font-family: var(--num);
+  font-feature-settings: 'tnum' 1;
+}
+
+/* 画面共通レイアウトコンテナ */
+.screen {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 22px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+@media (min-width: 880px) {
+  .screen {
+    padding-left: 44px;
+    padding-right: 44px;
+  }
+}

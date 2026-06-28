@@ -1,0 +1,74 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14.5px;
+  transition: 0.15s ease;
+  white-space: nowrap;
+}
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.block {
+  width: 100%;
+}
+
+/* primary: 濃いソリッド */
+.primary {
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 700;
+  padding: 13px 24px;
+}
+.primary:not(:disabled):hover {
+  opacity: 0.88;
+}
+
+/* secondary: 罫線つきニュートラル */
+.secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line-2);
+  padding: 12px 22px;
+}
+.secondary:not(:disabled):hover {
+  background: var(--surface-2);
+}
+
+/* text: 罫線なし */
+.text {
+  color: var(--text-dim);
+  font-size: 14px;
+  padding: 13px 14px;
+}
+.text:not(:disabled):hover {
+  color: var(--text);
+}
+
+/* danger: 危険操作 (赤ソリッド) */
+.danger {
+  background: var(--danger);
+  color: #fff;
+  font-weight: 700;
+  padding: 13px 24px;
+}
+.danger:not(:disabled):hover {
+  opacity: 0.88;
+}
+
+/* mini: 小型の罫線ボタン */
+.mini {
+  min-height: 36px;
+  background: var(--surface-3);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 0 16px;
+  font-size: 13px;
+}
+.mini:not(:disabled):hover {
+  border-color: var(--line-2);
+}

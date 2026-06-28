@@ -1,0 +1,72 @@
+.dots {
+  display: flex;
+  gap: 18px;
+  height: 16px;
+  align-items: center;
+}
+.dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1.5px solid var(--text-faint);
+  transition: all 0.15s ease;
+}
+.dotFilled {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.1);
+}
+.shake {
+  animation: shake 0.4s ease;
+}
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-10px);
+  }
+  40% {
+    transform: translateX(9px);
+  }
+  60% {
+    transform: translateX(-6px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+.pad {
+  display: grid;
+  grid-template-columns: repeat(3, 76px);
+  gap: 14px 22px;
+}
+.key {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  font-size: 26px;
+  font-weight: 500;
+  display: grid;
+  place-items: center;
+  transition:
+    transform 0.08s ease,
+    background 0.15s ease;
+}
+.key:active {
+  transform: scale(0.93);
+  background: var(--accent-soft);
+}
+.keyGhost {
+  background: transparent;
+  box-shadow: none;
+  font-size: 15px;
+  color: var(--text-dim);
+}
+.keyGhost:active {
+  transform: scale(0.93);
+}

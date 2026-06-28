@@ -1,0 +1,63 @@
+.toolbar {
+  /* 本文上部に常駐する補助バー。本文が伸びても縮まないよう固定する */
+  flex: none;
+  padding: 4px 8px;
+  background: color-mix(in oklab, var(--surface) 88%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+  /* ボタンが多くて入りきらない端末では横スクロールさせる */
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.toolbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* width:max-content + margin:auto で、収まる時は中央寄せ・溢れる時は左から並ぶ */
+.inner {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  width: max-content;
+  margin: 0 auto;
+}
+
+.button {
+  flex: none;
+  min-width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dim);
+  transition:
+    background 0.12s ease,
+    color 0.12s ease,
+    transform 0.08s ease;
+}
+.button:active {
+  transform: scale(0.92);
+}
+.button:disabled {
+  opacity: 0.32;
+  pointer-events: none;
+}
+.button svg {
+  display: block;
+}
+
+.divider {
+  width: 1px;
+  align-self: stretch;
+  margin: 4px 2px;
+  background: var(--line);
+}
+
+.buttonOn {
+  background: var(--accent-soft);
+  color: var(--accent);
+}

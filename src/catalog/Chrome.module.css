@@ -1,0 +1,122 @@
+.shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100%;
+}
+
+@media (min-width: 880px) {
+  .shell {
+    grid-template-columns: 248px 1fr;
+  }
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  padding: 24px 18px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
+}
+
+@media (min-width: 880px) {
+  .sidebar {
+    border-bottom: none;
+    border-right: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.brandMark {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.brandText {
+  font-family: var(--num);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.brandSub {
+  font-size: 10.5px;
+  color: var(--text-faint);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.themePicker {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.themeLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.themeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.themeChip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 9px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-dim);
+  transition: 0.12s ease;
+}
+
+.themeChip:hover {
+  border-color: var(--line-2);
+}
+
+.themeChipOn {
+  border-color: var(--accent-line);
+  color: var(--text);
+}
+
+/* スウォッチは chip 自身の data-theme スコープで色を解決する */
+.themeSwatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 5px;
+  flex: none;
+  background: var(--accent);
+  box-shadow: inset 0 0 0 2px var(--bg);
+  outline: 1px solid var(--line-2);
+}
+
+.content {
+  min-width: 0;
+  padding: 28px 22px 80px;
+}
+
+@media (min-width: 880px) {
+  .content {
+    padding: 40px 44px 100px;
+  }
+}

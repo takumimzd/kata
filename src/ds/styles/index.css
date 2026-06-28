@@ -1,0 +1,9 @@
+/* ============================================================
+   kata — スタイルエントリ
+   利用側は `import 'kata/styles.css'` で読み込む。
+   フォント (Zen Kaku Gothic New / Space Grotesk) は別途
+   <link> で読み込むこと (README 参照)。
+   ============================================================ */
+@import './tokens.css';
+@import './reset.css';
+@import './utilities.css';

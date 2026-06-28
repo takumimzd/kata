@@ -1,0 +1,66 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fade 0.2s ease;
+}
+.sheet {
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  border-radius: 18px 18px 0 0;
+  width: 100%;
+  max-width: 560px;
+  max-height: 92vh;
+  overflow-y: auto;
+  animation: slideUp 0.26s cubic-bezier(0.3, 0.9, 0.3, 1);
+  /* スクロールは維持しつつバーは非表示 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.sheet::-webkit-scrollbar {
+  display: none;
+}
+.head {
+  position: sticky;
+  top: 0;
+  background: var(--bg-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 18px 12px;
+  border-bottom: 1px solid var(--line);
+  z-index: 2;
+}
+.head h3 {
+  font-size: 16px;
+  font-weight: 700;
+}
+.body {
+  padding: 18px;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+}
+
+@media (min-width: 880px) {
+  .overlay {
+    align-items: center;
+  }
+  .sheet {
+    border-radius: 16px;
+  }
+}
