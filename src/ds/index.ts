@@ -53,7 +53,15 @@ export {
 // --- 単体 (components/ 直下) ---
 export { Icon, type IconName } from './components/Icon';
 export { Button, type ButtonVariant } from './components/Button';
-export { IconButton } from './components/IconButton';
+export {
+  IconButton,
+  type IconButtonShape,
+  type IconButtonSize,
+  type IconButtonVariant,
+} from './components/IconButton';
+export { Fab } from './components/Fab';
+export { Breadcrumb, type BreadcrumbItem } from './components/Breadcrumb';
+export { ActionSheet, ActionSheetItem } from './components/ActionSheet';
 export { SearchBox } from './components/SearchBox';
 export { Calendar } from './components/Calendar';
 export { PinPad } from './components/PinPad';

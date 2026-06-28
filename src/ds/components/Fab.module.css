@@ -1,0 +1,30 @@
+.fab {
+  position: fixed;
+  right: var(--space-5);
+  bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+  z-index: 30;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: var(--shadow);
+  transition:
+    transform 0.12s ease,
+    background 0.15s ease;
+}
+
+.fab:hover {
+  background: var(--accent-2);
+}
+
+.fab:active {
+  transform: scale(0.94);
+}
+
+.fab:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
