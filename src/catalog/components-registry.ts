@@ -57,6 +57,7 @@ export const COMPONENTS: CompEntry[] = [
   entry('calendar', 'Calendar', '月グリッド', 'root'),
   entry('pin-pad', 'PinPad', 'パスコード入力', 'root'),
   entry('modal', 'Modal', 'ボトムシート', 'root'),
+  entry('menu', 'Menu', 'ドロップダウンメニュー', 'root'),
   entry('confirm-dialog', 'ConfirmDialog', 'useConfirm() 確認ダイアログ', 'root'),
   entry('toast', 'Toast', 'useToast() トースト', 'root'),
   entry('side-nav', 'SideNav', '多階層対応サイドナビ', 'root'),

@@ -1,0 +1,68 @@
+/* 開いた状態のメニューパネル。トリガーを内包する position:relative の
+   ラッパに対して絶対配置する (トリガーは利用側が用意する)。 */
+.menu {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  z-index: 25;
+  min-width: 168px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: menuIn 0.16s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.right {
+  right: 0;
+  transform-origin: top right;
+}
+
+.left {
+  left: 0;
+  transform-origin: top left;
+}
+
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  white-space: nowrap;
+  transition: background 0.13s ease;
+}
+
+.item:hover {
+  background: var(--accent-soft);
+}
+
+.item svg {
+  flex: none;
+}
+
+.danger {
+  color: var(--danger);
+}
+
+.danger:hover {
+  background: var(--danger-soft);
+}
