@@ -20,11 +20,13 @@ export function useChartWidth(initial = 400) {
 
 /** なめらかなパスを生成 (Catmull-Rom 風の単純スムージング) */
 export function smoothPath(points: { x: number; y: number }[]): string {
-  if (points.length < 2) return points.length === 1 ? `M ${points[0].x} ${points[0].y}` : '';
-  let d = `M ${points[0].x} ${points[0].y}`;
+  const first = points[0];
+  if (!first) return '';
+  if (points.length < 2) return `M ${first.x} ${first.y}`;
+  let d = `M ${first.x} ${first.y}`;
   for (let i = 1; i < points.length; i++) {
-    const p0 = points[i - 1];
-    const p1 = points[i];
+    const p0 = points[i - 1]!;
+    const p1 = points[i]!;
     const cx = (p0.x + p1.x) / 2;
     d += ` C ${cx} ${p0.y} ${cx} ${p1.y} ${p1.x} ${p1.y}`;
   }

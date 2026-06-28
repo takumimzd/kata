@@ -24,7 +24,7 @@ export function Sparkline({ data, color = 'var(--accent)', width = 120, height =
     y: height - ((v - min) / (max - min)) * height,
   }));
   const path = smoothPath(pts);
-  const last = pts[pts.length - 1];
+  const last = pts[pts.length - 1]!;
   return (
     <svg
       width={width}

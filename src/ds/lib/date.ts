@@ -9,7 +9,7 @@ export const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'] as con
 /** "YYYY-MM-DD" をローカルタイムの Date に変換する (UTC ずれを避ける) */
 export function parseYmd(s: string): Date {
   const [y, m, d] = s.split('-').map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1);
+  return new Date(y ?? 1970, (m ?? 1) - 1, d ?? 1);
 }
 
 /** Date を "YYYY-MM-DD" に整形する */

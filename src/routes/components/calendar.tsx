@@ -15,7 +15,7 @@ function CalendarPage() {
   const [month, setMonth] = useState(() => today().slice(0, 7));
 
   const shift = (delta: number) => {
-    const [y, m] = month.split('-').map(Number);
+    const [y = 1970, m = 1] = month.split('-').map(Number);
     const dt = new Date(y, m - 1 + delta, 1);
     setMonth(`${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`);
   };

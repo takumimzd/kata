@@ -63,7 +63,7 @@ export function LineChart({
   const linePath = smoothPath(points);
   const areaPath =
     linePath +
-    ` L ${points[points.length - 1].x} ${padT + innerH} L ${points[0].x} ${padT + innerH} Z`;
+    ` L ${points[points.length - 1]!.x} ${padT + innerH} L ${points[0]!.x} ${padT + innerH} Z`;
 
   const ticks = [min + (max - min) * 0.5, max - (max - min) * yPad, min + (max - min) * yPad];
   const fmt = format ?? ((v: number) => v.toFixed(1));
@@ -118,15 +118,15 @@ export function LineChart({
         {hover != null && (
           <g>
             <line
-              x1={points[hover].x}
+              x1={points[hover]!.x}
               y1={padT}
-              x2={points[hover].x}
+              x2={points[hover]!.x}
               y2={padT + innerH}
               stroke="var(--line-2)"
             />
             <circle
-              cx={points[hover].x}
-              cy={points[hover].y}
+              cx={points[hover]!.x}
+              cy={points[hover]!.y}
               r="4.5"
               fill={color}
               stroke="var(--surface)"
@@ -136,15 +136,15 @@ export function LineChart({
         )}
         {xLabelIdx.map((i) => (
           <text key={i} x={xAt(i)} y={height - 8} textAnchor="middle" className={styles.axis}>
-            {data[i].label}
+            {data[i]!.label}
           </text>
         ))}
       </svg>
       {hover != null && (
-        <div className={styles.tip} style={{ left: `${(points[hover].x / w) * 100}%` }}>
-          <div className={styles.tipDate}>{data[hover].label}</div>
+        <div className={styles.tip} style={{ left: `${(points[hover]!.x / w) * 100}%` }}>
+          <div className={styles.tipDate}>{data[hover]!.label}</div>
           <div className={styles.tipVal}>
-            {fmt(data[hover].value)}
+            {fmt(data[hover]!.value)}
             <span>{unit}</span>
           </div>
         </div>

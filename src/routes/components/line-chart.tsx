@@ -45,7 +45,7 @@ function LineChartPage() {
             tabs={TABS}
             activeTab={tab}
             onTabChange={setTab}
-            data={SERIES[tab]}
+            data={SERIES[tab] ?? []}
             unit="kg"
           />
         </div>

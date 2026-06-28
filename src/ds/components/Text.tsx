@@ -17,7 +17,7 @@ interface TextProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
 }
 
-const VARIANT: Record<TextVariant, string> = {
+const VARIANT: Record<TextVariant, string | undefined> = {
   body: styles.body,
   bodyStrong: styles.bodyStrong,
   sub: styles.sub,

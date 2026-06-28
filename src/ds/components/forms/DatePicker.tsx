@@ -52,7 +52,7 @@ export function DatePicker({ value, onChange, max, min }: DatePickerProps) {
     };
   }, [open]);
 
-  const [y, m] = view.split('-').map(Number);
+  const [y = 1970, m = 1] = view.split('-').map(Number);
   const startDow = new Date(y, m - 1, 1).getDay();
   const days = new Date(y, m, 0).getDate();
   const cells: (number | null)[] = [];

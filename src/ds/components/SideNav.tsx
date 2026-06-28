@@ -107,8 +107,8 @@ export function SideNav({ items, renderLink, footer, className }: SideNavProps) 
       ) : (
         <Fragment key={it.key}>
           {renderLink(it, {
-            className: depth === 0 ? styles.link : styles.childLink,
-            activeClassName: styles.on,
+            className: (depth === 0 ? styles.link : styles.childLink) ?? '',
+            activeClassName: styles.on ?? '',
             content: linkContent(it),
           })}
         </Fragment>
