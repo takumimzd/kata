@@ -1,0 +1,34 @@
+.wrap {
+  position: relative;
+  width: 100%;
+}
+.select {
+  width: 100%;
+  height: 48px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 0 38px 0 14px;
+  font-size: 14.5px;
+  /* ネイティブの矢印を消して独自の chevron を出す */
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.select:hover {
+  border-color: var(--line-2);
+}
+.select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.chev {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  color: var(--text-faint);
+  pointer-events: none;
+}

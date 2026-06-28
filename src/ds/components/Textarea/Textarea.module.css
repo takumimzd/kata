@@ -1,0 +1,23 @@
+.textarea {
+  width: 100%;
+  min-height: 92px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.15s;
+}
+.textarea::placeholder {
+  color: var(--text-faint);
+}
+.textarea:hover {
+  border-color: var(--line-2);
+}
+.textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}

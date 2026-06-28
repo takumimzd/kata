@@ -36,6 +36,11 @@ export {
   type SideNavGroup,
   type SideNavRenderCtx,
 } from './components/SideNav';
+export { Switch } from './components/Switch';
+export { Textarea } from './components/Textarea';
+export { Select, type SelectOption } from './components/Select';
+export { SearchSelect, type SearchSelectOption } from './components/SearchSelect';
+export { Calendar } from './components/Calendar';
 export { BarChart, LineChart, Sparkline, type ChartPoint } from './components/charts';
 export {
   RichTextEditor,

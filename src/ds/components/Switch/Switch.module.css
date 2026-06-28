@@ -1,0 +1,32 @@
+.toggle {
+  width: 46px;
+  height: 27px;
+  flex: none;
+  border-radius: 999px;
+  background: var(--fill-2);
+  border: 1px solid var(--line);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  transition: background 0.18s;
+}
+.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  justify-content: flex-end;
+}
+.toggle:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.knob {
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  transition: 0.18s;
+}
+.on .knob {
+  background: var(--on-accent);
+}

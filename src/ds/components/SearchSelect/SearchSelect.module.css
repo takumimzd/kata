@@ -1,0 +1,149 @@
+.select {
+  position: relative;
+  width: 100%;
+}
+
+/* 閉じているときのコントロール (アイコン + ラベル + ▼) */
+.control {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 11px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.15s;
+}
+.control:hover {
+  border-color: var(--accent-line);
+}
+.controlOpen {
+  border-color: var(--accent-line);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.control > svg:first-child {
+  flex: none;
+  color: var(--accent);
+}
+.controlLabel {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+.chevron {
+  flex: none;
+  color: var(--text-faint);
+  transform: rotate(90deg);
+  transition: transform 0.18s;
+}
+.chevronOpen {
+  transform: rotate(-90deg);
+}
+
+.panel {
+  position: absolute;
+  z-index: 30;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--accent-line);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 11px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
+}
+.search > svg {
+  flex: none;
+  color: var(--text-faint);
+}
+.search input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  color: var(--text);
+  padding: 2px 0;
+  /* iOS のフォーカス時自動ズーム防止 (16px 未満だとズーム) */
+  font-size: 16px;
+}
+.search input:focus {
+  outline: none;
+}
+.clear {
+  display: inline-flex;
+  flex: none;
+  padding: 2px;
+  color: var(--text-faint);
+}
+.clear:hover {
+  color: var(--text);
+}
+
+.list {
+  max-height: 256px;
+  overflow-y: auto;
+  padding: 6px;
+}
+.group + .group {
+  margin-top: 2px;
+}
+.groupLabel {
+  padding: 7px 8px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-faint);
+  letter-spacing: 0.03em;
+}
+.option {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 8px;
+  text-align: left;
+  border-radius: 7px;
+  color: var(--text);
+  font-size: 13.5px;
+  transition: 0.12s;
+}
+.option > svg:first-child {
+  flex: none;
+  color: var(--text-faint);
+}
+.optionLabel {
+  flex: 1;
+  min-width: 0;
+}
+.option:hover {
+  background: var(--fill-1);
+}
+.trailing {
+  flex: none;
+  display: inline-flex;
+  opacity: 0;
+  color: var(--accent);
+}
+.option:hover .trailing {
+  opacity: 1;
+}
+.empty {
+  padding: 18px 8px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--text-faint);
+}
