@@ -2,24 +2,32 @@
 //  kata — BarChart (棒グラフ)
 //  data: { label, value }[]。幅はコンテナに追従する。
 // ============================================================
+import { ChartCard, type ChartFrameProps } from './ChartCard';
 import styles from './charts.module.css';
 import type { ChartPoint } from './types';
 import { useChartWidth } from './util';
 
-interface BarChartProps {
+interface BarChartProps extends ChartFrameProps {
   data: ChartPoint[];
   color?: string;
   height?: number;
 }
 
-export function BarChart({ data, color = 'var(--accent)', height = 170 }: BarChartProps) {
+export function BarChart({
+  data,
+  color = 'var(--accent)',
+  height = 170,
+  ...frame
+}: BarChartProps) {
   const { ref, width: w } = useChartWidth(400);
 
   if (!data || data.length === 0) {
     return (
-      <div ref={ref} className={styles.empty}>
-        データがありません
-      </div>
+      <ChartCard {...frame}>
+        <div ref={ref} className={styles.empty}>
+          データがありません
+        </div>
+      </ChartCard>
     );
   }
 
@@ -35,8 +43,9 @@ export function BarChart({ data, color = 'var(--accent)', height = 170 }: BarCha
   const yAt = (v: number) => padT + innerH - (v / max) * innerH;
 
   return (
-    <div ref={ref} className={styles.wrap}>
-      <svg width="100%" height={height} viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none">
+    <ChartCard {...frame}>
+      <div ref={ref} className={styles.wrap}>
+        <svg width="100%" height={height} viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none">
         {[0.5, 1].map((f, i) => (
           <line
             key={i}
@@ -63,7 +72,8 @@ export function BarChart({ data, color = 'var(--accent)', height = 170 }: BarCha
             </g>
           );
         })}
-      </svg>
-    </div>
+        </svg>
+      </div>
+    </ChartCard>
   );
 }

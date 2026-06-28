@@ -1,0 +1,40 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  color: var(--text);
+  transition: 0.15s;
+}
+.chip svg {
+  color: var(--text-faint);
+}
+.chip:not(:disabled):hover {
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+.chip:not(:disabled):hover svg {
+  color: var(--accent);
+}
+.chip:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.active {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+.active svg {
+  color: var(--accent);
+}
+
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}

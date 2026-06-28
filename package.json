@@ -18,8 +18,7 @@
   "exports": {
     ".": "./src/ds/index.ts",
     "./styles.css": "./src/ds/styles/index.css",
-    "./tokens.css": "./src/ds/styles/index.css",
-    "./components/*": "./src/ds/components/*/index.ts"
+    "./tokens.css": "./src/ds/styles/index.css"
   },
   "peerDependencies": {
     "react": ">=19",

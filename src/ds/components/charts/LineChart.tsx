@@ -3,11 +3,12 @@
 //  data: { label, value }[]。ホバーでツールチップを表示する。
 // ============================================================
 import { useState } from 'react';
+import { ChartCard, type ChartFrameProps } from './ChartCard';
 import styles from './charts.module.css';
 import type { ChartPoint } from './types';
 import { smoothPath, useChartWidth } from './util';
 
-interface LineChartProps {
+interface LineChartProps extends ChartFrameProps {
   data: ChartPoint[];
   unit?: string;
   color?: string;
@@ -25,15 +26,18 @@ export function LineChart({
   height = 200,
   yPad = 0.12,
   format,
+  ...frame
 }: LineChartProps) {
   const { ref, width: w } = useChartWidth(600);
   const [hover, setHover] = useState<number | null>(null);
 
   if (!data || data.length === 0) {
     return (
-      <div ref={ref} className={styles.empty}>
-        データがありません
-      </div>
+      <ChartCard {...frame}>
+        <div ref={ref} className={styles.empty}>
+          データがありません
+        </div>
+      </ChartCard>
     );
   }
 
@@ -85,8 +89,9 @@ export function LineChart({
   );
 
   return (
-    <div ref={ref} className={styles.wrap}>
-      <svg
+    <ChartCard {...frame}>
+      <div ref={ref} className={styles.wrap}>
+        <svg
         width="100%"
         height={height}
         viewBox={`0 0 ${w} ${height}`}
@@ -144,6 +149,7 @@ export function LineChart({
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </ChartCard>
   );
 }
