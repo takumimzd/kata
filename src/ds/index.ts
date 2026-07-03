@@ -39,6 +39,12 @@ export {
   type BarListItem,
   type ChartPoint,
   type ChartTab,
+  Heatmap,
+  type HeatmapDatum,
+  StackedBarChart,
+  type StackedPoint,
+  type StackedSeries,
+  type LineOverlay,
 } from './components/charts';
 
 // --- editor ---

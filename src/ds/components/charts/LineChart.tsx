@@ -8,6 +8,13 @@ import styles from './charts.module.css';
 import type { ChartPoint } from './types';
 import { smoothPath, useChartWidth } from './util';
 
+export interface LineOverlay {
+  /** data と同じ label 軸に index で対応させる */
+  data: ChartPoint[];
+  color?: string;
+  dashed?: boolean;
+}
+
 interface LineChartProps extends ChartFrameProps {
   data: ChartPoint[];
   unit?: string;
@@ -17,6 +24,8 @@ interface LineChartProps extends ChartFrameProps {
   yPad?: number;
   /** 値の整形 (軸/ツールチップ) */
   format?: (v: number) => string;
+  /** 重ね描きの系列 (移動平均など)。ツールチップ対象外 */
+  overlays?: LineOverlay[];
 }
 
 export function LineChart({
@@ -26,6 +35,7 @@ export function LineChart({
   height = 200,
   yPad = 0.12,
   format,
+  overlays,
   ...frame
 }: LineChartProps) {
   const { ref, width: w } = useChartWidth(600);
@@ -48,7 +58,7 @@ export function LineChart({
   const innerW = Math.max(10, w - padL - padR);
   const innerH = height - padT - padB;
 
-  const vals = data.map((d) => d.value);
+  const vals = [...data, ...(overlays ?? []).flatMap((o) => o.data)].map((d) => d.value);
   let min = Math.min(...vals);
   let max = Math.max(...vals);
   const range = max - min || 1;
@@ -114,6 +124,24 @@ export function LineChart({
           </g>
         ))}
         <path d={areaPath} fill={`url(#${gid})`} />
+        {(overlays ?? []).map((o, oi) => {
+          if (!o.data.length) return null;
+          const oxAt = (i: number) =>
+            padL + (o.data.length === 1 ? innerW / 2 : (i / (o.data.length - 1)) * innerW);
+          const opts = o.data.map((d, i) => ({ x: oxAt(i), y: yAt(d.value), ...d }));
+          return (
+            <path
+              key={oi}
+              d={smoothPath(opts)}
+              fill="none"
+              stroke={o.color ?? 'var(--text-faint, #999)'}
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeDasharray={o.dashed ? '4 4' : undefined}
+              opacity="0.85"
+            />
+          );
+        })}
         <path d={linePath} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" />
         {hover != null && (
           <g>
