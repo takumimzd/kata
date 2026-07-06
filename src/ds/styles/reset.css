@@ -44,6 +44,17 @@ select {
   color: inherit;
 }
 
+/* iOS Safari は input の font-size が 16px 未満だとフォーカス時に
+   ズームインする。狭い画面ではそれを避けるため、モバイルでは最低 16px
+   を保証する (見た目は transform / スタイルで調整可能)。 */
+@media (max-width: 879px) {
+  input,
+  textarea,
+  select {
+    font-size: max(16px, 1em);
+  }
+}
+
 a {
   color: inherit;
   text-decoration: none;
