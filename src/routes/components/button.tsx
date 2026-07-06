@@ -31,7 +31,10 @@ function ButtonPage() {
       </Demo>
       <Code>{`<Button variant="primary">保存する</Button>
 <Button variant="danger"><Icon name="trash" size={16} />削除</Button>
-<Button variant="mini">複製</Button>`}</Code>
+<Button variant="mini">複製</Button>
+
+// リンクにボタンの見た目を与える
+<Link to="/back" className={buttonClassName('text')}>戻る</Link>`}</Code>
       <PropsTable
         rows={[
           { name: 'variant', type: `'primary' | 'secondary' | 'text' | 'danger' | 'ghost' | 'mini'`, def: `'primary'`, desc: '見た目のバリアント。ghost はクレイ罫線の控えめアクション' },

@@ -59,7 +59,7 @@ export {
 
 // --- 単体 (components/ 直下) ---
 export { Icon, ICON_NAMES, type IconName } from './components/Icon';
-export { Button, type ButtonVariant } from './components/Button';
+export { Button, buttonClassName, type ButtonVariant } from './components/Button';
 export {
   IconButton,
   type IconButtonShape,

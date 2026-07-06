@@ -16,6 +16,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
+/** <a> やルーターの Link などにボタンの見た目を与えるクラス名 */
+export function buttonClassName(variant: ButtonVariant = 'primary', opts?: { block?: boolean }): string {
+  return cn(styles.btn, styles[variant], opts?.block && styles.block);
+}
+
 export function Button({
   variant = 'primary',
   block = false,
