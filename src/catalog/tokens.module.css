@@ -1,0 +1,693 @@
+/* ============================================================
+   トークンページ (/tokens) — 章立てで色・タイポ・空間・角丸・影・BP
+   docs/design/Tokens.dc.html をトレース。
+   ============================================================ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+/* ============ HEADER ============ */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.headMeta {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.headKey {
+  font-family: var(--num);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.headSub {
+  font-family: var(--num);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.06em;
+}
+
+.headWrap {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 40px;
+  align-items: end;
+}
+
+.headBig {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 640px;
+}
+
+.title {
+  font-family: var(--ja);
+  font-weight: 900;
+  font-size: 56px;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.lede {
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.lede code {
+  font-family: var(--num);
+  color: var(--text);
+}
+
+.headStats {
+  display: flex;
+  align-items: stretch;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.headStat {
+  padding: 12px 18px;
+  border-right: 1px solid var(--line);
+  text-align: center;
+}
+
+.headStat:last-child {
+  border-right: none;
+}
+
+.headStatN {
+  font-family: var(--num);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1;
+}
+
+.headStatL {
+  font-size: 10px;
+  color: var(--text-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--num);
+  margin-top: 4px;
+}
+
+/* ============ CHAPTER ============ */
+.chap {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  align-items: baseline;
+  gap: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--text);
+  margin-bottom: 28px;
+}
+
+.chapKanji {
+  font-family: var(--ja);
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.chapJp {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.chapEn {
+  font-family: var(--num);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.chapSide {
+  font-family: var(--num);
+  font-size: 12px;
+  color: var(--text-faint);
+  text-align: right;
+}
+
+.chapSideDim {
+  color: var(--text-dim);
+}
+
+/* ============ SUB SECTION ============ */
+.sub {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.subN {
+  font-family: var(--num);
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.sub h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.subEn {
+  font-family: var(--num);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.subMeta {
+  margin-left: auto;
+  font-family: var(--num);
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+/* ============ COLORS ============ */
+.subSection {
+  margin-bottom: 40px;
+}
+
+.subSection:last-child {
+  margin-bottom: 0;
+}
+
+.colgrid {
+  display: grid;
+  gap: 14px;
+}
+
+.colLg {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.colMd {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.colSm {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+.colpanel {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.colpanelChip {
+  height: 130px;
+  position: relative;
+  border-bottom: 1px solid var(--line);
+}
+
+.colpanelHex {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  font-family: var(--num);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.02em;
+  padding: 3px 7px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  border-radius: 4px;
+}
+
+.colpanelMeta {
+  padding: 10px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.colpanelName {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.colpanelVar {
+  font-family: var(--num);
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+/* text-on-surface pair */
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.pairCard {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pairName {
+  font-family: var(--num);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.pairSample {
+  font-family: var(--num);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.pairVar {
+  font-family: var(--num);
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+
+/* ============ TYPOGRAPHY ============ */
+.typeHero {
+  padding: 44px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.typeHeroGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: end;
+}
+
+.eyebrow {
+  font-family: var(--num);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.typeSpecimen {
+  padding: 24px 28px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.typeRow {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  padding: 24px 0;
+  gap: 24px;
+  align-items: baseline;
+  border-top: 1px solid var(--line);
+}
+
+.typeRow:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.typeRow:last-child {
+  padding-bottom: 0;
+}
+
+.typeLbl {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.typeName {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.typeVar {
+  font-family: var(--num);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.02em;
+}
+
+.typeSpec {
+  font-family: var(--num);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* ============ SPACING ============ */
+.spacingGrid {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.spaceRow {
+  display: grid;
+  grid-template-columns: 100px 60px 1fr 130px;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.spaceRow:last-child {
+  border-bottom: none;
+}
+
+.spaceLbl {
+  font-family: var(--num);
+  font-size: 12.5px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.spacePx {
+  font-family: var(--num);
+  font-size: 11.5px;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+.spaceBar {
+  height: 20px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  border-radius: 3px;
+}
+
+.spaceUsed {
+  font-family: var(--num);
+  font-size: 10.5px;
+  color: var(--text-faint);
+  text-align: right;
+}
+
+/* ============ RADIUS ============ */
+.radiiRow {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.rbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.rboxShape {
+  width: 84px;
+  height: 84px;
+  background: var(--accent-soft);
+  border: 1.5px solid var(--accent);
+  position: relative;
+}
+
+.rboxCross::before,
+.rboxCross::after {
+  content: '';
+  position: absolute;
+  background: var(--accent);
+}
+
+.rboxCross::before {
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 1px;
+  transform: translate(-50%, -50%);
+}
+
+.rboxCross::after {
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+}
+
+.rboxInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.rboxVar {
+  font-family: var(--num);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.rboxDefault {
+  color: var(--accent);
+}
+
+.rboxPx {
+  font-family: var(--num);
+  font-size: 10.5px;
+  color: var(--text-faint);
+}
+
+/* ============ SHADOW ============ */
+.shadowRow {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.sbox {
+  padding: 24px 32px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 200px;
+  flex: 1;
+}
+
+.sboxName {
+  font-family: var(--num);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.sboxDesc {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.sboxVal {
+  font-family: var(--num);
+  font-size: 10.5px;
+  color: var(--text-faint);
+  letter-spacing: 0.02em;
+  margin-top: 4px;
+}
+
+/* ============ BREAKPOINTS ============ */
+.bpRow {
+  display: grid;
+  grid-template-columns: 90px 1fr 130px;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.bpRow:last-child {
+  border-bottom: none;
+}
+
+.bpLbl {
+  font-family: var(--num);
+  font-size: 12.5px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.bpBar {
+  position: relative;
+  height: 24px;
+  background: var(--fill-1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bpFill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+.bpFillSoft {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+}
+
+.bpFillMid {
+  background: var(--accent-line);
+}
+
+.bpUse {
+  font-family: var(--num);
+  font-size: 10.5px;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+/* ============ FOOTER ============ */
+.footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px solid var(--text);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: end;
+}
+
+.footerL {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.footerBrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footerMark {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: 5px;
+  font-family: var(--ja);
+  font-weight: 900;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.footerName {
+  font-family: var(--num);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.footerDesc {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.footerR {
+  font-family: var(--num);
+  font-size: 10.5px;
+  color: var(--text-faint);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 880px) {
+  .headWrap {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: 40px;
+  }
+
+  .typeHeroGrid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .typeRow {
+    grid-template-columns: 1fr;
+  }
+
+  .spaceRow {
+    grid-template-columns: 90px 60px 1fr;
+  }
+
+  .spaceUsed {
+    display: none;
+  }
+
+  .pair {
+    grid-template-columns: 1fr;
+  }
+}

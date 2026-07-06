@@ -41,6 +41,7 @@ function buildNavItems(activeGroup: string | null): SideNavItem[] {
     { key: 'overview', to: '/', label: '概要', exact: true, icon: <Icon name="home" size={18} /> },
     { key: 'principles', to: '/principles', label: '特徴', icon: <Icon name="book" size={18} /> },
     { key: 'tokens', to: '/tokens', label: 'トークン', icon: <Icon name="chart" size={18} /> },
+    { key: 'mobile', to: '/mobile', label: 'モバイル', icon: <Icon name="monitor" size={18} /> },
     {
       key: 'components',
       label: 'コンポーネント',
