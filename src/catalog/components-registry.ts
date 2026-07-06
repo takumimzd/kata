@@ -67,6 +67,9 @@ export const COMPONENTS: CompEntry[] = [
   entry('confirm-dialog', 'ConfirmDialog', 'useConfirm() 確認ダイアログ', 'root'),
   entry('toast', 'Toast', 'useToast() トースト', 'root'),
   entry('side-nav', 'SideNav', '多階層対応サイドナビ', 'root'),
+  entry('tab-bar', 'TabBar', 'モバイルのボトムタブ / 水平タブ', 'root'),
+  entry('drawer', 'Drawer', '画面端からせり出すオーバーレイ', 'root'),
+  entry('hamburger-menu', 'HamburgerMenu', 'ハンバーガー + Drawer の組合わせ', 'root'),
 
   // ---- components/forms/ (入力系) ----
   entry('field', 'Field', 'ラベル + ヒント/エラーのラッパー', 'forms'),
@@ -83,6 +86,8 @@ export const COMPONENTS: CompEntry[] = [
   entry('line-chart', 'LineChart', '折れ線チャート (枠つき)', 'charts'),
   entry('bar-list', 'BarList', '横棒ランキング (枠つき)', 'charts'),
   entry('sparkline', 'Sparkline', 'ミニ折れ線', 'charts'),
+  entry('heatmap', 'Heatmap', 'カレンダー草 (草) 型のヒートマップ', 'charts'),
+  entry('stacked-bar-chart', 'StackedBarChart', '積み上げ棒グラフ', 'charts'),
 
   // ---- components/editor/ ----
   entry('rich-text-editor', 'RichTextEditor', 'Lexical ベースのエディタ', 'editor'),

@@ -1,0 +1,87 @@
+/* ============================================================
+   TabBar — モバイルのボトムタブ / ナビ用の水平タブ列。
+   variant=floating: 画面下部に浮かせるフロート型 (mobile 用の定番)
+   variant=flat:     単に横並びの水平タブ (画面内に置く)
+   ============================================================ */
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+/* floating (画面下に固定して浮かせる) */
+.floating {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 30;
+  padding: 8px 6px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* flat (通常の横並び) */
+.flat {
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 10px;
+  min-width: 56px;
+  color: var(--text-dim);
+  font-size: 10px;
+  font-family: var(--num);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 12px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: color 0.12s ease;
+}
+
+.item:hover {
+  color: var(--text);
+}
+
+.itemActive {
+  color: var(--accent);
+}
+
+.itemActive:hover {
+  color: var(--accent);
+}
+
+.itemDisabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label {
+  font-family: var(--ja);
+  line-height: 1.1;
+}
+
+/* label なしで icon 単独のときは padding/min-width を詰める */
+.itemIconOnly {
+  min-width: 40px;
+  padding: 8px;
+}

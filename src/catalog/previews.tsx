@@ -37,12 +37,7 @@ function CalGrid({ cell = 12, gap = 4, dots = false }: { cell?: number; gap?: nu
 
 // --- 各プレビュー ---
 const previews: Record<string, () => ReactNode> = {
-  button: () => (
-    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <Button variant="primary">保存</Button>
-      <Button variant="secondary">取消</Button>
-    </div>
-  ),
+  button: () => <Button variant="primary">保存</Button>,
   'icon-button': () => (
     <div style={{ display: 'flex', gap: 8 }}>
       <IconButton label="edit">
@@ -777,6 +772,79 @@ const previews: Record<string, () => ReactNode> = {
       ))}
     </div>
   ),
+  heatmap: () => {
+    const cells = [];
+    for (let w = 0; w < 12; w++) {
+      for (let d = 0; d < 7; d++) {
+        const seed = (w * 7 + d) * 13;
+        const rand = ((seed * 9301 + 49297) % 233280) / 233280;
+        let bg = 'var(--fill-1)';
+        if (rand > 0.85) bg = 'var(--accent)';
+        else if (rand > 0.7) bg = 'var(--accent-line)';
+        else if (rand > 0.5) bg = 'var(--accent-soft)';
+        cells.push(
+          <div
+            key={`${w}-${d}`}
+            style={{
+              width: 8,
+              height: 8,
+              background: bg,
+              borderRadius: 2,
+            }}
+          />
+        );
+      }
+    }
+    return (
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateRows: 'repeat(7, 8px)',
+          gridAutoFlow: 'column',
+          gridAutoColumns: '8px',
+          gap: 2,
+        }}
+      >
+        {cells}
+      </div>
+    );
+  },
+  'stacked-bar-chart': () => {
+    const bars = [
+      [16, 10, 6],
+      [22, 12, 8],
+      [12, 18, 6],
+      [30, 14, 8],
+      [20, 20, 10],
+      [24, 22, 12],
+      [16, 26, 14],
+    ];
+    return (
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 60 }}>
+        {bars.map((s, i) => {
+          const [a = 0, b = 0, c = 0] = s;
+          const total = a + b + c;
+          return (
+            <div
+              key={i}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: 10,
+                height: total,
+                borderRadius: '2px 2px 0 0',
+                overflow: 'hidden',
+              }}
+            >
+              <div style={{ height: c, background: 'var(--accent-soft)' }} />
+              <div style={{ height: b, background: 'var(--accent-line)' }} />
+              <div style={{ height: a, background: 'var(--accent)' }} />
+            </div>
+          );
+        })}
+      </div>
+    );
+  },
   sparkline: () => {
     const pts = '2,26 14,22 26,28 38,14 50,20 62,10 74,16 86,6';
     return (
@@ -786,6 +854,119 @@ const previews: Record<string, () => ReactNode> = {
       </svg>
     );
   },
+  'tab-bar': () => (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        width: 150,
+        padding: '6px 6px',
+        background: 'var(--surface)',
+        border: '1px solid var(--line)',
+        borderRadius: 18,
+        boxShadow: 'var(--shadow-sm)',
+        gap: 4,
+      }}
+    >
+      {(
+        [
+          { l: '概要', on: true, name: 'home' },
+          { l: '特徴', on: false, name: 'book' },
+          { l: '部品', on: false, name: 'note' },
+        ] as const
+      ).map((t) => (
+        <div
+          key={t.l}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 1,
+            color: t.on ? 'var(--accent)' : 'var(--text-dim)',
+            fontFamily: 'var(--num)',
+            fontSize: 8.5,
+            fontWeight: 600,
+          }}
+        >
+          <Icon name={t.name} size={14} />
+          <span style={{ fontFamily: 'var(--ja)' }}>{t.l}</span>
+        </div>
+      ))}
+    </div>
+  ),
+  drawer: () => (
+    <div
+      style={{
+        position: 'relative',
+        width: 140,
+        height: 82,
+        background: 'var(--surface-2)',
+        border: '1px solid var(--line)',
+        borderRadius: 8,
+        overflow: 'hidden',
+        display: 'flex',
+      }}
+    >
+      <div
+        style={{
+          width: 72,
+          background: 'var(--bg-2)',
+          borderRight: '1px solid var(--line-2)',
+          padding: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 8,
+            fontWeight: 700,
+            color: 'var(--accent)',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            marginBottom: 2,
+          }}
+        >
+          MENU
+        </div>
+        <div style={{ height: 4, background: 'var(--accent-soft)', borderRadius: 2, width: '90%' }} />
+        <div style={{ height: 3, background: 'var(--fill-2)', borderRadius: 2, width: '75%' }} />
+        <div style={{ height: 3, background: 'var(--fill-2)', borderRadius: 2, width: '65%' }} />
+        <div style={{ height: 3, background: 'var(--fill-1)', borderRadius: 2, width: '80%' }} />
+      </div>
+      <div style={{ flex: 1, background: 'color-mix(in srgb, #000 12%, transparent)' }} />
+    </div>
+  ),
+  'hamburger-menu': () => (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+      <div
+        style={{
+          width: 40,
+          height: 32,
+          display: 'grid',
+          placeItems: 'center',
+          background: 'var(--accent-soft)',
+          color: 'var(--accent)',
+          borderRadius: 6,
+        }}
+      >
+        <Icon name="menu" size={20} />
+      </div>
+      <span
+        style={{
+          fontSize: 9.5,
+          color: 'var(--text-faint)',
+          fontFamily: 'var(--num)',
+          letterSpacing: '0.14em',
+          textTransform: 'uppercase',
+        }}
+      >
+        tap → open
+      </span>
+    </div>
+  ),
   // ---- editor ----
   'rich-text-editor': () => (
     <div

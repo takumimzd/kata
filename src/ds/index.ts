@@ -93,3 +93,6 @@ export {
   type SideNavGroup,
   type SideNavRenderCtx,
 } from './components/SideNav';
+export { TabBar, type TabBarItem, type TabBarRenderCtx, type TabBarVariant } from './components/TabBar';
+export { Drawer, type DrawerSide } from './components/Drawer';
+export { HamburgerMenu } from './components/HamburgerMenu';

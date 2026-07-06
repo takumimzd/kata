@@ -2,6 +2,7 @@
 // キー: ↑↓ で移動、Enter で遷移、Esc で閉じる、Cmd/Ctrl+K でも開く。
 import { Link, useRouter } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { COMPONENTS, GROUPS, type GroupKey } from './components-registry';
 import styles from './SearchOverlay.module.css';
 
@@ -33,9 +34,12 @@ function matches(text: string, q: string): boolean {
 export function SearchOverlay({ open, onClose }: Props) {
   const [query, setQuery] = useState('');
   const [activeIdx, setActiveIdx] = useState(0);
+  const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  useEffect(() => setMounted(true), []);
 
   const hits: Hit[] = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -75,7 +79,7 @@ export function SearchOverlay({ open, onClose }: Props) {
     };
   }, [open]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
   function onKey(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'ArrowDown') {
@@ -101,7 +105,7 @@ export function SearchOverlay({ open, onClose }: Props) {
 
   let idxCursor = 0;
 
-  return (
+  return createPortal(
     <div className={styles.backdrop} onClick={onClose} role="dialog" aria-modal="true">
       <div className={styles.panel} onClick={(e) => e.stopPropagation()}>
         <div className={styles.searchRow}>
@@ -188,6 +192,7 @@ export function SearchOverlay({ open, onClose }: Props) {
           </span>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

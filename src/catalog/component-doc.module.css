@@ -628,6 +628,16 @@
   display: grid;
   place-items: center;
   padding: 8px;
+  overflow: hidden;
+}
+
+.relPv > * {
+  max-width: 100%;
+  max-height: 100%;
+  /* カード全体を <Link> でくるんでいるので、プレビュー内のボタン等が
+     クリックを奪わないよう pointer-events を殺す */
+  pointer-events: none;
+  user-select: none;
 }
 
 .relBody {

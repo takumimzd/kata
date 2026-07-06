@@ -1,6 +1,17 @@
 import { Link, useLocation } from '@tanstack/react-router';
 import { useEffect, useState, type ReactNode } from 'react';
-import { cn, Icon, SideNav, type SideNavItem, type SideNavLink, type SideNavRenderCtx } from 'kata';
+import {
+  cn,
+  HamburgerMenu,
+  Icon,
+  SideNav,
+  TabBar,
+  type SideNavItem,
+  type SideNavLink,
+  type SideNavRenderCtx,
+  type TabBarItem,
+  type TabBarRenderCtx,
+} from 'kata';
 import { COMPONENTS, GROUPS } from './components-registry';
 import { SearchOverlay } from './SearchOverlay';
 import styles from './Chrome.module.css';
@@ -69,6 +80,13 @@ function activeMobileTab(pathname: string): MobileTab {
   return 'overview';
 }
 
+const MOBILE_TABS: Array<{ key: MobileTab; to: string; label: string; icon: ReactNode }> = [
+  { key: 'overview', to: '/', label: '概要', icon: <Icon name="home" size={20} /> },
+  { key: 'principles', to: '/principles', label: '特徴', icon: <Icon name="book" size={20} /> },
+  { key: 'tokens', to: '/tokens', label: 'トークン', icon: <Icon name="chart" size={20} /> },
+  { key: 'components', to: '/components', label: '部品', icon: <Icon name="note" size={20} /> },
+];
+
 export function Chrome({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>('kiri');
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -106,7 +124,7 @@ export function Chrome({ children }: { children: ReactNode }) {
     setSearchOpen(false);
   }, [pathname]);
 
-  // Cmd/Ctrl+K で検索を開く / Esc で閉じる
+  // Cmd/Ctrl+K で検索を開く
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -123,18 +141,6 @@ export function Chrome({ children }: { children: ReactNode }) {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [searchOpen]);
-
-  // ドロワー開閉時に body スクロールを制御
-  useEffect(() => {
-    if (drawerOpen) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = prev;
-      };
-    }
-    return undefined;
-  }, [drawerOpen]);
 
   function onPick(next: Theme) {
     setTheme(next);
@@ -167,30 +173,52 @@ export function Chrome({ children }: { children: ReactNode }) {
     </div>
   );
 
+  const sideNavContent = (
+    <SideNav
+      key={activeGroup ?? 'none'}
+      items={buildNavItems(activeGroup)}
+      renderLink={renderLink}
+      footer={themePicker}
+    />
+  );
+
+  const mobileTabItems: TabBarItem[] = MOBILE_TABS.map((t) => ({
+    key: t.key,
+    label: t.label,
+    icon: t.icon,
+    active: currentTab === t.key,
+  }));
+
+  function renderTabItem(item: TabBarItem, ctx: TabBarRenderCtx): ReactNode {
+    const spec = MOBILE_TABS.find((t) => t.key === item.key);
+    if (!spec) return null;
+    return (
+      <Link
+        to={spec.to}
+        hash={CONTENT_ID}
+        className={ctx.className}
+        aria-current={ctx.active ? 'page' : undefined}
+      >
+        {ctx.content}
+      </Link>
+    );
+  }
+
   return (
     <div className={styles.shell}>
       {/* モバイル top bar (>= 880px では非表示) */}
       <header className={styles.topbar}>
-        <button
-          type="button"
-          className={styles.topbarBtn}
-          aria-label="メニューを開く"
-          onClick={() => setDrawerOpen(true)}
+        <HamburgerMenu
+          open={drawerOpen}
+          onOpenChange={setDrawerOpen}
+          triggerLabel="メニューを開く"
         >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden
-          >
-            <path d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
+          <div className={styles.drawerHead}>
+            <span className={styles.topbarMark}>型</span>
+            <span className={styles.topbarName}>kata</span>
+          </div>
+          {sideNavContent}
+        </HamburgerMenu>
         <div className={styles.topbarBrand}>
           <span className={styles.topbarMark}>型</span>
           <span className={styles.topbarName}>kata</span>
@@ -207,20 +235,13 @@ export function Chrome({ children }: { children: ReactNode }) {
       </header>
 
       <div className={styles.shellInner}>
-        {drawerOpen && <div className={styles.backdrop} onClick={() => setDrawerOpen(false)} />}
-        <aside className={`${styles.sidebar}${drawerOpen ? ` ${styles.open}` : ''}`}>
+        <aside className={styles.sidebar}>
           <div className={styles.brand}>
             <span className={styles.brandMark}>型</span>
             <span className={styles.brandText}>kata</span>
             <span className={styles.brandSub}>design system</span>
           </div>
-
-          <SideNav
-            key={activeGroup ?? 'none'}
-            items={buildNavItems(activeGroup)}
-            renderLink={renderLink}
-            footer={themePicker}
-          />
+          {sideNavContent}
         </aside>
 
         <main id={CONTENT_ID} className={styles.content}>
@@ -228,45 +249,13 @@ export function Chrome({ children }: { children: ReactNode }) {
         </main>
       </div>
 
-      {/* モバイルボトムタブ (>= 880px では非表示) */}
-      <nav className={styles.tabbar} aria-label="モバイルナビ">
-        <Link
-          to="/"
-          hash={CONTENT_ID}
-          className={`${styles.tab}${currentTab === 'overview' ? ` ${styles.tabOn}` : ''}`}
-          aria-current={currentTab === 'overview' ? 'page' : undefined}
-        >
-          <Icon name="home" size={20} />
-          <span className={styles.tabLab}>概要</span>
-        </Link>
-        <Link
-          to="/principles"
-          hash={CONTENT_ID}
-          className={`${styles.tab}${currentTab === 'principles' ? ` ${styles.tabOn}` : ''}`}
-          aria-current={currentTab === 'principles' ? 'page' : undefined}
-        >
-          <Icon name="book" size={20} />
-          <span className={styles.tabLab}>特徴</span>
-        </Link>
-        <Link
-          to="/tokens"
-          hash={CONTENT_ID}
-          className={`${styles.tab}${currentTab === 'tokens' ? ` ${styles.tabOn}` : ''}`}
-          aria-current={currentTab === 'tokens' ? 'page' : undefined}
-        >
-          <Icon name="chart" size={20} />
-          <span className={styles.tabLab}>トークン</span>
-        </Link>
-        <Link
-          to="/components"
-          hash={CONTENT_ID}
-          className={`${styles.tab}${currentTab === 'components' ? ` ${styles.tabOn}` : ''}`}
-          aria-current={currentTab === 'components' ? 'page' : undefined}
-        >
-          <Icon name="note" size={20} />
-          <span className={styles.tabLab}>部品</span>
-        </Link>
-      </nav>
+      <TabBar
+        variant="floating"
+        ariaLabel="モバイルナビ"
+        items={mobileTabItems}
+        renderItem={renderTabItem}
+        className={styles.mobileTabBar}
+      />
 
       <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>

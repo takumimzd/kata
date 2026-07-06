@@ -1,0 +1,29 @@
+/* HamburgerMenu の trigger 用スタイル (Drawer 側は Drawer.module.css) */
+
+.trigger {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.trigger:hover {
+  background: var(--fill-1);
+  color: var(--text);
+}
+
+.trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.triggerActive {
+  background: var(--accent-soft);
+  color: var(--accent);
+}

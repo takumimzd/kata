@@ -42,6 +42,7 @@ export type IconName =
   | 'todo'
   | 'indent'
   | 'outdent'
+  | 'menu'
   | 'undo'
   | 'redo'
   // ---- からだを動かす ----
@@ -241,6 +242,7 @@ const PATHS: Record<IconName, ReactNode> = {
       <path d="M7 9l-3 3 3 3z" fill="currentColor" stroke="none" />
     </>
   ),
+  menu: <path d="M4 6h16M4 12h16M4 18h16" />,
   undo: (
     <>
       <path d="M9 8L5 12l4 4" />

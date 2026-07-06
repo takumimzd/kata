@@ -1,8 +1,9 @@
 /* ============================================================
    カタログのシェル。
-   - 880px 以上: サイドバー + 本文の 2 カラム (元のデスクトップ)
-   - 880px 未満: ハンバーガードロワー + トップバー + ボトムタブバー
-                 (docs/design/Mobile.dc.html の iOS っぽい構成)
+   - 880px 以上: サイドバー + 本文の 2 カラム (デスクトップ)
+   - 880px 未満: DS の HamburgerMenu + Drawer + TabBar でモバイル化。
+                 サイドバー自体はここでは非表示にして、Drawer 側に SideNav
+                 を差し込む形にしている。
    ============================================================ */
 
 .shell {
@@ -19,7 +20,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background: color-mix(in srgb, var(--bg) 92%, transparent);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
@@ -74,6 +75,15 @@
   flex: 1;
 }
 
+.drawerHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 10px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+}
+
 /* デスクトップではトップバーは表示しない */
 @media (min-width: 880px) {
   .topbar {
@@ -81,7 +91,7 @@
   }
 }
 
-/* ============ SHELL LAYOUT (Desktop grid) ============ */
+/* ============ SHELL LAYOUT ============ */
 .shellInner {
   display: grid;
   grid-template-columns: 1fr;
@@ -95,66 +105,23 @@
   }
 }
 
-/* ============ SIDEBAR ============ */
+/* ============ SIDEBAR (デスクトップのみ) ============ */
 .sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-  padding: var(--space-6) var(--space-4);
-  background: var(--bg-2);
-  border-right: 1px solid var(--line);
-}
-
-/* モバイル: サイドバーは既定で非表示、ハンバーガーで開くドロワー */
-@media (max-width: 879px) {
-  .sidebar {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: min(84vw, 300px);
-    z-index: 60;
-    transform: translateX(-100%);
-    transition: transform 0.2s ease;
-    box-shadow: var(--shadow);
-    overflow-y: auto;
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
+  display: none;
 }
 
 @media (min-width: 880px) {
   .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    padding: var(--space-6) var(--space-4);
+    background: var(--bg-2);
+    border-right: 1px solid var(--line);
     position: sticky;
     top: 0;
     height: 100vh;
     overflow-y: auto;
-  }
-}
-
-/* Drawer backdrop */
-.backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 55;
-  animation: fadeIn 0.15s ease;
-}
-
-@media (min-width: 880px) {
-  .backdrop {
-    display: none;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 
@@ -257,49 +224,10 @@
   }
 }
 
-/* ============ BOTTOM TAB BAR (mobile) ============ */
-.tabbar {
-  position: fixed;
-  left: 12px;
-  right: 12px;
-  bottom: 12px;
-  z-index: 30;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 8px 6px 8px;
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
-  backdrop-filter: blur(14px);
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  box-shadow: var(--shadow-sm);
-}
-
-.tab {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 5px 10px;
-  color: var(--text-dim);
-  font-size: 10px;
-  font-family: var(--num);
-  font-weight: 600;
-  text-decoration: none;
-  border-radius: 12px;
-  min-width: 56px;
-}
-
-.tabOn {
-  color: var(--accent);
-}
-
-.tabLab {
-  font-family: var(--ja);
-}
-
+/* ============ BOTTOM TAB BAR ============ */
+/* DS の TabBar (floating) を使うため、ここではデスクトップで隠すだけ */
 @media (min-width: 880px) {
-  .tabbar {
-    display: none;
+  .mobileTabBar {
+    display: none !important;
   }
 }
