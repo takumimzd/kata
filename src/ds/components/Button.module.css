@@ -60,6 +60,18 @@
   opacity: 0.88;
 }
 
+/* ghost: クレイの罫線つき控えめアクション (削除・取り消しなど) */
+.ghost {
+  color: var(--clay);
+  border: 1px solid var(--clay-soft);
+  padding: var(--space-3) var(--space-4);
+  font-size: 13.5px;
+  gap: var(--space-1);
+}
+.ghost:not(:disabled):hover {
+  background: var(--clay-soft);
+}
+
 /* mini: 小型の罫線ボタン */
 .mini {
   min-height: 36px;

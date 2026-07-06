@@ -53,3 +53,8 @@
   background: var(--danger-soft);
   color: var(--danger);
 }
+
+/* ---- 配色: ghost (ホバーでクレイ。控えめな削除・並べ替えなど) ---- */
+.ghost:not(:disabled):hover {
+  color: var(--clay);
+}

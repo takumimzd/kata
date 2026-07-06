@@ -9,7 +9,7 @@ import styles from './IconButton.module.css';
 
 export type IconButtonShape = 'square' | 'round';
 export type IconButtonSize = 'sm' | 'md' | 'lg';
-export type IconButtonVariant = 'default' | 'accent' | 'danger';
+export type IconButtonVariant = 'default' | 'accent' | 'danger' | 'ghost';
 
 interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'aria-label'> {
   /** スクリーンリーダー向けのラベル (必須) */
@@ -18,7 +18,7 @@ interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 
   shape?: IconButtonShape;
   /** サイズ。sm=30 / md=34 / lg=40。既定は md */
   size?: IconButtonSize;
-  /** 配色。default=中立 / accent=アクセント塗り / danger=赤。既定は default */
+  /** 配色。default=中立 / accent=アクセント塗り / danger=赤 / ghost=ホバーでクレイ。既定は default */
   variant?: IconButtonVariant;
   children: ReactNode;
 }
@@ -36,6 +36,7 @@ const VARIANT: Record<IconButtonVariant, string | undefined> = {
   default: undefined,
   accent: styles.accent,
   danger: styles.danger,
+  ghost: styles.ghost,
 };
 
 export function IconButton({

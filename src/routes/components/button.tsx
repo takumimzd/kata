@@ -19,6 +19,10 @@ function ButtonPage() {
             <Icon name="trash" size={16} />
             削除
           </Button>
+          <Button variant="ghost">
+            <Icon name="trash" size={15} />
+            取り消す
+          </Button>
           <Button variant="mini">複製</Button>
           <Button variant="primary" disabled>
             無効
@@ -30,7 +34,7 @@ function ButtonPage() {
 <Button variant="mini">複製</Button>`}</Code>
       <PropsTable
         rows={[
-          { name: 'variant', type: `'primary' | 'secondary' | 'text' | 'danger' | 'mini'`, def: `'primary'`, desc: '見た目のバリアント' },
+          { name: 'variant', type: `'primary' | 'secondary' | 'text' | 'danger' | 'ghost' | 'mini'`, def: `'primary'`, desc: '見た目のバリアント。ghost はクレイ罫線の控えめアクション' },
           { name: 'block', type: 'boolean', def: 'false', desc: '横幅いっぱいに広げる' },
           { name: '...rest', type: 'button 属性', desc: 'onClick / disabled / type など' },
         ]}

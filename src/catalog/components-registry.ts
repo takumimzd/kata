@@ -43,12 +43,12 @@ function entry(slug: string, name: string, desc: string, group: GroupKey): CompE
 
 export const COMPONENTS: CompEntry[] = [
   // ---- components/ 直下 ----
-  entry('button', 'Button', 'variant 5 種のボタン', 'root'),
+  entry('button', 'Button', 'variant 6 種のボタン', 'root'),
   entry('icon-button', 'IconButton', '正方/円形のアイコンボタン', 'root'),
   entry('fab', 'Fab', 'フローティングアクションボタン', 'root'),
   entry('breadcrumb', 'Breadcrumb', '階層パンくず', 'root'),
   entry('action-sheet', 'ActionSheet', '下からせり上がるシート', 'root'),
-  entry('icon', 'Icon', '38 種のラインアイコン', 'root'),
+  entry('icon', 'Icon', '65 種のラインアイコン', 'root'),
   entry('text', 'Text', '本文系テキスト (variant)', 'root'),
   entry('page-title', 'PageTitle', 'ページ見出し h1', 'root'),
   entry('section-title', 'SectionTitle', 'ヘアライン罫の見出し', 'root'),
