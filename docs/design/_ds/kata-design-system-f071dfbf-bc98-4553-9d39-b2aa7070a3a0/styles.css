@@ -1,0 +1,11 @@
+/* ============================================================
+   kata — スタイルエントリ (global entry)
+   利用側はこの 1 ファイルを読み込む: import 'kata/styles.css'
+   ※ @import の羅列のみ。ルールは各ファイルへ。
+   ============================================================ */
+@import './tokens/colors.css';
+@import './tokens/typography.css';
+@import './tokens/shape.css';
+@import './reset.css';
+@import './utilities.css';
+@import './components.css';

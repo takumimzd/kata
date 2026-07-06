@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/tokens/shape.css">
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/reset.css">
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/utilities.css">
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/components.css">
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/styles.css">
+  <script src="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/_ds_bundle.js"></script>
+  <style>
+    html, body { background: var(--bg); color: var(--text); font-family: var(--ja); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-feature-settings: 'palt' 1; }
+    .num { font-family: var(--num); font-variant-numeric: tabular-nums; }
+    .eyebrow { font-family: var(--num); font-size: 10.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-faint); }
+    .rule { border: none; border-top: 1px solid var(--line); margin: 0; }
+    .kanji-nav { font-family: var(--ja); font-weight: 700; font-size: 18px; color: var(--accent); letter-spacing: 0.04em; }
+    /* Focus & subtle hover for nav */
+    .side-link { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-sm); font-size: 13px; color: var(--text-dim); text-decoration: none; transition: background 0.12s ease, color 0.12s ease; font-weight: 500; }
+    .side-link:hover { background: var(--fill-1); color: var(--text); }
+    .side-link.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    .side-link .idx { margin-left: auto; font-family: var(--num); font-size: 11px; color: var(--text-faint); }
+    .kata-mark { display: inline-grid; place-items: center; width: 34px; height: 34px; background: var(--accent); color: var(--on-accent); border-radius: 8px; font-family: var(--ja); font-weight: 900; font-size: 20px; line-height: 1; letter-spacing: 0; }
+    /* watermark 型 */
+    .watermark { position: absolute; font-family: var(--ja); font-weight: 900; color: var(--accent); opacity: 0.06; font-size: 520px; line-height: 0.8; user-select: none; pointer-events: none; letter-spacing: -0.04em; }
+    /* filter chip */
+    .fchip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--radius-full); border: 1px solid var(--line-2); background: var(--surface); color: var(--text-dim); font-size: 12.5px; font-weight: 500; cursor: pointer; transition: 0.12s ease; font-family: var(--ja); }
+    .fchip .n { font-family: var(--num); font-size: 10.5px; color: var(--text-faint); }
+    .fchip:hover { border-color: var(--accent-line); color: var(--text); }
+    .fchip.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+    .fchip.on .n { color: var(--on-accent); opacity: 0.75; }
+    /* component card */
+    .cc { position: relative; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; text-decoration: none; color: inherit; transition: 0.15s ease; cursor: pointer; }
+    .cc:hover { border-color: var(--accent-line); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .cc .cc-preview { position: relative; height: 108px; background: var(--bg-2); border-bottom: 1px solid var(--line); display: grid; place-items: center; overflow: hidden; }
+    .cc .cc-idx { position: absolute; top: 10px; left: 12px; font-family: var(--num); font-size: 10.5px; font-weight: 600; color: var(--text-faint); letter-spacing: 0.02em; }
+    .cc .cc-tag { position: absolute; top: 10px; right: 12px; font-family: var(--num); font-size: 9.5px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+    .cc .cc-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 3px; }
+    .cc .cc-name { font-family: var(--num); font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: 0.005em; }
+    .cc .cc-desc { font-size: 11.5px; color: var(--text-dim); line-height: 1.55; }
+    .cc.hidden { display: none; }
+    /* theme chip */
+    .tchip { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: var(--radius-sm); border: 1px solid var(--line); background: var(--surface); font-size: 11.5px; font-weight: 600; color: var(--text-dim); cursor: pointer; transition: 0.12s ease; font-family: var(--ja); flex: 1; }
+    .tchip:hover { border-color: var(--line-2); }
+    .tchip.on { border-color: var(--accent-line); color: var(--text); }
+    .tchip .sw { width: 12px; height: 12px; border-radius: var(--radius-xs); background: var(--accent); box-shadow: inset 0 0 0 2px var(--bg); outline: 1px solid var(--line-2); flex: none; }
+    /* preview building blocks */
+    .pv-caption { position: absolute; bottom: 6px; right: 8px; font-family: var(--num); font-size: 9.5px; color: var(--text-faint); letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.75; }
+    /* feature row */
+    .feat { display: grid; grid-template-columns: 60px 200px 1fr; gap: 24px; padding: 20px 4px; border-bottom: 1px solid var(--line); align-items: baseline; }
+    .feat .feat-n { font-family: var(--num); font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 0.04em; }
+    .feat .feat-t { font-size: 14px; font-weight: 700; color: var(--text); }
+    .feat .feat-b { font-size: 13px; color: var(--text-dim); line-height: 1.75; }
+    /* stats */
+    .stat { display: flex; flex-direction: column; gap: 2px; padding: 12px 20px; border-right: 1px solid var(--line); }
+    .stat:last-child { border-right: none; }
+    .stat .num-lg { font-family: var(--num); font-size: 26px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; line-height: 1; }
+    .stat .cap { font-size: 11px; color: var(--text-faint); letter-spacing: 0.08em; text-transform: uppercase; font-family: var(--num); }
+    /* group anchor row */
+    .ganchor { display: flex; align-items: baseline; gap: 12px; padding: 20px 0 12px; border-bottom: 1px solid var(--line); margin-top: 32px; }
+    .ganchor:first-child { margin-top: 0; }
+    .ganchor .g-kan { font-family: var(--ja); font-size: 20px; font-weight: 700; color: var(--accent); }
+    .ganchor .g-jp { font-size: 15px; font-weight: 700; color: var(--text); }
+    .ganchor .g-en { font-family: var(--num); font-size: 11px; color: var(--text-faint); letter-spacing: 0.12em; text-transform: uppercase; }
+    .ganchor .g-meta { margin-left: auto; font-family: var(--num); font-size: 11px; color: var(--text-faint); }
+    /* search input */
+    .search-in { flex: 1; display: flex; align-items: center; gap: 10px; padding: 9px 14px; border: 1px solid var(--line-2); border-radius: var(--radius-full); background: var(--surface); transition: 0.12s ease; }
+    .search-in:focus-within { border-color: var(--accent-line); }
+    .search-in input { flex: 1; border: 0; background: transparent; outline: 0; font: inherit; font-size: 13px; color: var(--text); }
+    .search-in input::placeholder { color: var(--text-faint); }
+    /* section chapter header */
+    .chap { display: grid; grid-template-columns: 60px 1fr auto; align-items: baseline; gap: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--text); margin-bottom: 32px; }
+    .chap .c-kanji { font-family: var(--ja); font-size: 36px; font-weight: 900; color: var(--accent); line-height: 1; }
+    .chap .c-jp { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: 0.01em; }
+    .chap .c-en { font-family: var(--num); font-size: 11px; color: var(--text-faint); letter-spacing: 0.18em; text-transform: uppercase; margin-top: 4px; }
+    .chap .c-side { font-family: var(--num); font-size: 12px; color: var(--text-faint); text-align: right; }
+    @media (max-width: 880px) {
+      .k-shell { grid-template-columns: 1fr !important; }
+      .k-sidebar { position: static !important; height: auto !important; border-right: none !important; border-bottom: 1px solid var(--line) !important; }
+      .k-main { padding: 32px 20px 80px !important; }
+      .hero-wrap { grid-template-columns: 1fr !important; }
+      .chap { grid-template-columns: 40px 1fr !important; }
+      .chap .c-side { display: none; }
+      .feat { grid-template-columns: 40px 1fr !important; }
+      .feat .feat-b { grid-column: 1 / -1 !important; padding-left: 40px; }
+    }
+  </style>
+</helmet>
+
+<div class="k-shell" data-theme="{{ dataTheme }}" style="display: grid; grid-template-columns: 268px 1fr; min-height: 100vh; background: var(--bg-2); color: var(--text); font-family: var(--ja);">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="k-sidebar" style="position: sticky; top: 0; height: 100vh; padding: 22px 18px 18px; background: var(--bg); border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 24px; overflow-y: auto;">
+
+    <!-- Brand -->
+    <a href="#hero" style="display: flex; align-items: center; gap: 12px; text-decoration: none; padding: 4px 6px;">
+      <span class="kata-mark">型</span>
+      <span style="display: flex; flex-direction: column; gap: 0;">
+        <span class="num" style="font-size: 18px; font-weight: 600; color: var(--text); letter-spacing: 0.02em; line-height: 1;">kata</span>
+        <span class="eyebrow" style="margin-top: 3px; font-size: 9.5px;">design system</span>
+      </span>
+      <span class="num" style="margin-left: auto; font-size: 10.5px; color: var(--text-faint); padding: 2px 6px; border: 1px solid var(--line-2); border-radius: var(--radius-xs);">v0.1</span>
+    </a>
+
+    <!-- Nav sections -->
+    <nav style="display: flex; flex-direction: column; gap: 24px;">
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div class="eyebrow" style="padding: 0 10px 6px;">目次 · index</div>
+        <a href="#hero" class="side-link"><span class="kanji-nav" style="font-size: 14px; width: 16px; text-align: center;">壱</span><span>概要</span><span class="idx">01</span></a>
+        <a href="#principles" class="side-link"><span class="kanji-nav" style="font-size: 14px; width: 16px; text-align: center;">弐</span><span>特徴</span><span class="idx">06</span></a>
+        <a href="#tokens" class="side-link"><span class="kanji-nav" style="font-size: 14px; width: 16px; text-align: center;">参</span><span>トークン</span><span class="idx">4·2</span></a>
+        <a href="#components" class="side-link on"><span class="kanji-nav" style="font-size: 14px; width: 16px; text-align: center;">四</span><span>コンポーネント</span><span class="idx">{{ totalStr }}</span></a>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+        <div class="eyebrow" style="padding: 0 10px 6px;">グループ · groups</div>
+        <a href="#g-root" class="side-link" style="padding-left: 14px;"><span>ベース</span><span class="idx">24</span></a>
+        <a href="#g-forms" class="side-link" style="padding-left: 14px;"><span>フォーム</span><span class="idx">08</span></a>
+        <a href="#g-charts" class="side-link" style="padding-left: 14px;"><span>チャート</span><span class="idx">04</span></a>
+        <a href="#g-editor" class="side-link" style="padding-left: 14px;"><span>エディタ</span><span class="idx">01</span></a>
+      </div>
+    </nav>
+
+    <!-- Theme picker -->
+    <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
+      <div class="eyebrow" style="padding: 0 4px;">テーマ · theme</div>
+      <div style="display: flex; gap: 6px;">
+        <button type="button" class="tchip {{ isKiri }}" onClick="{{ pickKiri }}"><span class="sw"></span>霧 kiri</button>
+        <button type="button" class="tchip {{ isSumi }}" onClick="{{ pickSumi }}" data-theme="sumi"><span class="sw"></span>墨 sumi</button>
+      </div>
+    </div>
+
+    <!-- Footer note -->
+    <div style="padding: 12px 4px 4px; border-top: 1px solid var(--line); font-size: 10.5px; color: var(--text-faint); line-height: 1.6;">
+      <div class="num" style="letter-spacing: 0.08em;">github.com/takumimzd/kata</div>
+      <div style="margin-top: 4px;">個人開発サービス間で共有する汎用 DS。</div>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="k-main" style="min-width: 0; padding: 44px 56px 100px; display: flex; flex-direction: column; gap: 72px; position: relative;">
+
+    <!-- ============ HERO ============ -->
+    <section id="hero" style="position: relative; overflow: hidden;">
+      <!-- watermark 型 -->
+      <div class="watermark" style="top: -110px; right: -80px;">型</div>
+
+      <div style="position: relative; z-index: 1;">
+        <!-- top meta bar -->
+        <div style="display: flex; align-items: baseline; gap: 12px; padding-bottom: 20px; border-bottom: 1px solid var(--line); margin-bottom: 40px;">
+          <span class="num" style="font-size: 11px; letter-spacing: 0.16em; color: var(--accent); font-weight: 600; text-transform: uppercase;">Design System</span>
+          <span class="num" style="font-size: 11px; color: var(--text-faint); letter-spacing: 0.06em;">v0.1 · 2026</span>
+          <span style="margin-left: auto; font-family: var(--num); font-size: 11px; color: var(--text-faint); letter-spacing: 0.08em;">個人開発の共通言語</span>
+        </div>
+
+        <div class="hero-wrap" style="display: grid; grid-template-columns: 1fr 320px; gap: 40px; align-items: end;">
+          <div style="display: flex; flex-direction: column; gap: 24px; max-width: 640px;">
+            <div style="display: flex; align-items: baseline; gap: 20px;">
+              <h1 style="font-family: var(--ja); font-weight: 900; font-size: 88px; line-height: 0.9; letter-spacing: -0.02em; color: var(--text); margin: 0;">型 <span style="font-family: var(--num); font-weight: 500; color: var(--text-dim);">— kata</span></h1>
+            </div>
+            <p style="font-size: 16px; line-height: 1.85; color: var(--text-dim); max-width: 54ch; margin: 0;">個人開発のサービス間で共有する汎用デザインシステム。トークン・コンポーネント・カタログを 1 リポジトリにまとめ、各サービスから git 依存で利用する。<span style="color: var(--text);">静かに、続けやすく、要素は最小限に。</span></p>
+
+            <!-- quick actions -->
+            <div style="display: flex; gap: 12px; margin-top: 4px;">
+              <a href="#components" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--accent); color: var(--on-accent); border-radius: var(--radius-sm); text-decoration: none; font-weight: 600; font-size: 13.5px; transition: opacity 0.12s;">
+                コンポーネントを見る <span class="num" style="opacity: 0.7;">→</span>
+              </a>
+              <a href="#principles" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border: 1px solid var(--line-2); color: var(--text); border-radius: var(--radius-sm); text-decoration: none; font-weight: 600; font-size: 13.5px; background: var(--surface);">
+                特徴 · principles
+              </a>
+              <a href="https://github.com/takumimzd/kata" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 12px; color: var(--text-dim); text-decoration: none; font-size: 13px;">
+                <span class="num" style="letter-spacing: 0.06em;">GitHub</span> ↗
+              </a>
+            </div>
+          </div>
+
+          <!-- side info -->
+          <div style="display: flex; flex-direction: column; gap: 14px; padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm);">
+            <div class="eyebrow">meta</div>
+            <dl style="display: grid; grid-template-columns: 82px 1fr; gap: 8px 12px; margin: 0; font-size: 12.5px;">
+              <dt style="color: var(--text-faint); font-weight: 400;">基盤</dt>
+              <dd class="num" style="margin: 0; color: var(--text); letter-spacing: 0.02em;">React 19 · CSS Modules</dd>
+              <dt style="color: var(--text-faint); font-weight: 400;">タイポ</dt>
+              <dd style="margin: 0; color: var(--text);">Zen Kaku Gothic New / <span class="num">Space Grotesk</span></dd>
+              <dt style="color: var(--text-faint); font-weight: 400;">配布</dt>
+              <dd style="margin: 0; color: var(--text);">git 依存 (ソース)</dd>
+              <dt style="color: var(--text-faint); font-weight: 400;">対応</dt>
+              <dd style="margin: 0; color: var(--text);">霧 kiri · 墨 sumi</dd>
+              <dt style="color: var(--text-faint); font-weight: 400;">領域</dt>
+              <dd style="margin: 0; color: var(--text-dim);">健康 · 習慣 · 記録</dd>
+            </dl>
+          </div>
+        </div>
+
+        <!-- stats strip -->
+        <div style="margin-top: 44px; display: flex; align-items: stretch; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden;">
+          <div class="stat"><span class="num-lg">{{ total }}</span><span class="cap">部品 · parts</span></div>
+          <div class="stat"><span class="num-lg">4</span><span class="cap">グループ · groups</span></div>
+          <div class="stat"><span class="num-lg">65</span><span class="cap">アイコン · icons</span></div>
+          <div class="stat"><span class="num-lg">2</span><span class="cap">テーマ · themes</span></div>
+          <div class="stat"><span class="num-lg">1</span><span class="cap">アクセント色 · accent</span></div>
+          <div class="stat"><span class="num-lg">4<span style="font-size: 16px; color: var(--text-faint); margin-left: 2px;">px</span></span><span class="cap">グリッド · grid</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CHAPTER: PRINCIPLES ============ -->
+    <section id="principles">
+      <div class="chap">
+        <span class="c-kanji">弐</span>
+        <div>
+          <div class="c-jp">特徴</div>
+          <div class="c-en">principles · 06</div>
+        </div>
+        <div class="c-side">design principles<br><span style="color: var(--text-dim);">kata が守るルール</span></div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; padding-top: 4px;">
+        <div class="feat">
+          <span class="feat-n">01 / 06</span>
+          <span class="feat-t">CSS Modules + CSS 変数</span>
+          <span class="feat-b">スタイルはコンポーネント単位でスコープ。トークンは CSS カスタムプロパティで提供し、<span class="num" style="color: var(--text);">color-mix()</span> で派生色を動的に生成する。テーマ側はベース色のみ上書きし、派生は触らない。</span>
+        </div>
+        <div class="feat">
+          <span class="feat-n">02 / 06</span>
+          <span class="feat-t">ライブラリ非依存</span>
+          <span class="feat-b">Tailwind / styled-components / cva / clsx は使わない。クラス合成は <span class="num" style="color: var(--text);">cn()</span> ヘルパー (filter + join) のみ。依存を最小に保ち、長く使える基盤を目指す。</span>
+        </div>
+        <div class="feat">
+          <span class="feat-n">03 / 06</span>
+          <span class="feat-t">ライト / ダーク</span>
+          <span class="feat-b">霧 (kiri) をライト既定、墨 (sumi) をダークパレットに。<span class="num" style="color: var(--text);">data-theme</span> で切り替え、ライト / ダーク / システム追従は <span class="num" style="color: var(--text);">useAppearance</span> で管理する。</span>
+        </div>
+        <div class="feat">
+          <span class="feat-n">04 / 06</span>
+          <span class="feat-t">日本語に最適化</span>
+          <span class="feat-b">Zen Kaku Gothic New を本文に、Space Grotesk を数字に。<span class="num" style="color: var(--text);">palt</span> で日本語を詰め、<span class="num" style="color: var(--text);">tnum</span> で数字を等幅に揃える。読み心地とテーブルの整列を両立。</span>
+        </div>
+        <div class="feat">
+          <span class="feat-n">05 / 06</span>
+          <span class="feat-t">サービス横断で再利用</span>
+          <span class="feat-b">特定のアプリに依存しない汎用デザインシステム。健康・習慣・記録系のパーソナルアプリを共通の型で作れるよう、複数の個人開発サービスから共有して使う。</span>
+        </div>
+        <div class="feat" style="border-bottom: none;">
+          <span class="feat-n">06 / 06</span>
+          <span class="feat-t">ソース配布 (git 依存)</span>
+          <span class="feat-b">CSS Modules ソースをそのまま配布し、利用側の Vite でコンパイル。<span class="num" style="color: var(--text);">github:takumimzd/kata</span> を git 依存で参照し、タグやブランチでバージョンを固定する。</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CHAPTER: COMPONENTS ============ -->
+    <section id="components">
+      <div class="chap">
+        <span class="c-kanji">参</span>
+        <div>
+          <div class="c-jp">コンポーネント <span class="num" style="font-weight: 500; font-size: 15px; color: var(--text-dim); margin-left: 8px;">型録</span></div>
+          <div class="c-en">components catalog · {{ totalStr }}</div>
+        </div>
+        <div class="c-side">全 {{ totalStr }} 品<br><span style="color: var(--text-dim);">4 グループに分類</span></div>
+      </div>
+
+      <!-- Toolbar -->
+      <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 28px;">
+        <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+          <label class="search-in" style="min-width: 280px; max-width: 380px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-faint);"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+            <input type="text" placeholder="コンポーネントを検索（例: button, chart, calendar）" value="{{ query }}" onInput="{{ onSearch }}">
+            <span class="num" style="font-size: 10.5px; color: var(--text-faint); letter-spacing: 0.06em;">{{ visibleStr }} / {{ totalStr }}</span>
+          </label>
+
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="fchip {{ chipAll }}" onClick="{{ pickAll }}">すべて <span class="n">{{ totalStr }}</span></button>
+            <button type="button" class="fchip {{ chipRoot }}" onClick="{{ pickRoot }}">ベース <span class="n">24</span></button>
+            <button type="button" class="fchip {{ chipForms }}" onClick="{{ pickForms }}">フォーム <span class="n">08</span></button>
+            <button type="button" class="fchip {{ chipCharts }}" onClick="{{ pickCharts }}">チャート <span class="n">04</span></button>
+            <button type="button" class="fchip {{ chipEditor }}" onClick="{{ pickEditor }}">エディタ <span class="n">01</span></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Component groups -->
+      <div style="display: flex; flex-direction: column; gap: 4px;">
+
+        <!-- GROUP: root -->
+        <div class="ganchor" id="g-root" data-gvis="{{ visRoot }}" style="display: flex;">
+          <span class="g-kan">壱</span>
+          <span class="g-jp">ベース</span>
+          <span class="g-en">components / · root</span>
+          <span class="g-meta">24 品 · 表示 / ナビ / オーバーレイ</span>
+        </div>
+        <div class="cc-grid" data-group="root" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; padding: 16px 0 32px;">
+          <sc-for list="{{ rootList }}" as="c" hint-placeholder-count="24">
+            <a href="#" class="cc {{ c.hidden }}" data-slug="{{ c.slug }}">
+              <div class="cc-preview">
+                {{ c.preview }}
+                <span class="pv-caption">{{ c.slug }}</span>
+              </div>
+              <span class="cc-idx">{{ c.idx }}</span>
+              <span class="cc-tag">root</span>
+              <div class="cc-body">
+                <span class="cc-name">{{ c.name }}</span>
+                <span class="cc-desc">{{ c.desc }}</span>
+              </div>
+            </a>
+          </sc-for>
+        </div>
+
+        <!-- GROUP: forms -->
+        <div class="ganchor" id="g-forms" data-gvis="{{ visForms }}">
+          <span class="g-kan">弐</span>
+          <span class="g-jp">フォーム</span>
+          <span class="g-en">components / forms / · input</span>
+          <span class="g-meta">08 品 · 入力系</span>
+        </div>
+        <div class="cc-grid" data-group="forms" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; padding: 16px 0 32px;">
+          <sc-for list="{{ formsList }}" as="c" hint-placeholder-count="8">
+            <a href="#" class="cc {{ c.hidden }}" data-slug="{{ c.slug }}">
+              <div class="cc-preview">
+                {{ c.preview }}
+                <span class="pv-caption">{{ c.slug }}</span>
+              </div>
+              <span class="cc-idx">{{ c.idx }}</span>
+              <span class="cc-tag">forms</span>
+              <div class="cc-body">
+                <span class="cc-name">{{ c.name }}</span>
+                <span class="cc-desc">{{ c.desc }}</span>
+              </div>
+            </a>
+          </sc-for>
+        </div>
+
+        <!-- GROUP: charts -->
+        <div class="ganchor" id="g-charts" data-gvis="{{ visCharts }}">
+          <span class="g-kan">参</span>
+          <span class="g-jp">チャート</span>
+          <span class="g-en">components / charts / · viz</span>
+          <span class="g-meta">04 品 · 数字を見せる</span>
+        </div>
+        <div class="cc-grid" data-group="charts" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; padding: 16px 0 32px;">
+          <sc-for list="{{ chartsList }}" as="c" hint-placeholder-count="4">
+            <a href="#" class="cc {{ c.hidden }}" data-slug="{{ c.slug }}">
+              <div class="cc-preview">
+                {{ c.preview }}
+                <span class="pv-caption">{{ c.slug }}</span>
+              </div>
+              <span class="cc-idx">{{ c.idx }}</span>
+              <span class="cc-tag">charts</span>
+              <div class="cc-body">
+                <span class="cc-name">{{ c.name }}</span>
+                <span class="cc-desc">{{ c.desc }}</span>
+              </div>
+            </a>
+          </sc-for>
+        </div>
+
+        <!-- GROUP: editor -->
+        <div class="ganchor" id="g-editor" data-gvis="{{ visEditor }}">
+          <span class="g-kan">四</span>
+          <span class="g-jp">エディタ</span>
+          <span class="g-en">components / editor / · rich</span>
+          <span class="g-meta">01 品 · Lexical ベース</span>
+        </div>
+        <div class="cc-grid" data-group="editor" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; padding: 16px 0 0;">
+          <sc-for list="{{ editorList }}" as="c" hint-placeholder-count="1">
+            <a href="#" class="cc {{ c.hidden }}" data-slug="{{ c.slug }}">
+              <div class="cc-preview">
+                {{ c.preview }}
+                <span class="pv-caption">{{ c.slug }}</span>
+              </div>
+              <span class="cc-idx">{{ c.idx }}</span>
+              <span class="cc-tag">editor</span>
+              <div class="cc-body">
+                <span class="cc-name">{{ c.name }}</span>
+                <span class="cc-desc">{{ c.desc }}</span>
+              </div>
+            </a>
+          </sc-for>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer style="margin-top: 40px; padding: 32px 0 0; border-top: 2px solid var(--text); display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end;">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="kata-mark" style="width: 22px; height: 22px; font-size: 13px; border-radius: 5px;">型</span>
+          <span class="num" style="font-size: 13px; font-weight: 600; color: var(--text);">kata design system</span>
+        </div>
+        <div style="font-size: 11.5px; color: var(--text-faint); line-height: 1.6;">個人開発サービスの共通言語。<br>MIT · <span class="num">github.com/takumimzd/kata</span></div>
+      </div>
+      <div class="num" style="font-size: 10.5px; color: var(--text-faint); letter-spacing: 0.12em; text-transform: uppercase; text-align: right;">
+        v0.1 · 2026 · kataroku
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
+class Component extends DCLogic {
+  state = { theme: 'kiri', filter: 'all', query: '', dsReady: false };
+
+  componentDidMount() {
+    this._checkDs();
+  }
+  componentWillUnmount() {
+    if (this._t) clearInterval(this._t);
+  }
+  _checkDs() {
+    if (window.KataDesignSystem_f071df) {
+      this.setState({ dsReady: true });
+      return;
+    }
+    this._t = setInterval(() => {
+      if (window.KataDesignSystem_f071df) {
+        clearInterval(this._t);
+        this._t = null;
+        this.setState({ dsReady: true });
+      }
+    }, 60);
+  }
+
+  setFilter = (g) => this.setState({ filter: g });
+  onSearch = (e) => this.setState({ query: e.target.value });
+
+  // 37 components matching the actual COMPONENTS registry in kata
+  DATA = [
+    // root (24)
+    { slug: 'button', name: 'Button', desc: 'variant 6 種のボタン', group: 'root' },
+    { slug: 'icon-button', name: 'IconButton', desc: '正方 / 円形のアイコンボタン', group: 'root' },
+    { slug: 'fab', name: 'Fab', desc: 'フローティングアクションボタン', group: 'root' },
+    { slug: 'breadcrumb', name: 'Breadcrumb', desc: '階層パンくず', group: 'root' },
+    { slug: 'action-sheet', name: 'ActionSheet', desc: '下からせり上がるシート', group: 'root' },
+    { slug: 'icon', name: 'Icon', desc: '65 種のラインアイコン', group: 'root' },
+    { slug: 'text', name: 'Text', desc: '本文系テキスト (variant)', group: 'root' },
+    { slug: 'page-title', name: 'PageTitle', desc: 'ページ見出し h1', group: 'root' },
+    { slug: 'section-title', name: 'SectionTitle', desc: 'ヘアライン罫の見出し', group: 'root' },
+    { slug: 'card', name: 'Card', desc: 'サーフェス容器', group: 'root' },
+    { slug: 'badge', name: 'Badge', desc: '状態ラベル', group: 'root' },
+    { slug: 'chip', name: 'Chip', desc: '角丸の小ボタン・タグ', group: 'root' },
+    { slug: 'progress-bar', name: 'ProgressBar', desc: '進捗バー', group: 'root' },
+    { slug: 'goal-bar', name: 'GoalBar', desc: '目標つき進捗行', group: 'root' },
+    { slug: 'search-box', name: 'SearchBox', desc: '丸型の検索入力', group: 'root' },
+    { slug: 'calendar', name: 'Calendar', desc: '月グリッド', group: 'root' },
+    { slug: 'dot-calendar', name: 'DotCalendar', desc: '系列ドット + 凡例つき月カレンダー', group: 'root' },
+    { slug: 'pin-pad', name: 'PinPad', desc: 'パスコード入力', group: 'root' },
+    { slug: 'icon-color-picker', name: 'IconColorPicker', desc: 'アイコンと色のピッカー', group: 'root' },
+    { slug: 'modal', name: 'Modal', desc: 'ボトムシート', group: 'root' },
+    { slug: 'menu', name: 'Menu', desc: 'ドロップダウンメニュー', group: 'root' },
+    { slug: 'confirm-dialog', name: 'ConfirmDialog', desc: 'useConfirm 確認ダイアログ', group: 'root' },
+    { slug: 'toast', name: 'Toast', desc: 'useToast トースト', group: 'root' },
+    { slug: 'side-nav', name: 'SideNav', desc: '多階層対応サイドナビ', group: 'root' },
+    // forms (8)
+    { slug: 'field', name: 'Field', desc: 'ラベル + ヒント / エラー', group: 'forms' },
+    { slug: 'input', name: 'Input', desc: 'フィールド見た目のテキスト入力', group: 'forms' },
+    { slug: 'stepper', name: 'Stepper', desc: '± の数値入力', group: 'forms' },
+    { slug: 'textarea', name: 'Textarea', desc: '複数行テキスト入力', group: 'forms' },
+    { slug: 'select', name: 'Select', desc: '装飾した select', group: 'forms' },
+    { slug: 'search-select', name: 'SearchSelect', desc: '検索付きセレクト', group: 'forms' },
+    { slug: 'switch', name: 'Switch', desc: 'オン / オフ トグル', group: 'forms' },
+    { slug: 'date-picker', name: 'DatePicker', desc: 'カレンダー入力', group: 'forms' },
+    // charts (4)
+    { slug: 'bar-chart', name: 'BarChart', desc: '棒グラフ (枠つき)', group: 'charts' },
+    { slug: 'line-chart', name: 'LineChart', desc: '折れ線チャート (枠つき)', group: 'charts' },
+    { slug: 'bar-list', name: 'BarList', desc: '横棒ランキング', group: 'charts' },
+    { slug: 'sparkline', name: 'Sparkline', desc: 'ミニ折れ線', group: 'charts' },
+    // editor (1)
+    { slug: 'rich-text-editor', name: 'RichTextEditor', desc: 'Lexical ベースのエディタ', group: 'editor' },
+  ];
+
+  _matchesQuery(item, q) {
+    if (!q) return true;
+    const s = q.toLowerCase();
+    return item.slug.toLowerCase().includes(s) || item.name.toLowerCase().includes(s) || item.desc.toLowerCase().includes(s);
+  }
+
+  _matchesFilter(item, f) {
+    return f === 'all' || item.group === f;
+  }
+
+  renderVals() {
+    const { theme, filter, query, dsReady } = this.state;
+    const ds = dsReady ? window.KataDesignSystem_f071df : null;
+
+    // Build enriched list per group with per-item visibility + preview
+    const buildFor = (g) => {
+      const list = this.DATA.filter((x) => x.group === g);
+      const total = this.DATA.length;
+      // idx is the position in the full 37-item registry (01..37)
+      return list.map((item) => {
+        const globalIdx = this.DATA.indexOf(item) + 1;
+        const visible = this._matchesFilter(item, filter) && this._matchesQuery(item, query);
+        return {
+          slug: item.slug,
+          name: item.name,
+          desc: item.desc,
+          idx: String(globalIdx).padStart(2, '0') + ' / ' + String(total).padStart(2, '0'),
+          hidden: visible ? '' : 'hidden',
+          preview: this._preview(item.slug, ds),
+        };
+      });
+    };
+
+    const total = this.DATA.length;
+    const filtered = this.DATA.filter((x) => this._matchesFilter(x, filter) && this._matchesQuery(x, query));
+
+    // Group visibility (hide the group anchor if no matches in it)
+    const groupHas = (g) => filtered.some((x) => x.group === g);
+    const gv = (g) => groupHas(g) ? 'flex' : 'none';
+
+    return {
+      dataTheme: theme,
+      isKiri: theme === 'kiri' ? 'on' : '',
+      isSumi: theme === 'sumi' ? 'on' : '',
+      pickKiri: () => this._pickTheme('kiri'),
+      pickSumi: () => this._pickTheme('sumi'),
+
+      query,
+      onSearch: this.onSearch,
+
+      chipAll: filter === 'all' ? 'on' : '',
+      chipRoot: filter === 'root' ? 'on' : '',
+      chipForms: filter === 'forms' ? 'on' : '',
+      chipCharts: filter === 'charts' ? 'on' : '',
+      chipEditor: filter === 'editor' ? 'on' : '',
+      pickAll: () => this.setFilter('all'),
+      pickRoot: () => this.setFilter('root'),
+      pickForms: () => this.setFilter('forms'),
+      pickCharts: () => this.setFilter('charts'),
+      pickEditor: () => this.setFilter('editor'),
+
+      total,
+      totalStr: String(total),
+      visibleStr: String(filtered.length),
+
+      rootList: buildFor('root'),
+      formsList: buildFor('forms'),
+      chartsList: buildFor('charts'),
+      editorList: buildFor('editor'),
+
+      visRoot: gv('root'),
+      visForms: gv('forms'),
+      visCharts: gv('charts'),
+      visEditor: gv('editor'),
+    };
+  }
+
+  _pickTheme(t) {
+    this.setState({ theme: t });
+    // Also mirror to :root so the whole iframe reflects the theme (some rules target :root[data-theme='sumi'])
+    try {
+      if (t === 'kiri') delete document.documentElement.dataset.theme;
+      else document.documentElement.dataset.theme = t;
+    } catch (e) { /* noop */ }
+  }
+
+  // ---- Preview builder — uses live DS components where possible, else plain HTML ----
+  _preview(slug, ds) {
+    const R = React.createElement;
+
+    // Common styles
+    const bar = (w, h, c) => R('div', { style: { width: w, height: h, background: c || 'var(--fill-2)', borderRadius: 2 } });
+    const line = (c) => ({ height: 1, background: c || 'var(--line-2)' });
+
+    // Safe getters
+    const {
+      Button, IconButton, Fab, Icon, Badge, Chip, ProgressBar, Switch, Card, Text, PageTitle, SectionTitle, Sparkline, BarList
+    } = (ds || {});
+
+    // Fallback simple boxes when DS not ready — still visually pleasing
+    const stub = (label) => R('div', { style: { fontFamily: 'var(--num)', fontSize: 11, color: 'var(--text-faint)', letterSpacing: '0.06em' } }, label);
+
+    switch (slug) {
+      case 'button':
+        if (!Button) return stub('button');
+        return R('div', { style: { display: 'flex', gap: 8, alignItems: 'center' } },
+          R(Button, { variant: 'primary', key: 'p' }, '保存'),
+          R(Button, { variant: 'secondary', key: 's' }, '取消'),
+        );
+      case 'icon-button':
+        if (!IconButton || !Icon) return stub('icon-button');
+        return R('div', { style: { display: 'flex', gap: 8 } },
+          R(IconButton, { key: 'a', 'aria-label': 'edit' }, R(Icon, { name: 'edit', size: 16 })),
+          R(IconButton, { key: 'b', 'aria-label': 'copy' }, R(Icon, { name: 'copy', size: 16 })),
+          R(IconButton, { key: 'c', 'aria-label': 'trash' }, R(Icon, { name: 'trash', size: 16 })),
+        );
+      case 'fab':
+        if (!Icon) return stub('fab');
+        return R('div', { style: { width: 52, height: 52, borderRadius: '50%', background: 'var(--accent)', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', boxShadow: 'var(--shadow)' } },
+          R(Icon, { name: 'plus', size: 22, key: 'i' })
+        );
+      case 'breadcrumb':
+        return R('div', { style: { display: 'flex', gap: 6, alignItems: 'center', fontSize: 11.5, color: 'var(--text-dim)', fontFamily: 'var(--num)' } },
+          R('span', { key: 1 }, '概要'),
+          R('span', { key: 2, style: { color: 'var(--text-faint)' } }, '/'),
+          R('span', { key: 3 }, 'コンポーネント'),
+          R('span', { key: 4, style: { color: 'var(--text-faint)' } }, '/'),
+          R('span', { key: 5, style: { color: 'var(--text)', fontWeight: 600 } }, 'Button'),
+        );
+      case 'action-sheet':
+        return R('div', { style: { position: 'relative', width: 130, height: 78, background: 'var(--surface-2)', border: '1px solid var(--line)', borderRadius: 8, overflow: 'hidden' } },
+          R('div', { key: 1, style: { position: 'absolute', left: 0, right: 0, bottom: 0, height: 46, background: 'var(--surface)', borderTop: '1px solid var(--line-2)', borderRadius: '10px 10px 0 0', padding: 8, display: 'flex', flexDirection: 'column', gap: 4 } },
+            R('div', { key: 'g', style: { width: 30, height: 3, background: 'var(--text-faint)', borderRadius: 2, margin: '2px auto 6px', opacity: 0.5 } }),
+            R('div', { key: 'r1', style: line() }),
+            R('div', { key: 'r2', style: line() }),
+          ),
+        );
+      case 'icon':
+        if (!Icon) return stub('icon');
+        return R('div', { style: { display: 'flex', gap: 12, color: 'var(--text)' } },
+          R(Icon, { name: 'flame', size: 22, key: 1 }),
+          R(Icon, { name: 'glass', size: 22, key: 2 }),
+          R(Icon, { name: 'scale', size: 22, key: 3 }),
+          R(Icon, { name: 'pill', size: 22, key: 4 }),
+        );
+      case 'text':
+        return R('div', { style: { display: 'flex', flexDirection: 'column', gap: 5, width: 150 } },
+          R('div', { key: 1, style: { fontSize: 12.5, color: 'var(--text)', fontWeight: 600 } }, '本文テキスト'),
+          R('div', { key: 2, style: { height: 4, background: 'var(--fill-2)', width: '92%', borderRadius: 2 } }),
+          R('div', { key: 3, style: { height: 4, background: 'var(--fill-2)', width: '80%', borderRadius: 2 } }),
+          R('div', { key: 4, style: { height: 4, background: 'var(--fill-1)', width: '64%', borderRadius: 2 } }),
+        );
+      case 'page-title':
+        return R('div', { style: { fontFamily: 'var(--ja)', fontSize: 22, fontWeight: 700, color: 'var(--text)', letterSpacing: '0.01em' } }, '見出し');
+      case 'section-title':
+        return R('div', { style: { width: 150 } },
+          R('div', { key: 1, style: { fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text)' } }, 'SECTION'),
+          R('div', { key: 2, style: Object.assign(line(), { marginTop: 6 }) }),
+        );
+      case 'card':
+        return R('div', { style: { width: 130, height: 68, background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 10, padding: 8, boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 4 } },
+          R('div', { key: 1, style: { height: 5, background: 'var(--fill-2)', width: '55%', borderRadius: 2 } }),
+          R('div', { key: 2, style: { height: 3, background: 'var(--fill-1)', width: '80%', borderRadius: 2 } }),
+          R('div', { key: 3, style: { height: 3, background: 'var(--fill-1)', width: '68%', borderRadius: 2 } }),
+        );
+      case 'badge':
+        if (!Badge) return stub('badge');
+        return R('div', { style: { display: 'flex', gap: 6 } },
+          R(Badge, { key: 1, tone: 'accent' }, '完了'),
+          R(Badge, { key: 2 }, '継続 3日'),
+        );
+      case 'chip':
+        if (!Chip) return stub('chip');
+        return R('div', { style: { display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' } },
+          R(Chip, { key: 1, selected: true }, '筋トレ'),
+          R(Chip, { key: 2 }, '水分'),
+          R(Chip, { key: 3 }, '体重'),
+        );
+      case 'progress-bar':
+        return R('div', { style: { width: 160, display: 'flex', flexDirection: 'column', gap: 5 } },
+          R('div', { key: 1, style: { display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--num)', fontSize: 10.5, color: 'var(--text-dim)' } },
+            R('span', { key: 'a' }, '62%'), R('span', { key: 'b' }, '目標')),
+          R('div', { key: 2, style: { height: 6, background: 'var(--fill-1)', borderRadius: 3, overflow: 'hidden' } },
+            R('div', { key: 'f', style: { width: '62%', height: '100%', background: 'var(--accent)', borderRadius: 3 } })),
+        );
+      case 'goal-bar':
+        return R('div', { style: { width: 160, display: 'flex', flexDirection: 'column', gap: 5 } },
+          R('div', { key: 1, style: { display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--num)', fontSize: 10.5, color: 'var(--text-dim)' } },
+            R('span', { key: 'a' }, '55kg'), R('span', { key: 'b', style: { color: 'var(--accent)' } }, '62kg'), R('span', { key: 'c' }, '70kg')),
+          R('div', { key: 2, style: { position: 'relative', height: 6, background: 'var(--fill-1)', borderRadius: 3, overflow: 'visible' } },
+            R('div', { key: 'range', style: { position: 'absolute', left: '30%', right: '20%', top: 0, bottom: 0, background: 'var(--accent-soft)', borderRadius: 3 } }),
+            R('div', { key: 'dot', style: { position: 'absolute', left: '55%', top: -3, width: 12, height: 12, borderRadius: '50%', background: 'var(--accent)', border: '2px solid var(--surface)' } })),
+        );
+      case 'search-box':
+        return R('div', { style: { display: 'flex', alignItems: 'center', gap: 8, width: 160, padding: '7px 12px', background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 999, fontSize: 12, color: 'var(--text-faint)' } },
+          Icon ? R(Icon, { name: 'search', size: 14, key: 'i' }) : null,
+          R('span', { key: 't' }, '検索...'),
+        );
+      case 'calendar': {
+        const cells = [];
+        for (let i = 0; i < 35; i++) cells.push(R('div', { key: i, style: { width: 12, height: 12, borderRadius: 3, background: (i === 15) ? 'var(--accent)' : 'var(--fill-1)' } }));
+        return R('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(7, 12px)', gap: 4 } }, cells);
+      }
+      case 'dot-calendar': {
+        const cells = [];
+        for (let i = 0; i < 35; i++) {
+          const rand = (i * 7 + 3) % 11;
+          let bg = 'var(--fill-1)';
+          if (rand < 2) bg = 'var(--accent)';
+          else if (rand < 4) bg = 'var(--accent-line)';
+          else if (rand < 6) bg = 'var(--accent-soft)';
+          cells.push(R('div', { key: i, style: { width: 10, height: 10, borderRadius: '50%', background: bg } }));
+        }
+        return R('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(7, 10px)', gap: 4 } }, cells);
+      }
+      case 'pin-pad': {
+        const dots = [];
+        for (let i = 0; i < 4; i++) dots.push(R('div', { key: i, style: { width: 10, height: 10, borderRadius: '50%', background: i < 3 ? 'var(--accent)' : 'var(--fill-2)', border: i >= 3 ? '1px solid var(--line-2)' : 'none' } }));
+        const nums = [];
+        for (let i = 1; i <= 9; i++) nums.push(R('div', { key: i, style: { width: 22, height: 22, borderRadius: '50%', background: 'var(--surface-2)', display: 'grid', placeItems: 'center', fontFamily: 'var(--num)', fontSize: 10, color: 'var(--text-dim)', fontWeight: 600 } }, String(i)));
+        return R('div', { style: { display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' } },
+          R('div', { key: 'd', style: { display: 'flex', gap: 6 } }, dots),
+          R('div', { key: 'n', style: { display: 'grid', gridTemplateColumns: 'repeat(3, 22px)', gap: 4 } }, nums),
+        );
+      }
+      case 'icon-color-picker':
+        return R('div', { style: { display: 'flex', gap: 6 } },
+          ['var(--accent)', 'var(--clay)', 'var(--danger)', 'var(--text-dim)'].map((c, i) =>
+            R('div', { key: i, style: { width: 20, height: 20, borderRadius: '50%', background: c, border: i === 0 ? '2px solid var(--surface)' : 'none', boxShadow: i === 0 ? '0 0 0 2px var(--accent)' : 'none' } })
+          )
+        );
+      case 'modal':
+        return R('div', { style: { width: 150, height: 82, background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 10, padding: 10, boxShadow: 'var(--shadow)', display: 'flex', flexDirection: 'column', gap: 6, position: 'relative' } },
+          R('div', { key: 1, style: { fontSize: 11, fontWeight: 700, color: 'var(--text)' } }, 'タイトル'),
+          R('div', { key: 2, style: { height: 3, background: 'var(--fill-1)', width: '86%', borderRadius: 2 } }),
+          R('div', { key: 3, style: { height: 3, background: 'var(--fill-1)', width: '72%', borderRadius: 2 } }),
+          R('div', { key: 4, style: { display: 'flex', gap: 4, marginTop: 'auto', justifyContent: 'flex-end' } },
+            R('div', { key: 'a', style: { width: 32, height: 14, background: 'var(--fill-2)', borderRadius: 3 } }),
+            R('div', { key: 'b', style: { width: 32, height: 14, background: 'var(--accent)', borderRadius: 3 } }),
+          ),
+        );
+      case 'menu':
+        return R('div', { style: { width: 132, background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 8, padding: 5, boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 2 } },
+          [1, 2, 3].map((i) => R('div', { key: i, style: { padding: '4px 8px', display: 'flex', gap: 6, alignItems: 'center', fontSize: 10.5, color: i === 1 ? 'var(--text)' : 'var(--text-dim)', background: i === 1 ? 'var(--fill-1)' : 'transparent', borderRadius: 4 } },
+            R('span', { key: 'd', style: { width: 4, height: 4, borderRadius: '50%', background: 'currentColor' } }),
+            R('span', { key: 't' }, ['複製する', '共有する', '削除'][i - 1]),
+          )),
+        );
+      case 'confirm-dialog':
+        return R('div', { style: { width: 150, height: 82, background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 10, padding: 10, boxShadow: 'var(--shadow)', display: 'flex', flexDirection: 'column', gap: 6 } },
+          R('div', { key: 1, style: { fontSize: 11, fontWeight: 700, color: 'var(--text)' } }, '削除しますか？'),
+          R('div', { key: 2, style: { height: 3, background: 'var(--fill-1)', width: '76%', borderRadius: 2 } }),
+          R('div', { key: 4, style: { display: 'flex', gap: 4, marginTop: 'auto' } },
+            R('div', { key: 'a', style: { flex: 1, height: 16, background: 'var(--surface-2)', border: '1px solid var(--line-2)', borderRadius: 4 } }),
+            R('div', { key: 'b', style: { flex: 1, height: 16, background: 'var(--danger)', borderRadius: 4 } }),
+          ),
+        );
+      case 'toast':
+        return R('div', { style: { display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px', background: 'var(--clay)', color: 'var(--on-accent)', borderRadius: 999, fontSize: 11.5, fontWeight: 600, boxShadow: 'var(--shadow)' } },
+          R('div', { key: 'd', style: { width: 6, height: 6, borderRadius: '50%', background: 'var(--accent-2)' } }),
+          R('span', { key: 't' }, '保存しました'),
+        );
+      case 'side-nav':
+        return R('div', { style: { width: 130, height: 84, background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 8, padding: 6, display: 'flex', flexDirection: 'column', gap: 3 } },
+          [{ on: false, t: '概要' }, { on: false, t: '特徴' }, { on: true, t: 'コンポーネント' }, { on: false, t: 'トークン' }].map((r, i) =>
+            R('div', { key: i, style: { padding: '3px 6px', fontSize: 10, color: r.on ? 'var(--accent)' : 'var(--text-dim)', background: r.on ? 'var(--accent-soft)' : 'transparent', borderRadius: 4, display: 'flex', alignItems: 'center', gap: 4 } },
+              R('span', { key: 'd', style: { width: 4, height: 4, borderRadius: '50%', background: 'currentColor' } }),
+              R('span', { key: 't' }, r.t),
+            ),
+          ),
+        );
+
+      // ---- forms ----
+      case 'field':
+        return R('div', { style: { width: 160, display: 'flex', flexDirection: 'column', gap: 4 } },
+          R('div', { key: 1, style: { fontSize: 11, color: 'var(--text-dim)', fontWeight: 600 } }, 'メールアドレス'),
+          R('div', { key: 2, style: { height: 26, background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 6, padding: '4px 8px', fontSize: 10.5, color: 'var(--text-faint)', display: 'flex', alignItems: 'center' } }, 'name@example.com'),
+        );
+      case 'input':
+        return R('div', { style: { width: 160, height: 30, background: 'var(--surface)', border: '1px solid var(--accent-line)', borderRadius: 6, padding: '5px 10px', fontSize: 12, color: 'var(--text)', display: 'flex', alignItems: 'center' } }, '入力中...');
+      case 'stepper':
+        return R('div', { style: { display: 'flex', alignItems: 'center', gap: 0, border: '1px solid var(--line-2)', borderRadius: 6, background: 'var(--surface)' } },
+          R('div', { key: 1, style: { width: 28, height: 28, display: 'grid', placeItems: 'center', color: 'var(--text-dim)', fontSize: 13, fontFamily: 'var(--num)' } }, '−'),
+          R('div', { key: 2, style: { width: 36, height: 28, display: 'grid', placeItems: 'center', color: 'var(--text)', fontSize: 13, fontFamily: 'var(--num)', fontWeight: 600, borderLeft: '1px solid var(--line-2)', borderRight: '1px solid var(--line-2)' } }, '3'),
+          R('div', { key: 3, style: { width: 28, height: 28, display: 'grid', placeItems: 'center', color: 'var(--accent)', fontSize: 13, fontFamily: 'var(--num)' } }, '+'),
+        );
+      case 'textarea':
+        return R('div', { style: { width: 160, height: 62, background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 6, padding: 8, display: 'flex', flexDirection: 'column', gap: 4 } },
+          R('div', { key: 1, style: { height: 3, background: 'var(--fill-2)', width: '86%', borderRadius: 2 } }),
+          R('div', { key: 2, style: { height: 3, background: 'var(--fill-2)', width: '92%', borderRadius: 2 } }),
+          R('div', { key: 3, style: { height: 3, background: 'var(--fill-1)', width: '56%', borderRadius: 2 } }),
+        );
+      case 'select':
+        return R('div', { style: { display: 'flex', alignItems: 'center', width: 160, height: 30, background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 6, padding: '5px 10px', fontSize: 12, color: 'var(--text)' } },
+          R('span', { key: 't' }, '筋トレ'),
+          R('span', { key: 'c', style: { marginLeft: 'auto', color: 'var(--text-faint)', fontFamily: 'var(--num)' } }, '⌄'),
+        );
+      case 'search-select':
+        return R('div', { style: { display: 'flex', alignItems: 'center', width: 160, height: 30, background: 'var(--surface)', border: '1px solid var(--accent-line)', borderRadius: 6, padding: '5px 10px', fontSize: 12, gap: 6 } },
+          Icon ? R(Icon, { name: 'search', size: 12, key: 'i' }) : null,
+          R('span', { key: 't', style: { color: 'var(--text)' } }, '検索して選択'),
+          R('span', { key: 'c', style: { marginLeft: 'auto', color: 'var(--text-faint)', fontFamily: 'var(--num)' } }, '⌄'),
+        );
+      case 'switch':
+        return R('div', { style: { display: 'flex', gap: 14, alignItems: 'center' } },
+          R('div', { key: 1, style: { width: 34, height: 20, background: 'var(--accent)', borderRadius: 999, position: 'relative' } },
+            R('div', { key: 'k', style: { position: 'absolute', top: 2, right: 2, width: 16, height: 16, borderRadius: '50%', background: 'var(--on-accent)' } })),
+          R('div', { key: 2, style: { width: 34, height: 20, background: 'var(--fill-2)', borderRadius: 999, position: 'relative' } },
+            R('div', { key: 'k', style: { position: 'absolute', top: 2, left: 2, width: 16, height: 16, borderRadius: '50%', background: 'var(--surface)' } })),
+        );
+      case 'date-picker':
+        return R('div', { style: { display: 'flex', alignItems: 'center', gap: 8, width: 160, height: 30, background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 6, padding: '5px 10px', fontSize: 12, color: 'var(--text)' } },
+          Icon ? R(Icon, { name: 'calendar', size: 14, key: 'i' }) : null,
+          R('span', { key: 't', className: 'num', style: { fontFamily: 'var(--num)' } }, '2026 / 07 / 06'),
+        );
+
+      // ---- charts ----
+      case 'bar-chart': {
+        const heights = [22, 34, 18, 42, 28, 46, 32];
+        return R('div', { style: { display: 'flex', alignItems: 'flex-end', gap: 5, height: 60 } },
+          heights.map((h, i) => R('div', { key: i, style: { width: 10, height: h, background: i === 5 ? 'var(--accent)' : 'var(--accent-line)', borderRadius: '2px 2px 0 0' } }))
+        );
+      }
+      case 'line-chart': {
+        const pts = '4,52 26,38 50,44 74,20 98,30 122,14 146,26';
+        return R('svg', { width: 160, height: 60, viewBox: '0 0 160 60', style: { overflow: 'visible' } },
+          R('polyline', { key: 'l', points: pts, fill: 'none', stroke: 'var(--accent)', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }),
+          R('polyline', { key: 'a', points: '4,60 ' + pts + ' 146,60', fill: 'var(--accent-soft)', stroke: 'none' }),
+        );
+      }
+      case 'bar-list':
+        return R('div', { style: { display: 'flex', flexDirection: 'column', gap: 5, width: 160 } },
+          [{ l: '筋トレ', v: 90 }, { l: '水分', v: 66 }, { l: '睡眠', v: 44 }].map((r, i) =>
+            R('div', { key: i, style: { display: 'flex', alignItems: 'center', gap: 6, fontSize: 10.5, color: 'var(--text-dim)' } },
+              R('span', { key: 'l', style: { width: 34, fontFamily: 'var(--ja)' } }, r.l),
+              R('div', { key: 'b', style: { flex: 1, height: 8, background: 'var(--fill-1)', borderRadius: 2, overflow: 'hidden' } },
+                R('div', { key: 'f', style: { width: r.v + '%', height: '100%', background: 'var(--accent)' } })),
+              R('span', { key: 'v', style: { fontFamily: 'var(--num)', color: 'var(--text)', fontWeight: 600, width: 22, textAlign: 'right' } }, r.v),
+            )
+          )
+        );
+      case 'sparkline': {
+        const pts = '2,26 14,22 26,28 38,14 50,20 62,10 74,16 86,6';
+        return R('svg', { width: 100, height: 32, viewBox: '0 0 90 32' },
+          R('polyline', { key: 1, points: pts, fill: 'none', stroke: 'var(--accent)', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }),
+          R('circle', { key: 2, cx: 86, cy: 6, r: 2.2, fill: 'var(--accent)' }),
+        );
+      }
+
+      // ---- editor ----
+      case 'rich-text-editor':
+        return R('div', { style: { width: 170, background: 'var(--surface)', border: '1px solid var(--line-2)', borderRadius: 6, overflow: 'hidden' } },
+          R('div', { key: 't', style: { display: 'flex', gap: 3, padding: 4, background: 'var(--surface-2)', borderBottom: '1px solid var(--line)' } },
+            ['B', 'i', '⌐', '≡', '↩'].map((s, i) => R('div', { key: i, style: { width: 16, height: 16, display: 'grid', placeItems: 'center', fontFamily: 'var(--num)', fontSize: 9, fontWeight: 700, color: 'var(--text-dim)', borderRadius: 3 } }, s))
+          ),
+          R('div', { key: 'b', style: { padding: 8, display: 'flex', flexDirection: 'column', gap: 3 } },
+            R('div', { key: 1, style: { height: 4, background: 'var(--fill-2)', width: '85%', borderRadius: 2 } }),
+            R('div', { key: 2, style: { height: 4, background: 'var(--fill-2)', width: '70%', borderRadius: 2 } }),
+            R('div', { key: 3, style: { height: 4, background: 'var(--fill-1)', width: '50%', borderRadius: 2 } }),
+          ),
+        );
+
+      default:
+        return stub(slug);
+    }
+  }
+}
+</script>
+</body>
+</html>

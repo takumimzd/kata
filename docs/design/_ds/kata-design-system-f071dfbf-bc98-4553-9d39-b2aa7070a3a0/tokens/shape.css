@@ -1,0 +1,33 @@
+/* ============================================================
+   kata — 形状・余白・影トークン (shape / spacing / elevation)
+   角丸は 6〜24px + ピル。余白は 4px グリッド。影は 2 段。
+   影トークン (--shadow / --shadow-sm) はテーマ側 (colors.css) で
+   定義しているため、ここでは形状と余白のみ。
+   ============================================================ */
+
+:root {
+  /* ---- 角丸 (corner radius) ---- */
+  --radius-xs: 6px;
+  --radius-sm: 9px;
+  --radius: 13px; /* = md (既定) */
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px; /* ピル / 丸 */
+
+  /* ---- スペーシング (4px グリッド) ---- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 40px;
+  --space-10: 48px;
+
+  /* ---- ブレークポイント (参考値) ---- */
+  --bp-sm: 600px;
+  --bp-md: 880px;
+  --bp-lg: 1200px;
+}
