@@ -774,3 +774,186 @@
 .metaList span:last-child {
   color: var(--text);
 }
+
+/* ============ RESPONSIVE (mobile) ============ */
+@media (max-width: 879px) {
+  .main {
+    gap: 32px;
+  }
+
+  .crumb {
+    font-size: 11px;
+    gap: 6px;
+  }
+
+  .headMain {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .headR {
+    display: none;
+  }
+
+  .headTagRow {
+    gap: 8px;
+  }
+
+  .headIdx {
+    font-size: 11px;
+    padding: 2px 8px;
+  }
+
+  .headGroup {
+    font-size: 10px;
+  }
+
+  .headUpdated {
+    display: none;
+  }
+
+  .title {
+    font-size: 30px;
+  }
+
+  .lede {
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .metaStrip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-radius: 10px;
+  }
+
+  .metaCell {
+    padding: 8px 10px;
+    min-width: 0;
+  }
+
+  .metaCell:nth-child(3) {
+    border-right: none;
+  }
+
+  .metaCell:nth-child(4) {
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--line);
+    border-right: none;
+  }
+
+  .metaVal {
+    font-size: 13px;
+  }
+
+  /* section */
+  .sec {
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+    gap: 8px;
+  }
+
+  .sec h2 {
+    font-size: 14.5px;
+  }
+
+  .secEn {
+    font-size: 10px;
+  }
+
+  .secMeta {
+    display: none;
+  }
+
+  /* Demo container */
+  .demoHead {
+    padding: 8px 14px;
+  }
+
+  /* variant grid — stack */
+  .vgrid {
+    grid-template-columns: 1fr;
+  }
+
+  .vrow > * {
+    padding: 12px 14px;
+  }
+
+  .vlabel {
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    flex-direction: row;
+    align-items: baseline;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--surface-2);
+  }
+
+  /* Playground: stack the controls under the stage */
+  .pgStage {
+    padding: 32px 16px;
+    min-height: 160px;
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .pgControls {
+    padding: 14px 14px;
+    gap: 14px;
+  }
+
+  /* Do/Don't → 1 column */
+  .dodont {
+    gap: 12px;
+  }
+
+  .ddBody {
+    padding: 14px 16px;
+    gap: 10px;
+  }
+
+  .ddPreview {
+    min-height: 50px;
+    padding: 10px;
+  }
+
+  .ddNote {
+    font-size: 11.5px;
+  }
+
+  /* Related — 2 columns */
+  .rgrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .relPv {
+    height: 68px;
+    padding: 6px;
+  }
+
+  .relBody {
+    padding: 8px 10px 10px;
+  }
+
+  .relName {
+    font-size: 12px;
+  }
+
+  .relDesc {
+    font-size: 10.5px;
+  }
+
+  /* Prev/next: stack */
+  .pnav {
+    grid-template-columns: 1fr;
+  }
+
+  .pnavItem {
+    padding: 10px 14px;
+  }
+
+  .pnavName {
+    font-size: 13px;
+  }
+}

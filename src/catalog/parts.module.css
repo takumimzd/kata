@@ -65,3 +65,94 @@
   color: var(--text-faint);
   white-space: nowrap;
 }
+
+/* ============ MOBILE: props table → stacked cards ============ */
+@media (max-width: 720px) {
+  .demo {
+    padding: var(--space-4);
+  }
+
+  .code {
+    font-size: 11.5px;
+    line-height: 1.65;
+    padding: var(--space-3);
+  }
+
+  .tableWrap {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    overflow: visible;
+  }
+
+  .table {
+    display: block;
+    border-collapse: separate;
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .table tbody {
+    display: block;
+  }
+
+  .table tr {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .table tr:last-child {
+    border-bottom: none;
+  }
+
+  .table td {
+    display: block;
+    padding: 0;
+    border: none;
+    white-space: normal;
+    line-height: 1.55;
+  }
+
+  .table td.pName {
+    font-family: var(--num);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .table td.pType {
+    font-family: var(--num);
+    font-size: 11px;
+    color: var(--text-dim);
+    white-space: normal;
+  }
+
+  /* 「既定」列 — 型の右にラベル付きで見せる */
+  .table td:nth-child(3) {
+    font-family: var(--num);
+    font-size: 10.5px;
+    color: var(--text-faint);
+  }
+
+  .table td:nth-child(3)::before {
+    content: '既定: ';
+    color: var(--text-faint);
+  }
+
+  .table td:nth-child(3):empty::before,
+  .table td:nth-child(3):has(:empty)::before {
+    content: '';
+  }
+
+  /* 説明列 */
+  .table td:nth-child(4) {
+    font-size: 11.5px;
+    color: var(--text-dim);
+    padding-top: 2px;
+  }
+}

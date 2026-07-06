@@ -27,9 +27,7 @@ function linksOf(groupKey: string): SideNavLink[] {
   );
 }
 
-/** ナビ項目を組み立てる。src/ds/components/ の構成に対応:
- *  「コンポーネント」直下に root 部品を並べ、forms/charts/editor をフォルダ(アコーディオン)にする。
- *  現在のページのフォルダのみ展開する。 */
+/** ナビ項目を組み立てる。src/ds/components/ の構成に対応 */
 function buildNavItems(activeGroup: string | null): SideNavItem[] {
   const componentChildren: SideNavItem[] = GROUPS.flatMap((g): SideNavItem[] =>
     g.folder
@@ -41,7 +39,6 @@ function buildNavItems(activeGroup: string | null): SideNavItem[] {
     { key: 'overview', to: '/', label: '概要', exact: true, icon: <Icon name="home" size={18} /> },
     { key: 'principles', to: '/principles', label: '特徴', icon: <Icon name="book" size={18} /> },
     { key: 'tokens', to: '/tokens', label: 'トークン', icon: <Icon name="chart" size={18} /> },
-    { key: 'mobile', to: '/mobile', label: 'モバイル', icon: <Icon name="monitor" size={18} /> },
     {
       key: 'components',
       label: 'コンポーネント',
@@ -52,9 +49,6 @@ function buildNavItems(activeGroup: string | null): SideNavItem[] {
   ];
 }
 
-/** 本文要素の id。ナビリンクはこの id へのアンカー (hash) を付け、
- *  モバイルで「サイドメニューの上」ではなく本文へスクロールさせる。
- *  (scrollRestoration が先頭へ戻すのを、ルーター標準のハッシュスクロールで上書きする) */
 const CONTENT_ID = 'content';
 
 function applyTheme(theme: Theme): void {
@@ -63,12 +57,25 @@ function applyTheme(theme: Theme): void {
   else root.dataset.theme = theme;
 }
 
+/** モバイル用ボトムタブバーの 4 タブ */
+type MobileTab = 'overview' | 'principles' | 'tokens' | 'components';
+
+function activeMobileTab(pathname: string): MobileTab {
+  if (pathname === '/') return 'overview';
+  if (pathname.startsWith('/principles')) return 'principles';
+  if (pathname.startsWith('/tokens')) return 'tokens';
+  if (pathname.startsWith('/components')) return 'components';
+  return 'overview';
+}
+
 export function Chrome({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>('kiri');
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const pathname = useLocation({ select: (l) => l.pathname });
   const activeGroup = activeGroupKey(pathname);
+  const currentTab = activeMobileTab(pathname);
 
-  /** TanStack Router の <Link> で SideNav のリンクを描画する (本文へのアンカー付き) */
+  /** TanStack Router の <Link> で SideNav のリンクを描画する */
   function renderLink(link: SideNavLink, ctx: SideNavRenderCtx): ReactNode {
     return (
       <Link
@@ -77,19 +84,36 @@ export function Chrome({ children }: { children: ReactNode }) {
         className={ctx.className}
         activeProps={{ className: cn(ctx.className, ctx.activeClassName) }}
         activeOptions={{ exact: link.exact }}
+        onClick={() => setDrawerOpen(false)}
       >
         {ctx.content}
       </Link>
     );
   }
 
-  // 初回マウントで保存値を反映 (SSR では既定の kiri)
   useEffect(() => {
     const stored = localStorage.getItem(THEME_KEY) as Theme | null;
     const next = stored && THEMES.includes(stored) ? stored : 'kiri';
     setTheme(next);
     applyTheme(next);
   }, []);
+
+  // ページ遷移でドロワーを閉じる
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [pathname]);
+
+  // ドロワー開閉時に body スクロールを制御
+  useEffect(() => {
+    if (drawerOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+    return undefined;
+  }, [drawerOpen]);
 
   function onPick(next: Theme) {
     setTheme(next);
@@ -124,24 +148,99 @@ export function Chrome({ children }: { children: ReactNode }) {
 
   return (
     <div className={styles.shell}>
-      <aside className={styles.sidebar}>
-        <div className={styles.brand}>
-          <span className={styles.brandMark}>型</span>
-          <span className={styles.brandText}>kata</span>
-          <span className={styles.brandSub}>design system</span>
+      {/* モバイル top bar (>= 880px では非表示) */}
+      <header className={styles.topbar}>
+        <button
+          type="button"
+          className={styles.topbarBtn}
+          aria-label="メニューを開く"
+          onClick={() => setDrawerOpen(true)}
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <div className={styles.topbarBrand}>
+          <span className={styles.topbarMark}>型</span>
+          <span className={styles.topbarName}>kata</span>
         </div>
+        <span className={styles.topbarSpacer} />
+        <Link to="/" hash={CONTENT_ID} className={styles.topbarBtn} aria-label="検索">
+          <Icon name="search" size={18} />
+        </Link>
+      </header>
 
-        <SideNav
-          key={activeGroup ?? 'none'}
-          items={buildNavItems(activeGroup)}
-          renderLink={renderLink}
-          footer={themePicker}
-        />
-      </aside>
+      <div className={styles.shellInner}>
+        {drawerOpen && <div className={styles.backdrop} onClick={() => setDrawerOpen(false)} />}
+        <aside className={`${styles.sidebar}${drawerOpen ? ` ${styles.open}` : ''}`}>
+          <div className={styles.brand}>
+            <span className={styles.brandMark}>型</span>
+            <span className={styles.brandText}>kata</span>
+            <span className={styles.brandSub}>design system</span>
+          </div>
 
-      <main id={CONTENT_ID} className={styles.content}>
-        {children}
-      </main>
+          <SideNav
+            key={activeGroup ?? 'none'}
+            items={buildNavItems(activeGroup)}
+            renderLink={renderLink}
+            footer={themePicker}
+          />
+        </aside>
+
+        <main id={CONTENT_ID} className={styles.content}>
+          {children}
+        </main>
+      </div>
+
+      {/* モバイルボトムタブ (>= 880px では非表示) */}
+      <nav className={styles.tabbar} aria-label="モバイルナビ">
+        <Link
+          to="/"
+          hash={CONTENT_ID}
+          className={`${styles.tab}${currentTab === 'overview' ? ` ${styles.tabOn}` : ''}`}
+          aria-current={currentTab === 'overview' ? 'page' : undefined}
+        >
+          <Icon name="home" size={20} />
+          <span className={styles.tabLab}>概要</span>
+        </Link>
+        <Link
+          to="/principles"
+          hash={CONTENT_ID}
+          className={`${styles.tab}${currentTab === 'principles' ? ` ${styles.tabOn}` : ''}`}
+          aria-current={currentTab === 'principles' ? 'page' : undefined}
+        >
+          <Icon name="book" size={20} />
+          <span className={styles.tabLab}>特徴</span>
+        </Link>
+        <Link
+          to="/tokens"
+          hash={CONTENT_ID}
+          className={`${styles.tab}${currentTab === 'tokens' ? ` ${styles.tabOn}` : ''}`}
+          aria-current={currentTab === 'tokens' ? 'page' : undefined}
+        >
+          <Icon name="chart" size={20} />
+          <span className={styles.tabLab}>トークン</span>
+        </Link>
+        <Link
+          to="/components"
+          hash={CONTENT_ID}
+          className={`${styles.tab}${currentTab === 'components' ? ` ${styles.tabOn}` : ''}`}
+          aria-current={currentTab === 'components' ? 'page' : undefined}
+        >
+          <Icon name="note" size={20} />
+          <span className={styles.tabLab}>部品</span>
+        </Link>
+      </nav>
     </div>
   );
 }
