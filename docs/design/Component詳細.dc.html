@@ -378,17 +378,7 @@
         <span class="meta">TypeScript · React 19</span>
       </div>
 
-      <div class="code"><span class="c">// 主アクション</span>
-<span class="k">&lt;Button</span> <span class="t">variant</span>=<span class="s">"primary"</span><span class="k">&gt;</span>保存する<span class="k">&lt;/Button&gt;</span>
-
-<span class="c">// アイコン付き / 破壊的</span>
-<span class="k">&lt;Button</span> <span class="t">variant</span>=<span class="s">"danger"</span><span class="k">&gt;</span>
-  <span class="k">&lt;Icon</span> <span class="t">name</span>=<span class="s">"trash"</span> <span class="t">size</span>=<span class="s">{16}</span> <span class="k">/&gt;</span>
-  削除
-<span class="k">&lt;/Button&gt;</span>
-
-<span class="c">// リンクにボタンの見た目を与える</span>
-<span class="k">&lt;Link</span> <span class="t">to</span>=<span class="s">"/back"</span> <span class="t">className</span>=<span class="s">{buttonClassName(</span><span class="s">'text'</span><span class="s">)}</span><span class="k">&gt;</span>戻る<span class="k">&lt;/Link&gt;</span></div>
+      <div class="code">{{ codeBlock }}</div>
     </section>
 
     <!-- Section 06: Props -->
@@ -400,13 +390,13 @@
         <span class="meta">3 props · + button 属性</span>
       </div>
 
-      <table class="ptbl">
+      <table class="ptbl" style="table-layout: fixed;">
         <thead>
           <tr>
-            <th style="width: 100px;">prop</th>
-            <th style="width: 260px;">型</th>
-            <th style="width: 100px;">既定</th>
-            <th>説明</th>
+            <th style="width: 14%;">prop</th>
+            <th style="width: 30%;">型</th>
+            <th style="width: 12%;">既定</th>
+            <th style="width: 44%;">説明</th>
           </tr>
         </thead>
         <tbody>
@@ -654,8 +644,25 @@ class Component extends DCLogic {
       R(Chp, { key: 2 }, '水分'),
     ) : stub('Chip');
 
+    // Section 5 — code block (built as React element so newlines survive)
+    const cSpan = (cls, txt) => R('span', { className: cls }, txt);
+    const codeBlock = R('div', null,
+      cSpan('c', '// 主アクション'), '\n',
+      cSpan('k', '<Button'), ' ', cSpan('t', 'variant'), '=', cSpan('s', '"primary"'), cSpan('k', '>'), '保存する', cSpan('k', '</Button>'), '\n',
+      '\n',
+      cSpan('c', '// アイコン付き / 破壊的'), '\n',
+      cSpan('k', '<Button'), ' ', cSpan('t', 'variant'), '=', cSpan('s', '"danger"'), cSpan('k', '>'), '\n',
+      '  ', cSpan('k', '<Icon'), ' ', cSpan('t', 'name'), '=', cSpan('s', '"trash"'), ' ', cSpan('t', 'size'), '=', cSpan('s', '{16}'), ' ', cSpan('k', '/>'), '\n',
+      '  削除\n',
+      cSpan('k', '</Button>'), '\n',
+      '\n',
+      cSpan('c', '// リンクにボタンの見た目を与える'), '\n',
+      cSpan('k', '<Link'), ' ', cSpan('t', 'to'), '=', cSpan('s', '"/back"'), ' ', cSpan('t', 'className'), '=', cSpan('s', '{buttonClassName('), cSpan('s', "'text'"), cSpan('s', ')}'), cSpan('k', '>'), '戻る', cSpan('k', '</Link>'),
+    );
+
     return {
       dataTheme: theme,
+      codeBlock,
       demoAll, vPrimary, vSecondary, vText, vDanger, vGhost, vMini,
       playPreview,
       pgv1: pgv('primary'), pgv2: pgv('secondary'), pgv3: pgv('text'), pgv4: pgv('danger'), pgv5: pgv('ghost'), pgv6: pgv('mini'),

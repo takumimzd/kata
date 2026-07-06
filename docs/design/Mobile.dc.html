@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/tokens/colors.css">
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/tokens/typography.css">
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/tokens/shape.css">
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/reset.css">
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/utilities.css">
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/components.css">
+  <link rel="stylesheet" href="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/styles.css">
+  <script src="_ds/kata-design-system-f071dfbf-bc98-4553-9d39-b2aa7070a3a0/_ds_bundle.js"></script>
+  <style>
+    html, body { background: #d9d8d5; color: var(--text); font-family: var(--ja); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; font-feature-settings: 'palt' 1; }
+    .num { font-family: var(--num); font-variant-numeric: tabular-nums; }
+    .eyebrow { font-family: var(--num); font-size: 9.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-faint); }
+    .kata-mark { display: inline-grid; place-items: center; background: var(--accent); color: var(--on-accent); border-radius: 7px; font-family: var(--ja); font-weight: 900; line-height: 1; }
+    /* Frame column */
+    .fcol { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .flabel { font-family: var(--num); font-size: 11px; font-weight: 600; color: var(--text); letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 10px; background: rgba(255,255,255,0.7); border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; }
+    .flabel .n { color: var(--accent); font-weight: 700; }
+    .flabel .sub { color: var(--text-dim); font-weight: 500; letter-spacing: 0.04em; text-transform: none; font-family: var(--ja); }
+    /* Inside iOS screen — shared */
+    .m-screen { display: flex; flex-direction: column; height: 100%; background: var(--bg); overflow: hidden; font-family: var(--ja); color: var(--text); }
+    .m-topbar { display: flex; align-items: center; gap: 10px; padding: 8px 16px 12px; background: var(--bg); }
+    .m-icon-btn { width: 30px; height: 30px; display: grid; place-items: center; color: var(--text-dim); }
+    .m-body { flex: 1; overflow-y: auto; padding: 0 16px 96px; display: flex; flex-direction: column; gap: 20px; }
+    .m-tabbar { position: absolute; left: 12px; right: 12px; bottom: 34px; display: flex; justify-content: space-around; align-items: center; padding: 10px 8px 8px; background: rgba(241, 241, 242, 0.86); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow-sm); }
+    .m-tab { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 8px; color: var(--text-dim); font-size: 10px; font-family: var(--num); font-weight: 600; }
+    .m-tab.on { color: var(--accent); }
+    .m-tab .lab { font-family: var(--ja); }
+    .m-sec-h { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
+    .m-sec-h .k { font-family: var(--ja); font-weight: 700; color: var(--accent); font-size: 15px; }
+    .m-sec-h .t { font-size: 14px; font-weight: 700; color: var(--text); }
+    .m-sec-h .e { font-family: var(--num); font-size: 9.5px; color: var(--text-faint); letter-spacing: 0.12em; text-transform: uppercase; }
+    .m-sec-h .meta { margin-left: auto; font-family: var(--num); font-size: 10px; color: var(--text-faint); }
+    /* mini component card (screen B) */
+    .m-cc { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: flex; flex-direction: column; }
+    .m-cc .pv { position: relative; height: 72px; background: var(--bg-2); border-bottom: 1px solid var(--line); display: grid; place-items: center; overflow: hidden; padding: 6px; }
+    .m-cc .pv .cap { position: absolute; bottom: 4px; right: 6px; font-family: var(--num); font-size: 8.5px; color: var(--text-faint); letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.8; }
+    .m-cc .body { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 1px; }
+    .m-cc .idx { font-family: var(--num); font-size: 9px; color: var(--text-faint); letter-spacing: 0.04em; }
+    .m-cc .nm { font-family: var(--num); font-size: 12.5px; font-weight: 600; color: var(--text); line-height: 1.2; }
+    /* fchip mobile */
+    .m-fchip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--surface); color: var(--text-dim); font-size: 11px; font-weight: 500; white-space: nowrap; }
+    .m-fchip .n { font-family: var(--num); font-size: 9.5px; color: var(--text-faint); }
+    .m-fchip.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+    .m-fchip.on .n { color: var(--on-accent); opacity: 0.75; }
+    /* search */
+    .m-search { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: var(--surface); border: 1px solid var(--line-2); border-radius: 999px; font-size: 12px; color: var(--text-faint); }
+    /* screen C — variant row */
+    .m-vrow { display: grid; grid-template-columns: 82px 1fr; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: center; }
+    .m-vrow:last-child { border-bottom: none; }
+    .m-vrow .vn { display: flex; flex-direction: column; gap: 1px; font-family: var(--num); }
+    .m-vrow .vn .a { font-size: 12px; font-weight: 600; color: var(--text); }
+    .m-vrow .vn .b { font-family: var(--ja); font-size: 10.5px; color: var(--text-faint); }
+    /* prop row (stacked, mobile) */
+    .m-prow { padding: 10px 12px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
+    .m-prow:last-child { border-bottom: none; }
+    .m-prow .top { display: flex; align-items: center; gap: 6px; }
+    .m-prow .top .nm { font-family: var(--num); font-size: 12.5px; font-weight: 700; color: var(--text); }
+    .m-prow .top .req { padding: 1px 5px; border-radius: 3px; background: var(--accent-soft); color: var(--accent); font-family: var(--num); font-size: 8.5px; font-weight: 700; letter-spacing: 0.06em; }
+    .m-prow .top .def { margin-left: auto; font-family: var(--num); font-size: 10.5px; color: var(--text-faint); }
+    .m-prow .type { font-family: var(--num); font-size: 10.5px; color: var(--text-dim); }
+    .m-prow .desc { font-size: 11.5px; color: var(--text-dim); line-height: 1.55; }
+    /* segmented control */
+    .m-seg { display: grid; gap: 3px; background: var(--surface-2); border-radius: 8px; padding: 3px; border: 1px solid var(--line); grid-template-columns: repeat(3, 1fr); }
+    .m-seg button { padding: 5px 4px; font-size: 10.5px; font-family: var(--ja); font-weight: 600; border-radius: 5px; background: transparent; color: var(--text-dim); border: 0; }
+    .m-seg button.on { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+    /* switch */
+    .m-sw { position: relative; width: 30px; height: 18px; background: var(--fill-2); border-radius: 999px; }
+    .m-sw.on { background: var(--accent); }
+    .m-sw::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--surface); transition: 0.15s; }
+    .m-sw.on::after { left: 14px; background: var(--on-accent); }
+    /* code (mini) */
+    .m-code { background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font-family: var(--num); font-size: 10.5px; line-height: 1.7; color: var(--text-dim); white-space: pre; overflow-x: auto; }
+    .m-code .k { color: var(--accent); font-weight: 600; }
+    .m-code .c { color: var(--text-faint); font-style: italic; }
+    /* related pill */
+    .m-rel { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+    .m-rel .item { flex: 0 0 108px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+    .m-rel .pv { height: 56px; background: var(--bg-2); border-bottom: 1px solid var(--line); display: grid; place-items: center; }
+    .m-rel .nm { padding: 6px 10px 8px; font-family: var(--num); font-size: 11.5px; font-weight: 600; color: var(--text); }
+    /* frame grid */
+    .frames { display: flex; gap: 32px; padding: 40px 40px 60px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
+    /* Hero (page label) */
+    .page-hero { padding: 40px 40px 20px; display: flex; flex-direction: column; gap: 12px; max-width: 1200px; margin: 0 auto; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; background: linear-gradient(180deg, #e6e5e2 0%, #d5d4d0 100%); position: relative;">
+
+  <!-- Page hero label -->
+  <div class="page-hero">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span class="kata-mark" style="width: 30px; height: 30px; font-size: 17px;">型</span>
+      <span class="num" style="font-size: 12px; letter-spacing: 0.14em; color: var(--accent); font-weight: 600; text-transform: uppercase;">kata · Mobile Views</span>
+      <span class="num" style="font-size: 11px; color: var(--text-faint); letter-spacing: 0.06em; margin-left: 8px;">iPhone · 390 × 844</span>
+    </div>
+    <h1 style="margin: 0; font-family: var(--ja); font-size: 44px; font-weight: 900; letter-spacing: -0.01em; color: var(--text);">モバイル</h1>
+    <p style="margin: 0; font-size: 14px; line-height: 1.75; color: var(--text-dim); max-width: 60ch;">サイドバーの代わりに底タブ + ハンバーガー、カードは 2 列に圧縮。フィルタチップは横スクロール。詳細ページは props テーブルを縦積みカードに変換する。</p>
+  </div>
+
+  <div class="frames">
+
+    <!-- ============= SCREEN A: Overview ============= -->
+    <div class="fcol">
+      <span class="flabel"><span class="n">A</span><span class="sub">概要 · Overview</span></span>
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" title="kata" hint-size="393px,853px">
+        <div class="m-screen">
+          <!-- Top bar -->
+          <div class="m-topbar">
+            <div class="m-icon-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="kata-mark" style="width: 24px; height: 24px; font-size: 14px; border-radius: 5px;">型</span>
+              <span class="num" style="font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: 0.02em;">kata</span>
+            </div>
+            <div style="margin-left: auto; display: flex; gap: 4px;">
+              <div class="m-icon-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="m-body">
+            <!-- Hero -->
+            <div style="display: flex; flex-direction: column; gap: 12px; padding-top: 8px;">
+              <div class="eyebrow">Design System · v0.1 · 2026</div>
+              <h1 style="margin: 0; font-family: var(--ja); font-weight: 900; font-size: 60px; line-height: 0.9; letter-spacing: -0.02em;">型 <span class="num" style="font-family: var(--num); font-weight: 500; color: var(--text-dim); font-size: 28px;">— kata</span></h1>
+              <p style="margin: 0; font-size: 13.5px; line-height: 1.75; color: var(--text-dim);">個人開発のサービス間で共有する汎用デザインシステム。<span style="color: var(--text);">静かに、続けやすく。</span></p>
+            </div>
+
+            <!-- Stats -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden;">
+              <div style="padding: 10px 8px; border-right: 1px solid var(--line); text-align: center;">
+                <div class="num" style="font-size: 20px; font-weight: 600; color: var(--text); line-height: 1;">37</div>
+                <div class="eyebrow" style="margin-top: 3px; font-size: 8.5px;">部品</div>
+              </div>
+              <div style="padding: 10px 8px; border-right: 1px solid var(--line); text-align: center;">
+                <div class="num" style="font-size: 20px; font-weight: 600; color: var(--text); line-height: 1;">4</div>
+                <div class="eyebrow" style="margin-top: 3px; font-size: 8.5px;">群</div>
+              </div>
+              <div style="padding: 10px 8px; border-right: 1px solid var(--line); text-align: center;">
+                <div class="num" style="font-size: 20px; font-weight: 600; color: var(--text); line-height: 1;">65</div>
+                <div class="eyebrow" style="margin-top: 3px; font-size: 8.5px;">アイコン</div>
+              </div>
+              <div style="padding: 10px 8px; text-align: center;">
+                <div class="num" style="font-size: 20px; font-weight: 600; color: var(--text); line-height: 1;">2</div>
+                <div class="eyebrow" style="margin-top: 3px; font-size: 8.5px;">テーマ</div>
+              </div>
+            </div>
+
+            <!-- Primary CTA -->
+            <a href="#" style="display: flex; align-items: center; gap: 8px; justify-content: center; padding: 12px 16px; background: var(--accent); color: var(--on-accent); border-radius: 9px; text-decoration: none; font-weight: 600; font-size: 14px;">
+              コンポーネントを見る <span class="num" style="opacity: 0.7;">→</span>
+            </a>
+
+            <!-- Features preview -->
+            <div>
+              <div class="m-sec-h">
+                <span class="k">弐</span>
+                <span class="t">特徴</span>
+                <span class="e">principles</span>
+                <span class="meta">06</span>
+              </div>
+              <div style="margin-top: 10px; display: flex; flex-direction: column;">
+                <div style="padding: 12px 4px; border-bottom: 1px solid var(--line); display: flex; gap: 12px; align-items: baseline;">
+                  <span class="num" style="font-size: 10.5px; color: var(--accent); font-weight: 700; letter-spacing: 0.04em; flex: none; width: 40px;">01/06</span>
+                  <div>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px;">CSS Modules + CSS 変数</div>
+                    <div style="font-size: 11.5px; color: var(--text-dim); line-height: 1.6;">スコープ化されたスタイル。<span class="num" style="color: var(--text);">color-mix()</span> で派生色を動的生成。</div>
+                  </div>
+                </div>
+                <div style="padding: 12px 4px; border-bottom: 1px solid var(--line); display: flex; gap: 12px; align-items: baseline;">
+                  <span class="num" style="font-size: 10.5px; color: var(--accent); font-weight: 700; letter-spacing: 0.04em; flex: none; width: 40px;">02/06</span>
+                  <div>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px;">ライブラリ非依存</div>
+                    <div style="font-size: 11.5px; color: var(--text-dim); line-height: 1.6;">Tailwind / cva / clsx 不使用。<span class="num" style="color: var(--text);">cn()</span> のみ。</div>
+                  </div>
+                </div>
+                <div style="padding: 12px 4px; border-bottom: 1px solid var(--line); display: flex; gap: 12px; align-items: baseline;">
+                  <span class="num" style="font-size: 10.5px; color: var(--accent); font-weight: 700; letter-spacing: 0.04em; flex: none; width: 40px;">03/06</span>
+                  <div>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 3px;">日本語に最適化</div>
+                    <div style="font-size: 11.5px; color: var(--text-dim); line-height: 1.6;">Zen Kaku Gothic New + Space Grotesk。palt / tnum。</div>
+                  </div>
+                </div>
+                <a href="#" style="padding: 10px 4px; text-decoration: none; display: flex; align-items: center; justify-content: space-between; font-family: var(--num); font-size: 11.5px; color: var(--text-dim); font-weight: 600; letter-spacing: 0.06em;">
+                  <span>すべての特徴を見る</span>
+                  <span style="color: var(--accent);">→</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Group cards -->
+            <div>
+              <div class="m-sec-h">
+                <span class="k">四</span>
+                <span class="t">コンポーネント</span>
+                <span class="e">catalog</span>
+                <span class="meta">37 品</span>
+              </div>
+              <div style="margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <a href="#" style="padding: 14px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; text-decoration: none; display: flex; flex-direction: column; gap: 5px;">
+                  <div style="display: flex; align-items: baseline; gap: 6px;">
+                    <span class="num" style="font-family: var(--ja); font-weight: 700; color: var(--accent); font-size: 14px;">壱</span>
+                    <span style="font-size: 12.5px; font-weight: 700; color: var(--text);">ベース</span>
+                    <span class="num" style="margin-left: auto; font-size: 10.5px; color: var(--text-faint);">24</span>
+                  </div>
+                  <div style="font-size: 10.5px; color: var(--text-dim); line-height: 1.55;">Button · Icon · Card · Chip …</div>
+                </a>
+                <a href="#" style="padding: 14px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; text-decoration: none; display: flex; flex-direction: column; gap: 5px;">
+                  <div style="display: flex; align-items: baseline; gap: 6px;">
+                    <span class="num" style="font-family: var(--ja); font-weight: 700; color: var(--accent); font-size: 14px;">弐</span>
+                    <span style="font-size: 12.5px; font-weight: 700; color: var(--text);">フォーム</span>
+                    <span class="num" style="margin-left: auto; font-size: 10.5px; color: var(--text-faint);">08</span>
+                  </div>
+                  <div style="font-size: 10.5px; color: var(--text-dim); line-height: 1.55;">Input · Select · Switch …</div>
+                </a>
+                <a href="#" style="padding: 14px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; text-decoration: none; display: flex; flex-direction: column; gap: 5px;">
+                  <div style="display: flex; align-items: baseline; gap: 6px;">
+                    <span class="num" style="font-family: var(--ja); font-weight: 700; color: var(--accent); font-size: 14px;">参</span>
+                    <span style="font-size: 12.5px; font-weight: 700; color: var(--text);">チャート</span>
+                    <span class="num" style="margin-left: auto; font-size: 10.5px; color: var(--text-faint);">04</span>
+                  </div>
+                  <div style="font-size: 10.5px; color: var(--text-dim); line-height: 1.55;">BarChart · LineChart …</div>
+                </a>
+                <a href="#" style="padding: 14px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; text-decoration: none; display: flex; flex-direction: column; gap: 5px;">
+                  <div style="display: flex; align-items: baseline; gap: 6px;">
+                    <span class="num" style="font-family: var(--ja); font-weight: 700; color: var(--accent); font-size: 14px;">四</span>
+                    <span style="font-size: 12.5px; font-weight: 700; color: var(--text);">エディタ</span>
+                    <span class="num" style="margin-left: auto; font-size: 10.5px; color: var(--text-faint);">01</span>
+                  </div>
+                  <div style="font-size: 10.5px; color: var(--text-dim); line-height: 1.55;">RichTextEditor</div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom tab bar -->
+          <div class="m-tabbar">
+            <div class="m-tab on">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-6 8 6"></path><path d="M6 10v9h12v-9"></path></svg>
+              <span class="lab">概要</span>
+            </div>
+            <div class="m-tab">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"></path><path d="M6.5 2v15M20 2v20"></path><rect x="4" y="2" width="16" height="15"></rect></svg>
+              <span class="lab">特徴</span>
+            </div>
+            <div class="m-tab">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg>
+              <span class="lab">トークン</span>
+            </div>
+            <div class="m-tab">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="16"></rect><path d="M9 9h6M9 13h6M9 17h3"></path></svg>
+              <span class="lab">部品</span>
+            </div>
+          </div>
+        </div>
+      </x-import>
+    </div>
+
+    <!-- ============= SCREEN B: Components catalog ============= -->
+    <div class="fcol">
+      <span class="flabel"><span class="n">B</span><span class="sub">型録 · Catalog</span></span>
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" title="Components" hint-size="393px,853px">
+        <div class="m-screen">
+          <!-- Top bar -->
+          <div class="m-topbar" style="padding-bottom: 8px;">
+            <div class="m-icon-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <span class="eyebrow" style="font-size: 8.5px;">四 · Catalog</span>
+              <span style="font-size: 15px; font-weight: 700; color: var(--text);">コンポーネント</span>
+            </div>
+            <div class="m-icon-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="5" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="12" cy="19" r="1.2" fill="currentColor" stroke="none"></circle></svg>
+            </div>
+          </div>
+
+          <div class="m-body" style="gap: 14px; padding-top: 4px;">
+            <!-- Search -->
+            <div class="m-search">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+              <span>コンポーネントを検索</span>
+              <span class="num" style="margin-left: auto; font-size: 9.5px; color: var(--text-faint); letter-spacing: 0.04em;">37 / 37</span>
+            </div>
+
+            <!-- Filter chips (scrollable) -->
+            <div style="display: flex; gap: 6px; overflow-x: auto; margin: 0 -16px; padding: 0 16px 4px;">
+              <span class="m-fchip on">すべて <span class="n">37</span></span>
+              <span class="m-fchip">ベース <span class="n">24</span></span>
+              <span class="m-fchip">フォーム <span class="n">08</span></span>
+              <span class="m-fchip">チャート <span class="n">04</span></span>
+              <span class="m-fchip">エディタ <span class="n">01</span></span>
+            </div>
+
+            <!-- Group anchor -->
+            <div style="display: flex; align-items: baseline; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--line);">
+              <span style="font-family: var(--ja); font-size: 15px; font-weight: 700; color: var(--accent);">壱</span>
+              <span style="font-size: 13.5px; font-weight: 700; color: var(--text);">ベース</span>
+              <span class="num" style="font-size: 9.5px; color: var(--text-faint); letter-spacing: 0.1em; text-transform: uppercase;">root</span>
+              <span class="num" style="margin-left: auto; font-size: 10px; color: var(--text-faint);">24 品</span>
+            </div>
+
+            <!-- Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+              <div class="m-cc"><div class="pv">{{ pvButton }}<span class="cap">button</span></div><div class="body"><span class="idx">01 · root</span><span class="nm">Button</span></div></div>
+              <div class="m-cc"><div class="pv">{{ pvIconBtn }}<span class="cap">icon-btn</span></div><div class="body"><span class="idx">02 · root</span><span class="nm">IconButton</span></div></div>
+              <div class="m-cc"><div class="pv">{{ pvFab }}<span class="cap">fab</span></div><div class="body"><span class="idx">03 · root</span><span class="nm">Fab</span></div></div>
+              <div class="m-cc"><div class="pv">{{ pvIcon }}<span class="cap">icon</span></div><div class="body"><span class="idx">06 · root</span><span class="nm">Icon</span></div></div>
+              <div class="m-cc"><div class="pv">{{ pvBadge }}<span class="cap">badge</span></div><div class="body"><span class="idx">11 · root</span><span class="nm">Badge</span></div></div>
+              <div class="m-cc"><div class="pv">{{ pvChip }}<span class="cap">chip</span></div><div class="body"><span class="idx">12 · root</span><span class="nm">Chip</span></div></div>
+              <div class="m-cc"><div class="pv">{{ pvProg }}<span class="cap">progress</span></div><div class="body"><span class="idx">13 · root</span><span class="nm">ProgressBar</span></div></div>
+              <div class="m-cc"><div class="pv">{{ pvSpark }}<span class="cap">spark</span></div><div class="body"><span class="idx">36 · charts</span><span class="nm">Sparkline</span></div></div>
+            </div>
+
+            <div style="text-align: center; padding: 6px 0 0;">
+              <span class="num" style="font-size: 10.5px; color: var(--text-faint); letter-spacing: 0.08em;">↓ さらに 16 品</span>
+            </div>
+          </div>
+
+          <div class="m-tabbar">
+            <div class="m-tab">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 11l8-6 8 6"></path><path d="M6 10v9h12v-9"></path></svg>
+              <span class="lab">概要</span>
+            </div>
+            <div class="m-tab">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="2" width="16" height="15"></rect><path d="M4 19.5A2.5 2.5 0 016.5 17H20"></path></svg>
+              <span class="lab">特徴</span>
+            </div>
+            <div class="m-tab">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg>
+              <span class="lab">トークン</span>
+            </div>
+            <div class="m-tab on">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="4" width="14" height="16"></rect><path d="M9 9h6M9 13h6M9 17h3"></path></svg>
+              <span class="lab">部品</span>
+            </div>
+          </div>
+        </div>
+      </x-import>
+    </div>
+
+    <!-- ============= SCREEN C: Component detail ============= -->
+    <div class="fcol">
+      <span class="flabel"><span class="n">C</span><span class="sub">詳細 · Detail</span></span>
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" title="Button" hint-size="393px,853px">
+        <div class="m-screen">
+          <!-- Top bar -->
+          <div class="m-topbar" style="padding-bottom: 8px;">
+            <div class="m-icon-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+              <span class="eyebrow" style="font-size: 8.5px;">01 / 37 · root</span>
+              <span class="num" style="font-size: 15px; font-weight: 700; color: var(--text);">Button</span>
+            </div>
+            <div class="m-icon-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l6 6M3 21l3.5-.5L20 7a2 2 0 0 0-3-3L3.5 17.5 3 21z"></path></svg>
+            </div>
+          </div>
+
+          <div class="m-body" style="gap: 18px; padding-top: 4px;">
+            <!-- Intro -->
+            <p style="margin: 0; font-size: 12.5px; line-height: 1.7; color: var(--text-dim);">variant でスタイルを切り替える基本ボタン。アイコンは children に渡す。深緑アクセントは primary と mini のみ。</p>
+
+            <!-- Meta strip -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden;">
+              <div style="padding: 8px 10px; border-right: 1px solid var(--line);">
+                <div class="eyebrow" style="font-size: 8.5px;">variant</div>
+                <div class="num" style="font-size: 13px; font-weight: 700; color: var(--text); margin-top: 2px;">6</div>
+              </div>
+              <div style="padding: 8px 10px; border-right: 1px solid var(--line);">
+                <div class="eyebrow" style="font-size: 8.5px;">props</div>
+                <div class="num" style="font-size: 13px; font-weight: 700; color: var(--text); margin-top: 2px;">3</div>
+              </div>
+              <div style="padding: 8px 10px;">
+                <div class="eyebrow" style="font-size: 8.5px;">a11y</div>
+                <div class="num" style="font-size: 13px; font-weight: 700; color: var(--text); margin-top: 2px;">native</div>
+              </div>
+            </div>
+
+            <!-- Demo -->
+            <div>
+              <div class="m-sec-h">
+                <span class="k" style="font-family: var(--num); font-size: 11px;">01</span>
+                <span class="t">デモ</span>
+                <span class="e">live</span>
+              </div>
+              <div style="margin-top: 8px; padding: 20px 14px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: center;">
+                {{ demoAll }}
+              </div>
+            </div>
+
+            <!-- Variant list -->
+            <div>
+              <div class="m-sec-h">
+                <span class="k" style="font-family: var(--num); font-size: 11px;">02</span>
+                <span class="t">variant</span>
+                <span class="e">6 種</span>
+              </div>
+              <div style="margin-top: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 0 14px;">
+                <div class="m-vrow">
+                  <div class="vn"><span class="a">primary</span><span class="b">主アクション</span></div>
+                  <div style="display: flex; justify-content: flex-end;">{{ vPrimary }}</div>
+                </div>
+                <div class="m-vrow">
+                  <div class="vn"><span class="a">secondary</span><span class="b">中立</span></div>
+                  <div style="display: flex; justify-content: flex-end;">{{ vSecondary }}</div>
+                </div>
+                <div class="m-vrow">
+                  <div class="vn"><span class="a">danger</span><span class="b">破壊的</span></div>
+                  <div style="display: flex; justify-content: flex-end;">{{ vDanger }}</div>
+                </div>
+                <div class="m-vrow">
+                  <div class="vn"><span class="a">mini</span><span class="b">追加操作</span></div>
+                  <div style="display: flex; justify-content: flex-end;">{{ vMini }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Playground -->
+            <div>
+              <div class="m-sec-h">
+                <span class="k" style="font-family: var(--num); font-size: 11px;">03</span>
+                <span class="t">プレイグラウンド</span>
+                <span class="e">try</span>
+              </div>
+              <div style="margin-top: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden;">
+                <div style="padding: 24px 14px; background: var(--bg-2); border-bottom: 1px solid var(--line); display: grid; place-items: center; min-height: 80px;">
+                  {{ playPreview }}
+                </div>
+                <div style="padding: 12px 14px; display: flex; flex-direction: column; gap: 12px;">
+                  <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <span class="eyebrow" style="font-size: 8.5px;">variant</span>
+                    <div class="m-seg">
+                      <button type="button" class="on">primary</button>
+                      <button type="button">secondary</button>
+                      <button type="button">text</button>
+                    </div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 12px; color: var(--text);">block</span>
+                    <div class="m-sw"></div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 12px; color: var(--text);">disabled</span>
+                    <div class="m-sw"></div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 12px; color: var(--text);">アイコン付き</span>
+                    <div class="m-sw on"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Code -->
+            <div>
+              <div class="m-sec-h">
+                <span class="k" style="font-family: var(--num); font-size: 11px;">04</span>
+                <span class="t">使い方</span>
+                <span class="e">code</span>
+              </div>
+              <div class="m-code" style="margin-top: 8px;">{{ codeBlock }}</div>
+            </div>
+
+            <!-- Props (stacked cards) -->
+            <div>
+              <div class="m-sec-h">
+                <span class="k" style="font-family: var(--num); font-size: 11px;">05</span>
+                <span class="t">props</span>
+                <span class="e">3 · + rest</span>
+              </div>
+              <div style="margin-top: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px;">
+                <div class="m-prow">
+                  <div class="top"><span class="nm">variant</span><span class="req">REQ</span><span class="def">= 'primary'</span></div>
+                  <div class="type">'primary' | 'secondary' | 'text' | 'danger' | 'ghost' | 'mini'</div>
+                  <div class="desc">見た目のバリアント。ghost はクレイ罫線の控えめアクション。</div>
+                </div>
+                <div class="m-prow">
+                  <div class="top"><span class="nm">block</span><span class="def">= false</span></div>
+                  <div class="type">boolean</div>
+                  <div class="desc">横幅いっぱいに広げる。</div>
+                </div>
+                <div class="m-prow">
+                  <div class="top"><span class="nm">...rest</span></div>
+                  <div class="type">ButtonHTMLAttributes</div>
+                  <div class="desc">onClick / disabled / type など native button 属性。</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Related -->
+            <div>
+              <div class="m-sec-h">
+                <span class="k" style="font-family: var(--num); font-size: 11px;">06</span>
+                <span class="t">関連</span>
+                <span class="e">related</span>
+              </div>
+              <div class="m-rel" style="margin-top: 8px;">
+                <div class="item"><div class="pv">{{ relIconBtn }}</div><div class="nm">IconButton</div></div>
+                <div class="item"><div class="pv">{{ relFab }}</div><div class="nm">Fab</div></div>
+                <div class="item"><div class="pv">{{ relChip }}</div><div class="nm">Chip</div></div>
+                <div class="item"><div class="pv">{{ relBadge }}</div><div class="nm">Badge</div></div>
+              </div>
+            </div>
+
+            <!-- Prev/Next -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <a href="#" style="padding: 10px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; text-decoration: none; display: flex; flex-direction: column; gap: 2px;">
+                <span class="eyebrow" style="font-size: 8.5px;">← 前</span>
+                <span style="font-size: 11.5px; color: var(--text-dim);">最初</span>
+              </a>
+              <a href="#" style="padding: 10px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; text-decoration: none; display: flex; flex-direction: column; gap: 2px; text-align: right;">
+                <span class="eyebrow" style="font-size: 8.5px;">次 →</span>
+                <span class="num" style="font-size: 12px; font-weight: 600; color: var(--text);">IconButton</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="m-tabbar">
+            <div class="m-tab">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 11l8-6 8 6"></path><path d="M6 10v9h12v-9"></path></svg>
+              <span class="lab">概要</span>
+            </div>
+            <div class="m-tab">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="2" width="16" height="15"></rect></svg>
+              <span class="lab">特徴</span>
+            </div>
+            <div class="m-tab">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10"></path></svg>
+              <span class="lab">トークン</span>
+            </div>
+            <div class="m-tab on">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="5" y="4" width="14" height="16"></rect><path d="M9 9h6M9 13h6M9 17h3"></path></svg>
+              <span class="lab">部品</span>
+            </div>
+          </div>
+        </div>
+      </x-import>
+    </div>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
+class Component extends DCLogic {
+  state = { dsReady: false };
+
+  componentDidMount() {
+    if (window.KataDesignSystem_f071df) { this.setState({ dsReady: true }); return; }
+    this._t = setInterval(() => {
+      if (window.KataDesignSystem_f071df) { clearInterval(this._t); this._t = null; this.setState({ dsReady: true }); }
+    }, 60);
+  }
+  componentWillUnmount() { if (this._t) clearInterval(this._t); }
+
+  renderVals() {
+    const R = React.createElement;
+    const ds = this.state.dsReady ? window.KataDesignSystem_f071df : null;
+    const stub = (t) => R('span', { style: { fontFamily: 'var(--num)', color: 'var(--text-faint)', fontSize: 10 } }, t);
+
+    const B = ds && ds.Button;
+    const IB = ds && ds.IconButton;
+    const I = ds && ds.Icon;
+    const Bd = ds && ds.Badge;
+    const Ch = ds && ds.Chip;
+
+    // --- Screen B previews (2-col grid) ---
+    const pvButton = B ? R(B, { variant: 'primary' }, '保存') : stub('btn');
+    const pvIconBtn = IB && I ? R('div', { style: { display: 'flex', gap: 4 } },
+      R(IB, { key: 1, 'aria-label': 'edit' }, R(I, { name: 'edit', size: 12 })),
+      R(IB, { key: 2, 'aria-label': 'copy' }, R(I, { name: 'copy', size: 12 })),
+    ) : stub('ib');
+    const pvFab = I ? R('div', { style: { width: 36, height: 36, borderRadius: '50%', background: 'var(--accent)', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', boxShadow: 'var(--shadow)' } }, R(I, { name: 'plus', size: 16 })) : stub('fab');
+    const pvIcon = I ? R('div', { style: { display: 'flex', gap: 8 } },
+      R(I, { name: 'flame', size: 16, key: 1 }),
+      R(I, { name: 'glass', size: 16, key: 2 }),
+      R(I, { name: 'scale', size: 16, key: 3 }),
+    ) : stub('icn');
+    const pvBadge = Bd ? R('div', { style: { display: 'flex', gap: 4 } }, R(Bd, { key: 1, tone: 'accent' }, '完了'), R(Bd, { key: 2 }, '3 日')) : stub('bdg');
+    const pvChip = Ch ? R('div', { style: { display: 'flex', gap: 3 } }, R(Ch, { key: 1, selected: true }, '筋トレ'), R(Ch, { key: 2 }, '水分')) : stub('chip');
+    const pvProg = R('div', { style: { width: 120, height: 6, background: 'var(--fill-1)', borderRadius: 3, overflow: 'hidden' } },
+      R('div', { key: 1, style: { width: '62%', height: '100%', background: 'var(--accent)' } })
+    );
+    const pvSpark = R('svg', { width: 90, height: 26, viewBox: '0 0 90 26' },
+      R('polyline', { key: 1, points: '2,20 14,16 26,20 38,10 50,14 62,6 74,10 86,4', fill: 'none', stroke: 'var(--accent)', strokeWidth: 1.5, strokeLinecap: 'round', strokeLinejoin: 'round' }),
+      R('circle', { key: 2, cx: 86, cy: 4, r: 2, fill: 'var(--accent)' }),
+    );
+
+    // --- Screen C: Button detail previews ---
+    const demoAll = B ? R('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' } },
+      R(B, { key: 1, variant: 'primary' }, '保存'),
+      R(B, { key: 2, variant: 'secondary' }, 'キャンセル'),
+      R(B, { key: 3, variant: 'text' }, 'あとで'),
+      R(B, { key: 4, variant: 'danger' }, I ? R(I, { name: 'trash', size: 14, key: 'i' }) : null, '削除'),
+      R(B, { key: 5, variant: 'mini' }, '複製'),
+    ) : stub('demo');
+
+    const vPrimary = B ? R(B, { variant: 'primary' }, '保存') : stub('pri');
+    const vSecondary = B ? R(B, { variant: 'secondary' }, 'キャンセル') : stub('sec');
+    const vDanger = B ? R(B, { variant: 'danger' }, '削除') : stub('dng');
+    const vMini = B ? R(B, { variant: 'mini' }, '複製') : stub('mini');
+
+    const playPreview = B ? R(B, { variant: 'primary' }, I ? R(I, { name: 'plus', size: 16, key: 'i' }) : null, '保存する') : stub('play');
+
+    // Code (mini)
+    const cSpan = (cls, txt) => R('span', { className: cls }, txt);
+    const codeBlock = R('div', null,
+      cSpan('c', '// 主アクション'), '\n',
+      cSpan('k', '<Button'), ' variant="primary">保存', cSpan('k', '</Button>'), '\n',
+      '\n',
+      cSpan('c', '// 削除'), '\n',
+      cSpan('k', '<Button'), ' variant="danger">\n',
+      '  ', cSpan('k', '<Icon'), ' name="trash"', cSpan('k', '/>'), ' 削除\n',
+      cSpan('k', '</Button>'),
+    );
+
+    // Related
+    const relIconBtn = IB && I ? R('div', { style: { display: 'flex', gap: 3 } },
+      R(IB, { key: 1, 'aria-label': 'edit' }, R(I, { name: 'edit', size: 12 })),
+      R(IB, { key: 2, 'aria-label': 'copy' }, R(I, { name: 'copy', size: 12 })),
+    ) : stub('ib');
+    const relFab = I ? R('div', { style: { width: 32, height: 32, borderRadius: '50%', background: 'var(--accent)', color: 'var(--on-accent)', display: 'grid', placeItems: 'center', boxShadow: 'var(--shadow)' } }, R(I, { name: 'plus', size: 14 })) : stub('fab');
+    const relChip = Ch ? R('div', { style: { display: 'flex', gap: 3 } }, R(Ch, { key: 1, selected: true }, '筋トレ')) : stub('chip');
+    const relBadge = Bd ? R(Bd, { tone: 'accent' }, '完了') : stub('bdg');
+
+    return {
+      pvButton, pvIconBtn, pvFab, pvIcon, pvBadge, pvChip, pvProg, pvSpark,
+      demoAll, vPrimary, vSecondary, vDanger, vMini,
+      playPreview, codeBlock,
+      relIconBtn, relFab, relChip, relBadge,
+    };
+  }
+}
+</script>
+</body>
+</html>
