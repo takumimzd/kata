@@ -2,6 +2,7 @@ import { Link, useLocation } from '@tanstack/react-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { cn, Icon, SideNav, type SideNavItem, type SideNavLink, type SideNavRenderCtx } from 'kata';
 import { COMPONENTS, GROUPS } from './components-registry';
+import { SearchOverlay } from './SearchOverlay';
 import styles from './Chrome.module.css';
 
 /** カタログで切り替えられるテーマ (kiri = ライト既定 / data-theme なし, sumi = ダーク) */
@@ -71,6 +72,7 @@ function activeMobileTab(pathname: string): MobileTab {
 export function Chrome({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>('kiri');
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const pathname = useLocation({ select: (l) => l.pathname });
   const activeGroup = activeGroupKey(pathname);
   const currentTab = activeMobileTab(pathname);
@@ -98,10 +100,29 @@ export function Chrome({ children }: { children: ReactNode }) {
     applyTheme(next);
   }, []);
 
-  // ページ遷移でドロワーを閉じる
+  // ページ遷移でドロワー / 検索を閉じる
   useEffect(() => {
     setDrawerOpen(false);
+    setSearchOpen(false);
   }, [pathname]);
+
+  // Cmd/Ctrl+K で検索を開く / Esc で閉じる
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+      } else if (e.key === '/' && !searchOpen) {
+        const t = e.target as HTMLElement | null;
+        const tag = t?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || t?.isContentEditable) return;
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [searchOpen]);
 
   // ドロワー開閉時に body スクロールを制御
   useEffect(() => {
@@ -175,9 +196,14 @@ export function Chrome({ children }: { children: ReactNode }) {
           <span className={styles.topbarName}>kata</span>
         </div>
         <span className={styles.topbarSpacer} />
-        <Link to="/" hash={CONTENT_ID} className={styles.topbarBtn} aria-label="検索">
+        <button
+          type="button"
+          className={styles.topbarBtn}
+          aria-label="コンポーネントを検索"
+          onClick={() => setSearchOpen(true)}
+        >
           <Icon name="search" size={18} />
-        </Link>
+        </button>
       </header>
 
       <div className={styles.shellInner}>
@@ -241,6 +267,8 @@ export function Chrome({ children }: { children: ReactNode }) {
           <span className={styles.tabLab}>部品</span>
         </Link>
       </nav>
+
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </div>
   );
 }

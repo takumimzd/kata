@@ -921,27 +921,41 @@
     font-size: 11.5px;
   }
 
-  /* Related — 2 columns */
+  /* Related — 1 col + horizontal card (catalog カードと同じ扱い) */
   .rgrid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 10px;
   }
 
+  .rel {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
   .relPv {
-    height: 68px;
-    padding: 6px;
+    flex: 0 0 128px;
+    width: 128px;
+    height: auto;
+    min-height: 88px;
+    padding: 8px;
+    border-bottom: none;
+    border-right: 1px solid var(--line);
   }
 
   .relBody {
-    padding: 8px 10px 10px;
+    padding: 12px 14px;
+    justify-content: center;
+    min-width: 0;
+    flex: 1;
   }
 
   .relName {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .relDesc {
-    font-size: 10.5px;
+    font-size: 11.5px;
+    line-height: 1.55;
   }
 
   /* Prev/next: stack */
