@@ -21,6 +21,9 @@ function IconButtonPage() {
           <IconButton label="削除" variant="danger">
             <Icon name="trash" size={20} />
           </IconButton>
+          <IconButton label="この行を削除" variant="ghost">
+            <Icon name="close" size={20} />
+          </IconButton>
           <IconButton label="無効" disabled>
             <Icon name="settings" size={20} />
           </IconButton>
@@ -32,7 +35,7 @@ function IconButtonPage() {
       <PropsTable
         rows={[
           { name: 'label', type: 'string', desc: 'aria-label (必須)' },
-          { name: 'variant', type: `'default' | 'danger'`, def: `'default'`, desc: 'hover 時の強調色' },
+          { name: 'variant', type: `'default' | 'accent' | 'danger' | 'ghost'`, def: `'default'`, desc: 'hover 時の強調色。ghost はクレイ' },
           { name: 'children', type: 'ReactNode', desc: 'アイコン要素' },
           { name: '...rest', type: 'button 属性', desc: 'onClick / disabled など' },
         ]}

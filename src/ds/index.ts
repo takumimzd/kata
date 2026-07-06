@@ -13,6 +13,7 @@ export {
   isDark,
   APPEARANCE_KEY,
   APPEARANCE_INIT_SCRIPT,
+  appearanceInitScript,
   type Appearance,
 } from './lib/theme';
 
@@ -57,8 +58,8 @@ export {
 } from './components/editor';
 
 // --- 単体 (components/ 直下) ---
-export { Icon, type IconName } from './components/Icon';
-export { Button, type ButtonVariant } from './components/Button';
+export { Icon, ICON_NAMES, type IconName } from './components/Icon';
+export { Button, buttonClassName, type ButtonVariant } from './components/Button';
 export {
   IconButton,
   type IconButtonShape,
@@ -70,6 +71,9 @@ export { Breadcrumb, type BreadcrumbItem } from './components/Breadcrumb';
 export { ActionSheet, ActionSheetItem } from './components/ActionSheet';
 export { SearchBox } from './components/SearchBox';
 export { Calendar } from './components/Calendar';
+export { DotCalendar, type CalendarSeries } from './components/DotCalendar';
+export { GoalBar } from './components/GoalBar';
+export { IconColorPicker, type IconPickerGroup } from './components/IconColorPicker';
 export { PinPad } from './components/PinPad';
 export { Badge, type BadgeVariant } from './components/Badge';
 export { Chip, ChipGroup } from './components/Chip';

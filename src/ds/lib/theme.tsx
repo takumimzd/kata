@@ -5,6 +5,8 @@
 //
 //  利用側はアプリのルートで <AppearanceProvider> で包み、
 //  <head> 内に APPEARANCE_INIT_SCRIPT を同期実行して FOUC を防ぐ。
+//  localStorage キーをアプリごとに分けたい場合は storageKey と
+//  appearanceInitScript(key) を同じキーで揃えて使う。
 // ============================================================
 import {
   createContext,
@@ -17,7 +19,7 @@ import {
 
 export type Appearance = 'light' | 'dark' | 'system';
 
-/** localStorage キー。アプリごとに分けたい場合は変更する。 */
+/** 既定の localStorage キー */
 export const APPEARANCE_KEY = 'kata.appearance';
 
 /** ダーク時に適用するパレット (tokens.css の data-theme) */
@@ -50,17 +52,22 @@ function apply(appearance: Appearance): void {
   if (meta) meta.setAttribute('content', dark ? THEME_COLOR.dark : THEME_COLOR.light);
 }
 
-function readStored(): Appearance {
+function readStored(storageKey: string): Appearance {
   if (typeof localStorage === 'undefined') return 'system';
-  const v = localStorage.getItem(APPEARANCE_KEY);
+  const v = localStorage.getItem(storageKey);
   return v === 'light' || v === 'dark' || v === 'system' ? v : 'system';
 }
 
 /**
- * FOUC を避けるため <head> 内で同期実行するスクリプト。
+ * FOUC を避けるため <head> 内で同期実行するスクリプトを生成する。
  * 上の apply() / readStored() と挙動を一致させること。
  */
-export const APPEARANCE_INIT_SCRIPT = `(function(){try{var k='${APPEARANCE_KEY}';var a=localStorage.getItem(k);if(a!=='light'&&a!=='dark'&&a!=='system')a='system';var d=a==='dark'||(a==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);var r=document.documentElement;if(d)r.dataset.theme='${DARK_THEME}';else delete r.dataset.theme;var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',d?'${THEME_COLOR.dark}':'${THEME_COLOR.light}');}catch(e){}})();`;
+export function appearanceInitScript(storageKey: string = APPEARANCE_KEY): string {
+  return `(function(){try{var k='${storageKey}';var a=localStorage.getItem(k);if(a!=='light'&&a!=='dark'&&a!=='system')a='system';var d=a==='dark'||(a==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);var r=document.documentElement;if(d)r.dataset.theme='${DARK_THEME}';else delete r.dataset.theme;var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',d?'${THEME_COLOR.dark}':'${THEME_COLOR.light}');}catch(e){}})();`;
+}
+
+/** 既定キーで生成した初期化スクリプト (storageKey を変えない場合はこちら) */
+export const APPEARANCE_INIT_SCRIPT = appearanceInitScript();
 
 interface AppearanceContextValue {
   appearance: Appearance;
@@ -69,25 +76,34 @@ interface AppearanceContextValue {
 
 const AppearanceContext = createContext<AppearanceContextValue | null>(null);
 
-export function AppearanceProvider({ children }: { children: ReactNode }) {
+interface AppearanceProviderProps {
+  /** 保存先の localStorage キー。appearanceInitScript と揃えること */
+  storageKey?: string;
+  children: ReactNode;
+}
+
+export function AppearanceProvider({ storageKey = APPEARANCE_KEY, children }: AppearanceProviderProps) {
   // SSR / 初回は system 固定。マウント後に保存値へ同期する。
   const [appearance, setAppearanceState] = useState<Appearance>('system');
 
   useEffect(() => {
-    const stored = readStored();
+    const stored = readStored(storageKey);
     setAppearanceState(stored);
     apply(stored);
-  }, []);
+  }, [storageKey]);
 
-  const setAppearance = useCallback((a: Appearance) => {
-    setAppearanceState(a);
-    try {
-      localStorage.setItem(APPEARANCE_KEY, a);
-    } catch {
-      // localStorage 非対応環境では永続化しない
-    }
-    apply(a);
-  }, []);
+  const setAppearance = useCallback(
+    (a: Appearance) => {
+      setAppearanceState(a);
+      try {
+        localStorage.setItem(storageKey, a);
+      } catch {
+        // localStorage 非対応環境では永続化しない
+      }
+      apply(a);
+    },
+    [storageKey],
+  );
 
   // system 選択中は OS のダークモード設定変更に追従する
   useEffect(() => {

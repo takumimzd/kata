@@ -43,12 +43,12 @@ function entry(slug: string, name: string, desc: string, group: GroupKey): CompE
 
 export const COMPONENTS: CompEntry[] = [
   // ---- components/ 直下 ----
-  entry('button', 'Button', 'variant 5 種のボタン', 'root'),
+  entry('button', 'Button', 'variant 6 種のボタン', 'root'),
   entry('icon-button', 'IconButton', '正方/円形のアイコンボタン', 'root'),
   entry('fab', 'Fab', 'フローティングアクションボタン', 'root'),
   entry('breadcrumb', 'Breadcrumb', '階層パンくず', 'root'),
   entry('action-sheet', 'ActionSheet', '下からせり上がるシート', 'root'),
-  entry('icon', 'Icon', '38 種のラインアイコン', 'root'),
+  entry('icon', 'Icon', '65 種のラインアイコン', 'root'),
   entry('text', 'Text', '本文系テキスト (variant)', 'root'),
   entry('page-title', 'PageTitle', 'ページ見出し h1', 'root'),
   entry('section-title', 'SectionTitle', 'ヘアライン罫の見出し', 'root'),
@@ -56,9 +56,12 @@ export const COMPONENTS: CompEntry[] = [
   entry('badge', 'Badge', '状態ラベル', 'root'),
   entry('chip', 'Chip', '角丸の小ボタン・タグ', 'root'),
   entry('progress-bar', 'ProgressBar', '進捗バー', 'root'),
+  entry('goal-bar', 'GoalBar', '目標つき進捗行 (min/max/範囲)', 'root'),
   entry('search-box', 'SearchBox', '丸型の検索入力', 'root'),
   entry('calendar', 'Calendar', '月グリッド', 'root'),
+  entry('dot-calendar', 'DotCalendar', '系列ドット + 凡例つき月カレンダー', 'root'),
   entry('pin-pad', 'PinPad', 'パスコード入力', 'root'),
+  entry('icon-color-picker', 'IconColorPicker', 'アイコンと色のピッカー', 'root'),
   entry('modal', 'Modal', 'ボトムシート', 'root'),
   entry('menu', 'Menu', 'ドロップダウンメニュー', 'root'),
   entry('confirm-dialog', 'ConfirmDialog', 'useConfirm() 確認ダイアログ', 'root'),
