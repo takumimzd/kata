@@ -1,0 +1,33 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  flex: none;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap; /* 項目が多いときは行ごと折り返す (カラム落ち) */
+  gap: var(--space-2) var(--space-3);
+  justify-content: center;
+  margin-top: var(--space-3);
+  font-size: 11.5px;
+  color: var(--text-dim);
+}
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  white-space: nowrap; /* ラベルは横書きのまま (文字が縦に割れないように) */
+}
+.legend i {
+  width: 7px;
+  height: 7px;
+}
