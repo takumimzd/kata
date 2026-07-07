@@ -1,0 +1,143 @@
+/* ============================================================
+   ErrorState — 500 / 404 / 403 などのフルページエラー表示。
+   モバイル・タブレット・デスクトップの 3 サイズで自然に見えるよう
+   縦積み → 余白・タイポを段階的に大きくする。
+   ============================================================ */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-4);
+  min-height: 60vh;
+  max-width: 560px;
+  margin-inline: auto;
+  color: var(--text);
+}
+
+/* --- コード ("500" / "404" ...): 装飾用の巨大数字 --- */
+.code {
+  font-family: var(--display);
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--text-faint);
+  font-feature-settings: 'tnum' 1;
+  user-select: none;
+}
+
+/* --- アイコンの入る円 (装飾) --- */
+.badge {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-full);
+  display: grid;
+  place-items: center;
+  background: var(--fill-1);
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+}
+
+.badge svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* --- トーン (系統色): default / danger / warn --- */
+.toneDanger .code,
+.toneDanger .badge {
+  color: var(--danger);
+}
+.toneDanger .badge {
+  background: var(--danger-soft);
+  border-color: var(--danger-line);
+}
+.toneWarn .code,
+.toneWarn .badge {
+  color: var(--accent);
+}
+.toneWarn .badge {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.message {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  margin: 0;
+  max-width: 42ch;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 320px;
+  margin-top: var(--space-2);
+}
+
+/* ---- タブレット (>= 600px) ---- */
+@media (min-width: 600px) {
+  .root {
+    gap: var(--space-5);
+    padding: var(--space-8) var(--space-6);
+    min-height: 64vh;
+  }
+  .code {
+    font-size: 96px;
+  }
+  .badge {
+    width: 88px;
+    height: 88px;
+  }
+  .badge svg {
+    width: 40px;
+    height: 40px;
+  }
+  .title {
+    font-size: 22px;
+  }
+  .message {
+    font-size: 15px;
+  }
+  .actions {
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* ---- デスクトップ (>= 880px) ---- */
+@media (min-width: 880px) {
+  .root {
+    gap: var(--space-6);
+    padding: var(--space-10) var(--space-6);
+    min-height: 70vh;
+  }
+  .code {
+    font-size: 128px;
+  }
+  .title {
+    font-size: 26px;
+  }
+  .message {
+    font-size: 15.5px;
+  }
+}

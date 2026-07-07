@@ -1,0 +1,134 @@
+/* ============================================================
+   EmptyState — データ 0 件を示す空状態表示。
+   カード内や画面内のブロックとして置く前提で、上下の余白は
+   ErrorState より控えめ。size で密度を切り替える。
+   ============================================================ */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-4);
+  color: var(--text);
+  max-width: 480px;
+  margin-inline: auto;
+}
+
+/* --- size 別のブロック密度 --- */
+.sizeSm {
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-3);
+}
+.sizeMd {
+  /* 既定値: 上の .root と同じ */
+}
+.sizeLg {
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-4);
+  min-height: 40vh;
+  justify-content: center;
+}
+
+/* --- アイコン (装飾用の円) --- */
+.badge {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--fill-1);
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+}
+.badge svg {
+  width: 24px;
+  height: 24px;
+}
+
+.sizeSm .badge {
+  width: 44px;
+  height: 44px;
+}
+.sizeSm .badge svg {
+  width: 20px;
+  height: 20px;
+}
+.sizeLg .badge {
+  width: 68px;
+  height: 68px;
+}
+.sizeLg .badge svg {
+  width: 28px;
+  height: 28px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin: 0;
+}
+.sizeSm .title {
+  font-size: 14px;
+}
+.sizeLg .title {
+  font-size: 18px;
+}
+
+.message {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  margin: 0;
+  max-width: 40ch;
+}
+.sizeLg .message {
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 260px;
+  margin-top: var(--space-1);
+}
+
+/* ---- タブレット以上でボタンを横並び + 余白拡大 ---- */
+@media (min-width: 600px) {
+  .root {
+    padding: var(--space-7) var(--space-5);
+  }
+  .sizeSm {
+    padding: var(--space-5) var(--space-4);
+  }
+  .sizeLg {
+    padding: var(--space-9) var(--space-5);
+    min-height: 44vh;
+  }
+  .actions {
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    max-width: none;
+  }
+}
+
+/* ---- デスクトップ ---- */
+@media (min-width: 880px) {
+  .sizeLg {
+    padding: var(--space-10) var(--space-6);
+  }
+  .sizeLg .title {
+    font-size: 20px;
+  }
+  .sizeLg .message {
+    font-size: 14.5px;
+  }
+}

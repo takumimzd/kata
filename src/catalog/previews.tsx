@@ -1013,6 +1013,44 @@ const previews: Record<string, () => ReactNode> = {
       </div>
     </div>
   ),
+  'error-state': () => (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+      <div
+        style={{
+          fontFamily: 'var(--display)',
+          fontSize: 42,
+          fontWeight: 700,
+          lineHeight: 1,
+          letterSpacing: '-0.04em',
+          color: 'var(--text-faint)',
+        }}
+      >
+        404
+      </div>
+      <div style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--text)' }}>ページが見つかりません</div>
+      <div style={{ fontSize: 10, color: 'var(--text-dim)' }}>移動または削除された可能性</div>
+    </div>
+  ),
+  'empty-state': () => (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+      <div
+        style={{
+          width: 40,
+          height: 40,
+          borderRadius: 999,
+          background: 'var(--fill-1)',
+          border: '1px solid var(--line)',
+          display: 'grid',
+          placeItems: 'center',
+          color: 'var(--text-dim)',
+        }}
+      >
+        <Icon name="folder" size={18} />
+      </div>
+      <div style={{ fontSize: 11.5, fontWeight: 700, color: 'var(--text)' }}>まだ記録がありません</div>
+      <div style={{ fontSize: 10, color: 'var(--text-dim)' }}>最初の一件を追加してみよう</div>
+    </div>
+  ),
 };
 
 export function preview(slug: string): ReactNode {

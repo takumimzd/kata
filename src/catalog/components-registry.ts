@@ -70,6 +70,8 @@ export const COMPONENTS: CompEntry[] = [
   entry('tab-bar', 'TabBar', 'モバイルのボトムタブ / 水平タブ', 'root'),
   entry('drawer', 'Drawer', '画面端からせり出すオーバーレイ', 'root'),
   entry('hamburger-menu', 'HamburgerMenu', 'ハンバーガー + Drawer の組合わせ', 'root'),
+  entry('error-state', 'ErrorState', '500 / 404 / 403 のフルページ表示', 'root'),
+  entry('empty-state', 'EmptyState', 'データ 0 件の空状態表示', 'root'),
 
   // ---- components/forms/ (入力系) ----
   entry('field', 'Field', 'ラベル + ヒント/エラーのラッパー', 'forms'),
