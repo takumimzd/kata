@@ -15,7 +15,12 @@ import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin
 import { $createHeadingNode, $isHeadingNode, HeadingNode } from '@lexical/rich-text';
 import type { InitialConfigType } from '@lexical/react/LexicalComposer';
 import { $findMatchingParent } from '@lexical/utils';
-import { $getRoot, $getSelection, $isRangeSelection } from 'lexical';
+import {
+  $getNearestNodeFromDOMNode,
+  $getRoot,
+  $getSelection,
+  $isRangeSelection,
+} from 'lexical';
 import { useEffect, useMemo, useRef } from 'react';
 import { cn } from '../../lib/cn';
 import { EditorToolbar } from './EditorToolbar';
@@ -115,7 +120,17 @@ function EditorBody({ placeholder }: { placeholder: string }) {
     <div
       className={styles.body}
       onMouseDown={(e) => {
+        // 本文 (contenteditable) より下の余白をタップしたときだけ末尾にフォーカス
+        // する。横方向の余白 (行の右側など) はブラウザ既定のキャレット配置に任せて、
+        // 意図しないメモ末尾へのジャンプを避ける。
         if (e.target !== e.currentTarget) return;
+        const contentEl = e.currentTarget.firstElementChild;
+        if (contentEl instanceof HTMLElement) {
+          const last = contentEl.lastElementChild;
+          if (last instanceof HTMLElement && e.clientY <= last.getBoundingClientRect().bottom) {
+            return;
+          }
+        }
         e.preventDefault();
         editor.focus(() => editor.update(() => $getRoot().selectEnd()));
       }}
@@ -134,6 +149,52 @@ function EditorBody({ placeholder }: { placeholder: string }) {
       />
     </div>
   );
+}
+
+/**
+ * iOS Safari 対策。
+ * チェックボックス項目 (`role="checkbox"`, `tabindex="-1"` が付いた `<li>`) の
+ * マーカーより右側 (テキスト行の末尾など) をタップしたとき、ブラウザ標準の
+ * フォーカス処理では li 自体にフォーカスが移り、キャレットが一瞬乗って
+ * すぐ消える不具合が出る。ここで pointerdown を捕捉し、対象の項目末尾へ
+ * 明示的にキャレットを置くことで安定させる。
+ */
+function ChecklistCaretFix() {
+  const [editor] = useLexicalComposerContext();
+  useEffect(() => {
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      // テキスト自体 (span 等) 上のタップはブラウザ既定のキャレット配置に任せる。
+      // 対象は「行の右端の余白」など li 自体をヒットしたケースだけ。
+      if (!(target instanceof HTMLLIElement)) return;
+      if (target.getAttribute('role') !== 'checkbox') return;
+      const rect = target.getBoundingClientRect();
+      const before = window.getComputedStyle(target, '::before');
+      const beforeWidth = parseFloat(before.width) || 0;
+      // Lexical のチェックリストプラグインがタッチ時に 32px 余分にヒット判定を
+      // 広げているのに合わせ、その領域より外側だけ自前で処理する。
+      const markerRightEdge = rect.left + beforeWidth + 32;
+      if (event.clientX <= markerRightEdge) return;
+      event.preventDefault();
+      const rootElement = editor.getRootElement();
+      editor.update(() => {
+        const node = $getNearestNodeFromDOMNode(target);
+        if ($isListItemNode(node)) node.selectEnd();
+      });
+      if (rootElement && rootElement.ownerDocument.activeElement !== rootElement) {
+        rootElement.focus({ preventScroll: true });
+      }
+    };
+    return editor.registerRootListener((rootElement, prevRootElement) => {
+      if (prevRootElement !== null) {
+        prevRootElement.removeEventListener('pointerdown', onPointerDown, { capture: true });
+      }
+      if (rootElement !== null) {
+        rootElement.addEventListener('pointerdown', onPointerDown, { capture: true });
+      }
+    });
+  }, [editor]);
+  return null;
 }
 
 /**
@@ -175,11 +236,14 @@ export function RichTextEditor({
       </div>
       <HistoryPlugin />
       <ListPlugin />
-      <CheckListPlugin />
+      {/* チェックボックスのトグル時に li にフォーカスを移さない (モバイルで
+          意図しないスクロールが走るのを避ける) */}
+      <CheckListPlugin disableTakeFocusOnClick />
       <TabIndentationPlugin maxIndent={MAX_INDENT} $canIndent={$selectionInList} />
       <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
       <SyncPlugin onChange={onChange} />
       <AutoFocusEndPlugin enabled={autoFocusEnd ?? false} />
+      <ChecklistCaretFix />
     </LexicalComposer>
   );
 }
