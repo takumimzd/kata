@@ -46,7 +46,8 @@
 }
 
 .h1,
-.h2 {
+.h2,
+.h3 {
   margin: 0;
   font-weight: 700;
   word-break: break-word;
@@ -60,6 +61,25 @@
   font-size: 20px;
   line-height: 1.4;
   padding: var(--space-2) 0 3px;
+}
+.h3 {
+  font-size: 17px;
+  line-height: 1.4;
+  padding: var(--space-2) 0 2px;
+}
+
+/* 仕切り線。段落 1 つ分の余白を上下に持たせて他ブロックと視覚的に区切る */
+.hr {
+  margin: var(--space-3) 0;
+  border: none;
+  height: 1px;
+  background: var(--line);
+  /* 選択されたときはクリックしやすいよう若干太くし、色を強調する */
+  cursor: pointer;
+}
+.hrSelected {
+  background: var(--accent);
+  height: 2px;
 }
 
 /* ---- リスト / チェックボックス ---- */

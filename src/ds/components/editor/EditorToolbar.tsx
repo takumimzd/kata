@@ -6,7 +6,9 @@ import {
   REMOVE_LIST_COMMAND,
 } from '@lexical/list';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { INSERT_HORIZONTAL_RULE_COMMAND } from '@lexical/react/LexicalHorizontalRuleNode';
 import { $createHeadingNode, $isHeadingNode } from '@lexical/rich-text';
+import type { HeadingTagType } from '@lexical/rich-text';
 import { $setBlocksType } from '@lexical/selection';
 import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from '@lexical/utils';
 import {
@@ -26,11 +28,12 @@ import { Icon, type IconName } from '../Icon';
 import { cn } from '../../lib/cn';
 import styles from './EditorToolbar.module.css';
 
-type ActiveType = 'p' | 'h1' | 'h2' | 'li' | 'todo';
+type ActiveType = 'p' | 'h1' | 'h2' | 'h3' | 'li' | 'todo';
 
-const HEADINGS: { type: 'h1' | 'h2'; label: string; name: string }[] = [
+const HEADINGS: { type: HeadingTagType; label: string; name: string }[] = [
   { type: 'h1', label: 'H1', name: '見出し1' },
   { type: 'h2', label: 'H2', name: '見出し2' },
+  { type: 'h3', label: 'H3', name: '見出し3' },
 ];
 
 const LISTS: { type: 'li' | 'todo'; icon: IconName; name: string }[] = [
@@ -49,7 +52,8 @@ function $activeType(): ActiveType {
   }
   const top = anchor.getKey() === 'root' ? anchor : anchor.getTopLevelElement();
   if (top && $isHeadingNode(top)) {
-    return top.getTag() === 'h1' ? 'h1' : 'h2';
+    const tag = top.getTag();
+    return tag === 'h1' ? 'h1' : tag === 'h3' ? 'h3' : 'h2';
   }
   return 'p';
 }
@@ -85,7 +89,7 @@ export function EditorToolbar() {
     );
   }, [editor]);
 
-  const setHeading = (type: 'h1' | 'h2') => {
+  const setHeading = (type: HeadingTagType) => {
     editor.update(() => {
       const selection = $getSelection();
       if (!$isRangeSelection(selection)) return;
@@ -93,6 +97,10 @@ export function EditorToolbar() {
         active === type ? $createParagraphNode() : $createHeadingNode(type),
       );
     });
+  };
+
+  const insertHorizontalRule = () => {
+    editor.dispatchCommand(INSERT_HORIZONTAL_RULE_COMMAND, undefined);
   };
 
   const setList = (type: 'li' | 'todo') => {
@@ -162,6 +170,15 @@ export function EditorToolbar() {
             <Icon name={item.icon} size={20} />
           </button>
         ))}
+        <button
+          type="button"
+          className={styles.button}
+          aria-label="仕切り線を挿入"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={insertHorizontalRule}
+        >
+          <Icon name="divider" size={20} />
+        </button>
         <span className={styles.divider} aria-hidden="true" />
         <button
           type="button"

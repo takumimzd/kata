@@ -6,6 +6,10 @@ import {
   ListItemNode,
   ListNode,
 } from '@lexical/list';
+import {
+  $createHorizontalRuleNode,
+  $isHorizontalRuleNode,
+} from '@lexical/react/LexicalHorizontalRuleNode';
 import { $createHeadingNode, $isHeadingNode } from '@lexical/rich-text';
 import type { HeadingTagType } from '@lexical/rich-text';
 import { $createParagraphNode, $createTextNode, $getRoot, $isElementNode } from 'lexical';
@@ -17,12 +21,12 @@ function isListBlock(type: EditorBlockType): boolean {
   return type === 'li' || type === 'todo';
 }
 
-/** 見出し / 段落のリーフ要素を作る (旧データの h3 は h2 に寄せる) */
+/** 見出し / 段落 / 仕切り線などのリーフ要素を作る */
 function $createLeaf(block: EditorBlock): LexicalNode {
-  const type = block.type as string;
+  const type = block.type;
+  if (type === 'hr') return $createHorizontalRuleNode();
   if (type === 'h1' || type === 'h2' || type === 'h3') {
-    const tag: HeadingTagType = type === 'h1' ? 'h1' : 'h2';
-    const node = $createHeadingNode(tag);
+    const node = $createHeadingNode(type as HeadingTagType);
     if (block.text) node.append($createTextNode(block.text));
     return node;
   }
@@ -140,8 +144,13 @@ function $appendListBlocks(list: ListNode, depth: number, out: EditorBlock[]): v
 }
 
 function $appendBlock(node: LexicalNode, out: EditorBlock[]): void {
+  if ($isHorizontalRuleNode(node)) {
+    out.push(createEditorBlock('hr'));
+    return;
+  }
   if ($isHeadingNode(node)) {
-    const type: EditorBlockType = node.getTag() === 'h1' ? 'h1' : 'h2';
+    const tag = node.getTag();
+    const type: EditorBlockType = tag === 'h1' ? 'h1' : tag === 'h3' ? 'h3' : 'h2';
     out.push(createEditorBlock(type, node.getTextContent()));
     return;
   }

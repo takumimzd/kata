@@ -42,6 +42,7 @@ export type IconName =
   | 'todo'
   | 'indent'
   | 'outdent'
+  | 'divider'
   | 'menu'
   | 'undo'
   | 'redo'
@@ -240,6 +241,12 @@ const PATHS: Record<IconName, ReactNode> = {
     <>
       <path d="M4 5h16M10 10h10M10 14h10M4 19h16" />
       <path d="M7 9l-3 3 3 3z" fill="currentColor" stroke="none" />
+    </>
+  ),
+  divider: (
+    <>
+      <path d="M4 6h16M4 18h16" />
+      <path d="M4 12h16" strokeDasharray="2 3" />
     </>
   ),
   menu: <path d="M4 6h16M4 12h16M4 18h16" />,

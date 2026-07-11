@@ -16,6 +16,9 @@ function initialBlocks(): EditorBlock[] {
     createEditorBlock('li', 'パン'),
     createEditorBlock('todo', '卵を買う', true),
     createEditorBlock('todo', 'コーヒー豆を買う', false),
+    createEditorBlock('hr'),
+    createEditorBlock('h3', 'メモ'),
+    createEditorBlock('p', '「### 」で H3、「--- 」で仕切り線を挿入できる。'),
   ];
 }
 
@@ -28,7 +31,7 @@ function RichTextEditorPage() {
   return (
     <Doc
       title="RichTextEditor"
-      lede="Lexical ベースのブロックエディタ。見出し (H1/H2) / 箇条書き / チェックボックス / ネストに対応。外部とは EditorBlock[] でやり取りし、Lexical 依存は内部に閉じている。"
+      lede="Lexical ベースのブロックエディタ。見出し (H1/H2/H3) / 箇条書き / チェックボックス / 仕切り線 / ネストに対応。外部とは EditorBlock[] でやり取りし、Lexical 依存は内部に閉じている。"
     >
       <Demo>
         {/* エディタ自体は枠を持たないので、デモでは高さ付きの枠ボックスに収める */}

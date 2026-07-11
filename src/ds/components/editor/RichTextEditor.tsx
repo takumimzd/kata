@@ -7,12 +7,19 @@ import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
+import {
+  $createHorizontalRuleNode,
+  $isHorizontalRuleNode,
+  HorizontalRuleNode,
+} from '@lexical/react/LexicalHorizontalRuleNode';
+import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
 import { $createHeadingNode, $isHeadingNode, HeadingNode } from '@lexical/rich-text';
+import type { HeadingTagType } from '@lexical/rich-text';
 import type { InitialConfigType } from '@lexical/react/LexicalComposer';
 import { $findMatchingParent } from '@lexical/utils';
 import {
@@ -32,17 +39,19 @@ import { MAX_INDENT } from './types';
 export type { EditorBlock, EditorBlockType } from './types';
 export { MAX_INDENT, createEditorBlock } from './types';
 
-/** 見出しは H1 / H2 のみ対応する独自トランスフォーマー (`# `, `## `) */
-const HEADING_H1_H2: ElementTransformer = {
+/** 見出しは H1 / H2 / H3 のみ対応する独自トランスフォーマー (`# `, `## `, `### `) */
+const HEADING_H1_H2_H3: ElementTransformer = {
   dependencies: [HeadingNode],
   export: (node, exportChildren) => {
     if (!$isHeadingNode(node)) return null;
     const level = Number(node.getTag().slice(1));
     return `${'#'.repeat(level)} ${exportChildren(node)}`;
   },
-  regExp: /^(#{1,2})\s/,
+  regExp: /^(#{1,3})\s/,
   replace: (parentNode, children, match) => {
-    const node = $createHeadingNode(match[1]?.length === 1 ? 'h1' : 'h2');
+    const level = match[1]?.length ?? 1;
+    const tag = `h${Math.min(3, level)}` as HeadingTagType;
+    const node = $createHeadingNode(tag);
     node.append(...children);
     parentNode.replace(node);
     node.select(0, 0);
@@ -50,8 +59,33 @@ const HEADING_H1_H2: ElementTransformer = {
   type: 'element',
 };
 
-/** マークダウン風ショートカット: 見出し(H1/H2) / 箇条書き / チェックボックスのみ有効化 */
-const TRANSFORMERS = [HEADING_H1_H2, UNORDERED_LIST, CHECK_LIST];
+/**
+ * 仕切り線 (`---`) を入力したら段落を HorizontalRuleNode に置き換えるトランスフォーマー。
+ * ダッシュ 3 つを入力して Enter を押した瞬間に発火する。
+ */
+const HORIZONTAL_RULE: ElementTransformer = {
+  dependencies: [HorizontalRuleNode],
+  export: (node) => ($isHorizontalRuleNode(node) ? '---' : null),
+  regExp: /^---\s?$/,
+  replace: (parentNode, _children, _match, isImport) => {
+    const hr = $createHorizontalRuleNode();
+    // 末尾に挿入するときは、続けて書けるよう段落を残したまま前へ差し込む
+    if (isImport || parentNode.getNextSibling() != null) {
+      parentNode.replace(hr);
+    } else {
+      parentNode.insertBefore(hr);
+    }
+    hr.selectNext();
+  },
+  triggerOnEnter: true,
+  type: 'element',
+};
+
+/**
+ * マークダウン風ショートカット:
+ * 見出し (H1/H2/H3) / 箇条書き / チェックボックス / 仕切り線 のみ有効化。
+ */
+const TRANSFORMERS = [HEADING_H1_H2_H3, HORIZONTAL_RULE, UNORDERED_LIST, CHECK_LIST];
 
 /** Tab でのインデントはリスト / チェックボックス内のみ許可する (段落は対象外) */
 function $selectionInList(): boolean {
@@ -62,7 +96,9 @@ function $selectionInList(): boolean {
 
 const theme = {
   paragraph: styles.paragraph,
-  heading: { h1: styles.h1, h2: styles.h2 },
+  heading: { h1: styles.h1, h2: styles.h2, h3: styles.h3 },
+  hr: styles.hr,
+  hrSelected: styles.hrSelected,
   list: {
     ul: styles.ul,
     listitem: styles.listItem,
@@ -215,7 +251,7 @@ export function RichTextEditor({
     () => ({
       namespace,
       theme,
-      nodes: [HeadingNode, ListNode, ListItemNode],
+      nodes: [HeadingNode, ListNode, ListItemNode, HorizontalRuleNode],
       onError: (error: Error) => {
         throw error;
       },
@@ -239,6 +275,7 @@ export function RichTextEditor({
       {/* チェックボックスのトグル時に li にフォーカスを移さない (モバイルで
           意図しないスクロールが走るのを避ける) */}
       <CheckListPlugin disableTakeFocusOnClick />
+      <HorizontalRulePlugin />
       <TabIndentationPlugin maxIndent={MAX_INDENT} $canIndent={$selectionInList} />
       <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
       <SyncPlugin onChange={onChange} />

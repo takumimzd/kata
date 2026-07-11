@@ -1,5 +1,5 @@
 /** エディタが扱うブロックの書式種別 */
-export type EditorBlockType = 'p' | 'h1' | 'h2' | 'li' | 'todo';
+export type EditorBlockType = 'p' | 'h1' | 'h2' | 'h3' | 'hr' | 'li' | 'todo';
 
 /** li / todo のネスト階層の最大深さ */
 export const MAX_INDENT = 6;
