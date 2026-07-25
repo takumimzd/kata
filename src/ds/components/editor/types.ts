@@ -27,6 +27,13 @@ export interface EditorImage {
   alt: string;
 }
 
+/** 文字装飾を持つ本文の断片 */
+export interface EditorSpan {
+  text: string;
+  bold?: boolean;
+  italic?: boolean;
+}
+
 /**
  * リッチテキストの 1 行 (1 ブロック)。
  * エディタの入出力フォーマットで、特定のドメインには依存しない。
@@ -34,6 +41,10 @@ export interface EditorImage {
 export interface EditorBlock {
   id: string;
   type: EditorBlockType;
+  /**
+   * 装飾を除いた素のテキスト。spans があるときはその連結と必ず一致する。
+   * 利用側がタイトルやプレビュー、検索に使うのはこちら。
+   */
   text: string;
   /** todo ブロックの完了状態 (他の種別では常に false) */
   checked: boolean;
@@ -41,6 +52,21 @@ export interface EditorBlock {
   indent: number;
   /** type === 'image' のときだけ入る */
   image?: EditorImage;
+  /**
+   * 装飾つきの本文。装飾が 1 つも無いブロックでは持たない
+   * (既存データをそのまま読めるようにするため任意項目にしてある)。
+   */
+  spans?: EditorSpan[];
+}
+
+/** spans を連結した素のテキスト */
+export function spansToText(spans: EditorSpan[]): string {
+  return spans.map((span) => span.text).join('');
+}
+
+/** 装飾が 1 つでも付いているか (spans を持たせるかの判断に使う) */
+export function hasInlineFormat(spans: EditorSpan[]): boolean {
+  return spans.some((span) => span.bold === true || span.italic === true);
 }
 
 let uidCounter = 0;

@@ -61,3 +61,14 @@
   background: var(--accent-soft);
   color: var(--accent);
 }
+
+/* B / I はラベル自体を装飾して、何のボタンか一目で分かるようにする */
+.boldLabel {
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.italicLabel {
+  font-style: italic;
+  font-size: 16px;
+}

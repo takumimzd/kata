@@ -18,6 +18,7 @@ import {
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_LOW,
+  FORMAT_TEXT_COMMAND,
   INDENT_CONTENT_COMMAND,
   OUTDENT_CONTENT_COMMAND,
   REDO_COMMAND,
@@ -66,12 +67,23 @@ export function EditorToolbar() {
   const [active, setActive] = useState<ActiveType>('p');
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
+  // 文字装飾は真偽値を別々に持つ。まとめて 1 つの state にすると
+  // 毎回新しいオブジェクトになり、変化が無くても再描画されてしまう。
+  const [bold, setBold] = useState(false);
+  const [italic, setItalic] = useState(false);
   // 画像機能が有効なときだけ画像ボタンを出す
   const imageConfig = useImageConfig();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const read = () => editor.getEditorState().read(() => setActive($activeType()));
+    const read = () =>
+      editor.getEditorState().read(() => {
+        setActive($activeType());
+        const selection = $getSelection();
+        const range = $isRangeSelection(selection) ? selection : null;
+        setBold(range?.hasFormat('bold') === true);
+        setItalic(range?.hasFormat('italic') === true);
+      });
     read();
     return mergeRegister(
       editor.registerUpdateListener(read),
@@ -167,6 +179,28 @@ export function EditorToolbar() {
             {item.label}
           </button>
         ))}
+        <span className={styles.divider} aria-hidden="true" />
+        <button
+          type="button"
+          className={cn(styles.button, styles.boldLabel, bold && styles.buttonOn)}
+          aria-label="太字"
+          aria-pressed={bold}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')}
+        >
+          B
+        </button>
+        <button
+          type="button"
+          className={cn(styles.button, styles.italicLabel, italic && styles.buttonOn)}
+          aria-label="斜体"
+          aria-pressed={italic}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic')}
+        >
+          I
+        </button>
+        <span className={styles.divider} aria-hidden="true" />
         {LISTS.map((item) => (
           <button
             key={item.type}

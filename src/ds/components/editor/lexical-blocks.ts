@@ -3,7 +3,6 @@ import {
   $createListNode,
   $isListItemNode,
   $isListNode,
-  ListItemNode,
   ListNode,
 } from '@lexical/list';
 import {
@@ -12,14 +11,76 @@ import {
 } from '@lexical/react/LexicalHorizontalRuleNode';
 import { $createHeadingNode, $isHeadingNode } from '@lexical/rich-text';
 import type { HeadingTagType } from '@lexical/rich-text';
-import { $createParagraphNode, $createTextNode, $getRoot, $isElementNode } from 'lexical';
+import {
+  $createParagraphNode,
+  $createTextNode,
+  $getRoot,
+  $isElementNode,
+  $isTextNode,
+} from 'lexical';
 import type { ElementNode, LexicalNode } from 'lexical';
 import { $createImageNode, $isImageNode } from './ImageNode';
-import type { EditorBlock, EditorBlockType } from './types';
-import { createEditorBlock, createImageBlock } from './types';
+import type { EditorBlock, EditorBlockType, EditorSpan } from './types';
+import { createEditorBlock, createImageBlock, hasInlineFormat, spansToText } from './types';
 
 function isListBlock(type: EditorBlockType): boolean {
   return type === 'li' || type === 'todo';
+}
+
+/** ブロックの本文を装飾つきで要素に流し込む */
+function $appendInline(node: ElementNode, block: EditorBlock): void {
+  const spans = block.spans;
+  if (!spans || spans.length === 0) {
+    if (block.text) node.append($createTextNode(block.text));
+    return;
+  }
+  for (const span of spans) {
+    if (!span.text) continue;
+    const text = $createTextNode(span.text);
+    if (span.bold) text.toggleFormat('bold');
+    if (span.italic) text.toggleFormat('italic');
+    node.append(text);
+  }
+}
+
+/** 隣り合う同じ装飾の断片はひとつにまとめる */
+function pushSpan(out: EditorSpan[], span: EditorSpan): void {
+  if (span.text === '') return;
+  const last = out[out.length - 1];
+  if (last && last.bold === span.bold && last.italic === span.italic) {
+    last.text += span.text;
+    return;
+  }
+  out.push(span);
+}
+
+/** 要素の直下にある断片を装飾つきで取り出す (入れ子リストは対象外) */
+function $spansOf(node: ElementNode): EditorSpan[] {
+  const out: EditorSpan[] = [];
+  for (const child of node.getChildren()) {
+    if ($isListNode(child)) continue;
+    if ($isTextNode(child)) {
+      const span: EditorSpan = { text: child.getTextContent() };
+      if (child.hasFormat('bold')) span.bold = true;
+      if (child.hasFormat('italic')) span.italic = true;
+      pushSpan(out, span);
+      continue;
+    }
+    // 改行など装飾を持たない要素は、テキストとしてだけ拾う
+    pushSpan(out, { text: child.getTextContent() });
+  }
+  return out;
+}
+
+/** 装飾があるときだけ spans を添えてブロックを作る */
+function inlineBlock(
+  type: EditorBlockType,
+  spans: EditorSpan[],
+  checked = false,
+  indent = 0,
+): EditorBlock {
+  const block = createEditorBlock(type, spansToText(spans), checked, indent);
+  return hasInlineFormat(spans) ? { ...block, spans } : block;
 }
 
 /** 見出し / 段落 / 仕切り線などのリーフ要素を作る */
@@ -30,11 +91,11 @@ function $createLeaf(block: EditorBlock): LexicalNode {
   if (type === 'image' && block.image) return $createImageNode(block.image);
   if (type === 'h1' || type === 'h2' || type === 'h3') {
     const node = $createHeadingNode(type as HeadingTagType);
-    if (block.text) node.append($createTextNode(block.text));
+    $appendInline(node, block);
     return node;
   }
   const node = $createParagraphNode();
-  if (block.text) node.append($createTextNode(block.text));
+  $appendInline(node, block);
   return node;
 }
 
@@ -59,7 +120,7 @@ function $buildLists(items: EditorBlock[]): ListNode[] {
     const listType = block.type === 'todo' ? 'check' : 'bullet';
     const li = $createListItemNode();
     if (listType === 'check') li.setChecked(block.checked);
-    if (block.text) li.append($createTextNode(block.text));
+    $appendInline(li, block);
 
     // この階層より深い開きリストを閉じる
     while (stack.length > 0 && (stack[stack.length - 1]?.indent ?? 0) > indent) stack.pop();
@@ -120,33 +181,19 @@ export function $blocksToNodes(blocks: EditorBlock[]): LexicalNode[] {
   return nodes;
 }
 
-/** ListItemNode 直下のテキスト (入れ子リストを除いた自分自身の文字列) */
-function $ownText(item: ListItemNode): string {
-  return item
-    .getChildren()
-    .filter((child) => !$isListNode(child))
-    .map((child) => child.getTextContent())
-    .join('');
-}
-
 function $appendListBlocks(list: ListNode, depth: number, out: EditorBlock[]): void {
   const type: EditorBlockType = list.getListType() === 'check' ? 'todo' : 'li';
   for (const item of list.getChildren()) {
     if (!$isListItemNode(item)) continue;
     const nested = item.getChildren().filter($isListNode);
-    const text = $ownText(item);
+    // 入れ子リストを除いた、この項目自身の本文
+    const spans = $spansOf(item);
     // ラッパー (テキストなし & 入れ子のみ) は自身を出力せず子リストへ降りる
-    if (nested.length > 0 && text === '') {
+    if (nested.length > 0 && spansToText(spans) === '') {
       for (const child of nested) $appendListBlocks(child, depth + 1, out);
       continue;
     }
-    const block = createEditorBlock(
-      type,
-      text,
-      type === 'todo' ? item.getChecked() === true : false,
-      depth,
-    );
-    out.push(block);
+    out.push(inlineBlock(type, spans, type === 'todo' && item.getChecked() === true, depth));
     for (const child of nested) $appendListBlocks(child, depth + 1, out);
   }
 }
@@ -159,7 +206,7 @@ function $appendBlock(node: LexicalNode, out: EditorBlock[]): void {
   if ($isHeadingNode(node)) {
     const tag = node.getTag();
     const type: EditorBlockType = tag === 'h1' ? 'h1' : tag === 'h3' ? 'h3' : 'h2';
-    out.push(createEditorBlock(type, node.getTextContent()));
+    out.push(inlineBlock(type, $spansOf(node)));
     return;
   }
   if ($isImageNode(node)) {
@@ -174,8 +221,11 @@ function $appendBlock(node: LexicalNode, out: EditorBlock[]): void {
     return;
   }
   // 段落・その他の要素は通常段落として扱う
-  const text = $isElementNode(node) ? (node as ElementNode).getTextContent() : node.getTextContent();
-  out.push(createEditorBlock('p', text));
+  if ($isElementNode(node)) {
+    out.push(inlineBlock('p', $spansOf(node)));
+    return;
+  }
+  out.push(createEditorBlock('p', node.getTextContent()));
 }
 
 /** 現在の Lexical 状態を EditorBlock[] へシリアライズする (editorState.read 内で呼ぶ) */

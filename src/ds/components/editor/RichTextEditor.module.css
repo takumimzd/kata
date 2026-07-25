@@ -48,6 +48,22 @@
   word-break: break-word;
 }
 
+/* --- 文字装飾 --- */
+.bold {
+  font-weight: 700;
+}
+
+/* 見出しは元から太いので、その中の太字はもう一段上げて区別する */
+.h1 .bold,
+.h2 .bold,
+.h3 .bold {
+  font-weight: 900;
+}
+
+.italic {
+  font-style: italic;
+}
+
 .h1,
 .h2,
 .h3 {

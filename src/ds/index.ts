@@ -56,6 +56,7 @@ export {
   type EditorBlock,
   type EditorBlockType,
   type EditorImage,
+  type EditorSpan,
   type ImageUploadResult,
 } from './components/editor';
 

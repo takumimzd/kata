@@ -1,5 +1,11 @@
 import { $isListItemNode, ListItemNode, ListNode } from '@lexical/list';
-import { CHECK_LIST, UNORDERED_LIST } from '@lexical/markdown';
+import {
+  BOLD_ITALIC_STAR,
+  BOLD_STAR,
+  CHECK_LIST,
+  ITALIC_STAR,
+  UNORDERED_LIST,
+} from '@lexical/markdown';
 import type { ElementTransformer } from '@lexical/markdown';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
@@ -41,7 +47,7 @@ import styles from './RichTextEditor.module.css';
 import type { EditorBlock, EditorImage } from './types';
 import { MAX_INDENT } from './types';
 
-export type { EditorBlock, EditorBlockType, EditorImage } from './types';
+export type { EditorBlock, EditorBlockType, EditorImage, EditorSpan } from './types';
 export type { ImageUploadResult } from './ImageContext';
 export { MAX_INDENT, createEditorBlock } from './types';
 
@@ -92,9 +98,19 @@ const HORIZONTAL_RULE: ElementTransformer = {
 
 /**
  * マークダウン風ショートカット:
- * 見出し (H1/H2/H3) / 箇条書き / チェックボックス / 仕切り線 のみ有効化。
+ * 見出し (H1/H2/H3) / 箇条書き / チェックボックス / 仕切り線 と、
+ * 文字装飾 (`**太字**` `*斜体*`) を有効化。
+ * アンダースコア版 (`__` `_`) は普通の文章で誤爆しやすいので入れない。
  */
-const TRANSFORMERS = [HEADING_H1_H2_H3, HORIZONTAL_RULE, UNORDERED_LIST, CHECK_LIST];
+const TRANSFORMERS = [
+  HEADING_H1_H2_H3,
+  HORIZONTAL_RULE,
+  UNORDERED_LIST,
+  CHECK_LIST,
+  BOLD_ITALIC_STAR,
+  BOLD_STAR,
+  ITALIC_STAR,
+];
 
 /** Tab でのインデントはリスト / チェックボックス内のみ許可する (段落は対象外) */
 function $selectionInList(): boolean {
@@ -106,6 +122,7 @@ function $selectionInList(): boolean {
 const theme = {
   paragraph: styles.paragraph,
   heading: { h1: styles.h1, h2: styles.h2, h3: styles.h3 },
+  text: { bold: styles.bold, italic: styles.italic },
   hr: styles.hr,
   hrSelected: styles.hrSelected,
   list: {
