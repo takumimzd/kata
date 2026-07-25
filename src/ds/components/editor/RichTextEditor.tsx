@@ -171,6 +171,70 @@ function SyncPlugin({ onChange }: { onChange: (blocks: EditorBlock[]) => void })
   );
 }
 
+/** キャレット行を見える位置に収めるときの上下の余白 (px) */
+const CARET_SCROLL_MARGIN = 24;
+
+/** 縦にスクロールできる最も近い祖先を探す */
+function scrollableAncestor(element: HTMLElement): HTMLElement | null {
+  for (let node = element.parentElement; node; node = node.parentElement) {
+    const overflowY = getComputedStyle(node).overflowY;
+    if ((overflowY === 'auto' || overflowY === 'scroll') && node.scrollHeight > node.clientHeight) {
+      return node;
+    }
+  }
+  return null;
+}
+
+/** キャレットのある行の要素 */
+function caretLineElement(root: HTMLElement): HTMLElement | null {
+  const selection = root.ownerDocument.defaultView?.getSelection();
+  if (!selection || selection.rangeCount === 0) return null;
+  const start = selection.getRangeAt(0).startContainer;
+  const element = start.nodeType === Node.TEXT_NODE ? start.parentElement : start;
+  if (!(element instanceof HTMLElement) || !root.contains(element)) return null;
+  return element;
+}
+
+/**
+ * 表示領域が縮んだときにキャレットを見える位置へ戻す。
+ *
+ * モバイルでソフトキーボードが開くと visual viewport が縮み、本文の
+ * スクロール領域も同時に縮む。スクロール位置はそのままなので、画面の下寄りを
+ * タップして書き始めるとキャレットのある行がキーボードの裏に隠れてしまう。
+ */
+function KeepCaretVisiblePlugin() {
+  const [editor] = useLexicalComposerContext();
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) return;
+    const onResize = () => {
+      const root = editor.getRootElement();
+      // 本文を編集中のときだけ追従する
+      if (!root || root.ownerDocument.activeElement !== root) return;
+      // 縮んだあとのレイアウトで測りたいので次のフレームまで待つ
+      requestAnimationFrame(() => {
+        const line = caretLineElement(root);
+        if (!line) return;
+        const scroller = scrollableAncestor(root);
+        if (!scroller) {
+          line.scrollIntoView({ block: 'nearest' });
+          return;
+        }
+        // 縁に貼り付くと窮屈なので、上下に少し余白を残して寄せる
+        const lineRect = line.getBoundingClientRect();
+        const viewRect = scroller.getBoundingClientRect();
+        const below = lineRect.bottom - (viewRect.bottom - CARET_SCROLL_MARGIN);
+        const above = viewRect.top + CARET_SCROLL_MARGIN - lineRect.top;
+        if (below > 0) scroller.scrollTop += below;
+        else if (above > 0) scroller.scrollTop -= above;
+      });
+    };
+    viewport.addEventListener('resize', onResize);
+    return () => viewport.removeEventListener('resize', onResize);
+  }, [editor]);
+  return null;
+}
+
 /** マウント直後に末尾へキャレットを置く */
 function AutoFocusEndPlugin({ enabled }: { enabled: boolean }) {
   const [editor] = useLexicalComposerContext();
@@ -350,6 +414,7 @@ export function RichTextEditor({
         <SyncPlugin onChange={onChange} />
         <AutoFocusEndPlugin enabled={autoFocusEnd ?? false} />
         <ChecklistCaretFix />
+        <KeepCaretVisiblePlugin />
         <ImagePlugin />
       </ImageConfigContext.Provider>
     </LexicalComposer>
