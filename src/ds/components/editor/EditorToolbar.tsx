@@ -23,9 +23,11 @@ import {
   REDO_COMMAND,
   UNDO_COMMAND,
 } from 'lexical';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Icon, type IconName } from '../Icon';
 import { cn } from '../../lib/cn';
+import { useImageConfig } from './ImageContext';
+import { INSERT_IMAGES_COMMAND } from './ImagePlugin';
 import styles from './EditorToolbar.module.css';
 
 type ActiveType = 'p' | 'h1' | 'h2' | 'h3' | 'li' | 'todo';
@@ -64,6 +66,9 @@ export function EditorToolbar() {
   const [active, setActive] = useState<ActiveType>('p');
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
+  // 画像機能が有効なときだけ画像ボタンを出す
+  const imageConfig = useImageConfig();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const read = () => editor.getEditorState().read(() => setActive($activeType()));
@@ -115,6 +120,11 @@ export function EditorToolbar() {
 
   const changeIndent = (dir: 1 | -1) => {
     editor.dispatchCommand(dir > 0 ? INDENT_CONTENT_COMMAND : OUTDENT_CONTENT_COMMAND, undefined);
+  };
+
+  const pickImages = (fileList: FileList | null) => {
+    const files = Array.from(fileList ?? []);
+    if (files.length > 0) editor.dispatchCommand(INSERT_IMAGES_COMMAND, files);
   };
 
   // ネストは箇条書き / チェックボックスの行でのみ有効
@@ -179,6 +189,31 @@ export function EditorToolbar() {
         >
           <Icon name="divider" size={20} />
         </button>
+        {imageConfig && (
+          <>
+            <button
+              type="button"
+              className={styles.button}
+              aria-label="画像を挿入"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Icon name="image" size={20} />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              hidden
+              onChange={(e) => {
+                pickImages(e.target.files);
+                // 同じファイルを続けて選べるように毎回リセットする
+                e.target.value = '';
+              }}
+            />
+          </>
+        )}
         <span className={styles.divider} aria-hidden="true" />
         <button
           type="button"

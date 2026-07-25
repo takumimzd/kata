@@ -55,6 +55,8 @@ export {
   createEditorBlock,
   type EditorBlock,
   type EditorBlockType,
+  type EditorImage,
+  type ImageUploadResult,
 } from './components/editor';
 
 // --- 単体 (components/ 直下) ---

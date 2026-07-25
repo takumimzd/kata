@@ -1,8 +1,31 @@
 /** エディタが扱うブロックの書式種別 */
-export type EditorBlockType = 'p' | 'h1' | 'h2' | 'h3' | 'hr' | 'li' | 'todo';
+export type EditorBlockType = 'p' | 'h1' | 'h2' | 'h3' | 'hr' | 'li' | 'todo' | 'image';
 
 /** li / todo のネスト階層の最大深さ */
 export const MAX_INDENT = 6;
+
+/** 画像の表示幅 (本文カラム幅に対する %) の下限・上限と刻み */
+export const MIN_IMAGE_WIDTH_PCT = 10;
+export const MAX_IMAGE_WIDTH_PCT = 100;
+export const IMAGE_WIDTH_STEP_PCT = 5;
+
+/**
+ * 画像ブロックの中身。
+ * 実体をどこに保存するかはアプリ側の責務なので、ここでは ID しか持たない
+ * (ID から表示 URL への変換は RichTextEditor の resolveImageUrl に委ねる)。
+ */
+export interface EditorImage {
+  id: string;
+  /** 元画像の実寸。読み込み前にアスペクト比を確保するために使う */
+  naturalWidth: number;
+  naturalHeight: number;
+  /**
+   * 表示幅。本文カラム幅に対する % (10–100)。
+   * px ではなく % なのは、同じ内容をスマホ幅と広い画面の双方で開くため。
+   */
+  widthPct: number;
+  alt: string;
+}
 
 /**
  * リッチテキストの 1 行 (1 ブロック)。
@@ -16,6 +39,8 @@ export interface EditorBlock {
   checked: boolean;
   /** li / todo のネスト深さ (0 = 最上位)。ネスト不可の種別では常に 0 */
   indent: number;
+  /** type === 'image' のときだけ入る */
+  image?: EditorImage;
 }
 
 let uidCounter = 0;
@@ -36,4 +61,19 @@ export function createEditorBlock(
   indent = 0,
 ): EditorBlock {
   return { id: uid(), type, text, checked, indent };
+}
+
+/**
+ * 画像ブロックを作る。
+ * text は常に空にしておく: 利用側がタイトルやプレビューを text から導出しても
+ * 画像が混ざらないようにするため。
+ */
+export function createImageBlock(image: EditorImage): EditorBlock {
+  return { id: uid(), type: 'image', text: '', checked: false, indent: 0, image };
+}
+
+/** 表示幅を有効範囲に丸める */
+export function clampImageWidthPct(value: number): number {
+  if (!Number.isFinite(value)) return MAX_IMAGE_WIDTH_PCT;
+  return Math.min(MAX_IMAGE_WIDTH_PCT, Math.max(MIN_IMAGE_WIDTH_PCT, Math.round(value)));
 }

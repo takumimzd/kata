@@ -1,0 +1,57 @@
+/* 全画面ビューア。エディタとは独立して body 直下に出る */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(10, 10, 12, 0.94);
+  animation: fade 0.16s ease-out;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ピンチズームはブラウザ標準に任せ、はみ出した分をここでスクロールさせる */
+.viewport {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(var(--space-4), env(safe-area-inset-top)) var(--space-4)
+    max(var(--space-4), env(safe-area-inset-bottom));
+  overflow: auto;
+  touch-action: pinch-zoom;
+  -webkit-overflow-scrolling: touch;
+}
+
+.image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  /* 透過画像でも輪郭が分かるように市松ではなく薄い下地を敷く */
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-xs);
+}
+
+.close {
+  position: absolute;
+  top: max(var(--space-3), env(safe-area-inset-top));
+  right: var(--space-3);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  cursor: pointer;
+}
+
+.close:hover {
+  background: rgba(255, 255, 255, 0.22);
+}

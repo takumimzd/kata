@@ -31,13 +31,21 @@ import {
 import { useEffect, useMemo, useRef } from 'react';
 import { cn } from '../../lib/cn';
 import { EditorToolbar } from './EditorToolbar';
+import { ImageConfigContext } from './ImageContext';
+import type { ImageConfig, ImageUploadResult } from './ImageContext';
+import { ImageNode } from './ImageNode';
+import { ImagePlugin } from './ImagePlugin';
 import { $blocksToNodes, $nodesToBlocks } from './lexical-blocks';
 import styles from './RichTextEditor.module.css';
-import type { EditorBlock } from './types';
+import type { EditorBlock, EditorImage } from './types';
 import { MAX_INDENT } from './types';
 
-export type { EditorBlock, EditorBlockType } from './types';
+export type { EditorBlock, EditorBlockType, EditorImage } from './types';
+export type { ImageUploadResult } from './ImageContext';
 export { MAX_INDENT, createEditorBlock } from './types';
+
+/** 1 回の操作で受け付ける画像の既定枚数 */
+const DEFAULT_MAX_IMAGES_PER_INSERT = 8;
 
 /** 見出しは H1 / H2 / H3 のみ対応する独自トランスフォーマー (`# `, `## `, `### `) */
 const HEADING_H1_H2_H3: ElementTransformer = {
@@ -118,6 +126,17 @@ interface RichTextEditorProps {
   /** Lexical の namespace。複数エディタを区別したいときに指定する */
   namespace?: string;
   className?: string;
+  /**
+   * 画像 ID から表示用 URL を解決する。
+   * onUploadImage と揃って指定されたときだけ画像機能が有効になる。
+   */
+  resolveImageUrl?: (image: EditorImage) => string;
+  /** ファイルをアップロードして実体の情報を返す */
+  onUploadImage?: (file: File) => Promise<ImageUploadResult>;
+  /** アップロードに失敗したときの通知 (トースト表示など) */
+  onImageError?: (error: unknown) => void;
+  /** 1 回の操作で受け付ける最大枚数 (既定 8) */
+  maxImagesPerInsert?: number;
 }
 
 /** 編集状態の変化を EditorBlock[] へ書き戻す */
@@ -244,14 +263,42 @@ export function RichTextEditor({
   autoFocusEnd,
   namespace = 'kata-rich-text-editor',
   className,
+  resolveImageUrl,
+  onUploadImage,
+  onImageError,
+  maxImagesPerInsert = DEFAULT_MAX_IMAGES_PER_INSERT,
 }: RichTextEditorProps) {
   // 初期状態の構築はマウント時の value のみを使う (以後は Lexical が真実の状態)
   const initialBlocksRef = useRef(value);
+
+  // 画像の解決とアップロードが揃って初めて画像機能を有効にする。
+  // 未指定なら ImagePlugin もツールバーの画像ボタンも出ないため、
+  // これまでどおりテキスト専用のエディタとして動く。
+  const imageEnabled = resolveImageUrl !== undefined && onUploadImage !== undefined;
+  // ハンドラは ref 越しに呼ぶ。呼び出し側がインラインの関数を渡しても
+  // context の同一性が保たれ、プラグインの再登録が起きない。
+  const handlersRef = useRef({ resolveImageUrl, onUploadImage, onImageError });
+  handlersRef.current = { resolveImageUrl, onUploadImage, onImageError };
+  const imageConfig = useMemo<ImageConfig | null>(() => {
+    if (!imageEnabled) return null;
+    return {
+      resolveImageUrl: (image) => handlersRef.current.resolveImageUrl?.(image) ?? '',
+      onUploadImage: (file) => {
+        const upload = handlersRef.current.onUploadImage;
+        return upload
+          ? upload(file)
+          : Promise.reject(new Error('onUploadImage が設定されていません'));
+      },
+      onImageError: (error) => handlersRef.current.onImageError?.(error),
+      maxImagesPerInsert,
+    };
+  }, [imageEnabled, maxImagesPerInsert]);
+
   const initialConfig = useMemo<InitialConfigType>(
     () => ({
       namespace,
       theme,
-      nodes: [HeadingNode, ListNode, ListItemNode, HorizontalRuleNode],
+      nodes: [HeadingNode, ListNode, ListItemNode, HorizontalRuleNode, ImageNode],
       onError: (error: Error) => {
         throw error;
       },
@@ -266,21 +313,24 @@ export function RichTextEditor({
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
-      <div className={cn(styles.editor, className)}>
-        <EditorToolbar />
-        <EditorBody placeholder={placeholder} />
-      </div>
-      <HistoryPlugin />
-      <ListPlugin />
-      {/* チェックボックスのトグル時に li にフォーカスを移さない (モバイルで
-          意図しないスクロールが走るのを避ける) */}
-      <CheckListPlugin disableTakeFocusOnClick />
-      <HorizontalRulePlugin />
-      <TabIndentationPlugin maxIndent={MAX_INDENT} $canIndent={$selectionInList} />
-      <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-      <SyncPlugin onChange={onChange} />
-      <AutoFocusEndPlugin enabled={autoFocusEnd ?? false} />
-      <ChecklistCaretFix />
+      <ImageConfigContext.Provider value={imageConfig}>
+        <div className={cn(styles.editor, className)}>
+          <EditorToolbar />
+          <EditorBody placeholder={placeholder} />
+        </div>
+        <HistoryPlugin />
+        <ListPlugin />
+        {/* チェックボックスのトグル時に li にフォーカスを移さない (モバイルで
+            意図しないスクロールが走るのを避ける) */}
+        <CheckListPlugin disableTakeFocusOnClick />
+        <HorizontalRulePlugin />
+        <TabIndentationPlugin maxIndent={MAX_INDENT} $canIndent={$selectionInList} />
+        <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+        <SyncPlugin onChange={onChange} />
+        <AutoFocusEndPlugin enabled={autoFocusEnd ?? false} />
+        <ChecklistCaretFix />
+        <ImagePlugin />
+      </ImageConfigContext.Provider>
     </LexicalComposer>
   );
 }
