@@ -181,6 +181,15 @@ export function ImageView({ nodeKey, image, previewUrl }: ImageViewProps) {
     <>
       <div
         ref={rootRef}
+        onPointerDown={(e) => {
+          // タッチで画像に触れたときは本文へフォーカスを移さない。
+          // 移るとモバイルでソフトキーボードが開いてしまい、画像を操作したいだけの
+          // ときに画面が半分隠れる。マウスでは既定の挙動を残す
+          // (本文にフォーカスが要る Delete / Backspace の削除を活かすため)。
+          if (e.pointerType === 'mouse') return;
+          e.preventDefault();
+          editor.getRootElement()?.blur();
+        }}
         className={cn(styles.figure, active && styles.selected, uploading && styles.uploading)}
         style={{
           width: `${widthPct}%`,
