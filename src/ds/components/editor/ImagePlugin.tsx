@@ -1,7 +1,8 @@
 // ============================================================
 //  kata — 画像の挿入プラグイン
-//  ツールバー / ペースト / ドロップの 3 経路から画像を受け取り、
-//  未確定ノードを先に置いてからアップロードを走らせる。
+//  挿入コマンドとペーストを受け、未確定ノードを先に置いてから
+//  アップロードを走らせる。
+//  (ドラッグ&ドロップの受け口は ImageDropZone 側)
 // ============================================================
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { $insertNodeToNearestRoot, mergeRegister } from '@lexical/utils';
@@ -10,37 +11,17 @@ import {
   COMMAND_PRIORITY_EDITOR,
   COMMAND_PRIORITY_NORMAL,
   createCommand,
-  DRAGOVER_COMMAND,
-  DROP_COMMAND,
   PASTE_COMMAND,
 } from 'lexical';
 import type { LexicalCommand, NodeKey } from 'lexical';
 import { useEffect } from 'react';
 import { useImageConfig } from './ImageContext';
+import { imageFilesOf } from './imageDrag';
 import { $createImageNode, $isImageNode } from './ImageNode';
 import { MAX_IMAGE_WIDTH_PCT } from './types';
 
-/** ファイルを本文に挿入する。ツールバーの画像ボタンから dispatch される */
+/** ファイルを本文に挿入する。ツールバーの画像ボタンとドロップから dispatch される */
 export const INSERT_IMAGES_COMMAND: LexicalCommand<File[]> = createCommand('INSERT_IMAGES');
-
-/** DataTransfer から画像ファイルだけを取り出す */
-function imageFilesOf(data: DataTransfer | null | undefined): File[] {
-  if (!data) return [];
-  return Array.from(data.files).filter((file) => file.type.startsWith('image/'));
-}
-
-/**
- * ドラッグ中の判定。
- * dragover の時点では files の中身が取れない (セキュリティ上の制限) ので、
- * items の kind / type と types を見る。
- */
-function hasDraggedImage(data: DataTransfer | null | undefined): boolean {
-  if (!data) return false;
-  if (Array.from(data.items).some((item) => item.kind === 'file' && item.type.startsWith('image/'))) {
-    return true;
-  }
-  return data.types.includes('Files');
-}
 
 /**
  * 画像機能を有効にするプラグイン。
@@ -110,26 +91,6 @@ export function ImagePlugin() {
           const files = imageFilesOf(event.clipboardData);
           if (files.length === 0) return false;
           // 画像を含むペーストはテキスト側の処理に渡さない
-          event.preventDefault();
-          return insertFiles(files);
-        },
-        COMMAND_PRIORITY_NORMAL,
-      ),
-      editor.registerCommand(
-        DRAGOVER_COMMAND,
-        (event) => {
-          if (!hasDraggedImage(event.dataTransfer)) return false;
-          // preventDefault しないとブラウザがドロップを受け付けない
-          event.preventDefault();
-          return true;
-        },
-        COMMAND_PRIORITY_NORMAL,
-      ),
-      editor.registerCommand(
-        DROP_COMMAND,
-        (event) => {
-          const files = imageFilesOf(event.dataTransfer);
-          if (files.length === 0) return false;
           event.preventDefault();
           return insertFiles(files);
         },

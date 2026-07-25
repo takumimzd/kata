@@ -7,6 +7,9 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  /* ドラッグ中の案内 (ImageDropZone) を重ねる基準。
+     本文は縦スクロールするので、スクロールしない外枠を基準にする */
+  position: relative;
 }
 
 .body {

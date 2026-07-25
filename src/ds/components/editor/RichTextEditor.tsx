@@ -33,6 +33,7 @@ import { cn } from '../../lib/cn';
 import { EditorToolbar } from './EditorToolbar';
 import { ImageConfigContext } from './ImageContext';
 import type { ImageConfig, ImageUploadResult } from './ImageContext';
+import { ImageDropZone } from './ImageDropZone';
 import { ImageNode } from './ImageNode';
 import { ImagePlugin } from './ImagePlugin';
 import { $blocksToNodes, $nodesToBlocks } from './lexical-blocks';
@@ -270,6 +271,7 @@ export function RichTextEditor({
 }: RichTextEditorProps) {
   // 初期状態の構築はマウント時の value のみを使う (以後は Lexical が真実の状態)
   const initialBlocksRef = useRef(value);
+  const editorRef = useRef<HTMLDivElement>(null);
 
   // 画像の解決とアップロードが揃って初めて画像機能を有効にする。
   // 未指定なら ImagePlugin もツールバーの画像ボタンも出ないため、
@@ -314,9 +316,11 @@ export function RichTextEditor({
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <ImageConfigContext.Provider value={imageConfig}>
-        <div className={cn(styles.editor, className)}>
+        {/* ドロップは本文だけでなくエディタ全体で受ける (下部の余白に落としても入る) */}
+        <div ref={editorRef} className={cn(styles.editor, className)}>
           <EditorToolbar />
           <EditorBody placeholder={placeholder} />
+          <ImageDropZone containerRef={editorRef} />
         </div>
         <HistoryPlugin />
         <ListPlugin />
