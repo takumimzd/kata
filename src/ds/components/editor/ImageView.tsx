@@ -12,7 +12,6 @@ import {
   COMMAND_PRIORITY_LOW,
   KEY_BACKSPACE_COMMAND,
   KEY_DELETE_COMMAND,
-  KEY_ESCAPE_COMMAND,
 } from 'lexical';
 import type { NodeKey } from 'lexical';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -55,10 +54,16 @@ function snap(pct: number): number {
 
 export function ImageView({ nodeKey, image, previewUrl }: ImageViewProps) {
   const [editor] = useLexicalComposerContext();
-  const [isSelected, setSelected, clearSelected] = useLexicalNodeSelection(nodeKey);
+  const [, setSelected, clearSelected] = useLexicalNodeSelection(nodeKey);
   const config = useImageConfig();
   const rootRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<DragState | null>(null);
+  /**
+   * 操作バーとハンドルを出すかどうか。
+   * Lexical の NodeSelection は更新のたびに外れてしまい表示の拠り所にできないので、
+   * 見た目の状態はここで持つ (NodeSelection はキーボード削除の判定にだけ使う)。
+   */
+  const [active, setActive] = useState(false);
   /** ドラッグ中だけ使う暫定の幅。確定は pointerup の 1 回だけ */
   const [draftPct, setDraftPct] = useState<number | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -85,9 +90,45 @@ export function ImageView({ nodeKey, image, previewUrl }: ImageViewProps) {
   );
   const removeSelf = useCallback(() => updateNode((node) => node.remove()), [updateNode]);
 
-  // 選択中はキーボード操作を受ける (Delete / Backspace で削除、Escape で選択解除)
+  /** 画像を操作対象にする。NodeSelection はキーボード削除のために張る */
+  const activate = useCallback(() => {
+    setActive(true);
+    setSelected(true);
+  }, [setSelected]);
+
+  const deactivate = useCallback(() => {
+    setActive(false);
+    clearSelected();
+  }, [clearSelected]);
+
+  // アップロード中のプレビュー (objectURL) は完了時に解放されるので、
+  // 表示が実 URL に切り替わったら読み込み失敗の表示をリセットする
+  useEffect(() => setLoadFailed(false), [src]);
+
+  // 画像の外を触ったら操作を終える (Lexical の選択解除だけでは追随しきれない)
   useEffect(() => {
-    if (!isSelected) return;
+    if (!active || lightboxOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      const root = rootRef.current;
+      if (root && event.target instanceof Node && root.contains(event.target)) return;
+      deactivate();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') deactivate();
+    };
+    document.addEventListener('pointerdown', onPointerDown, true);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+    // 全画面表示の間は Escape をライトボックスに譲る
+  }, [active, lightboxOpen, deactivate]);
+
+  // 操作中は Delete / Backspace で削除できる。
+  // 誤って本文の文字を消さないよう、画像が選択されているときだけ処理する。
+  useEffect(() => {
+    if (!active) return;
     const onDeleteKey = (event: KeyboardEvent) => {
       if (!$isNodeSelection($getSelection())) return false;
       event.preventDefault();
@@ -97,16 +138,8 @@ export function ImageView({ nodeKey, image, previewUrl }: ImageViewProps) {
     return mergeRegister(
       editor.registerCommand(KEY_DELETE_COMMAND, onDeleteKey, COMMAND_PRIORITY_LOW),
       editor.registerCommand(KEY_BACKSPACE_COMMAND, onDeleteKey, COMMAND_PRIORITY_LOW),
-      editor.registerCommand(
-        KEY_ESCAPE_COMMAND,
-        () => {
-          clearSelected();
-          return true;
-        },
-        COMMAND_PRIORITY_LOW,
-      ),
     );
-  }, [editor, isSelected, clearSelected, removeSelf]);
+  }, [editor, active, removeSelf]);
 
   // --- サイズ変更ハンドルのドラッグ ---
   const onHandleDown = (e: ReactPointerEvent<HTMLElement>) => {
@@ -148,7 +181,7 @@ export function ImageView({ nodeKey, image, previewUrl }: ImageViewProps) {
     <>
       <div
         ref={rootRef}
-        className={cn(styles.figure, isSelected && styles.selected, uploading && styles.uploading)}
+        className={cn(styles.figure, active && styles.selected, uploading && styles.uploading)}
         style={{
           width: `${widthPct}%`,
           // 読み込み前から高さを確保してレイアウトのがたつきを防ぐ
@@ -166,7 +199,7 @@ export function ImageView({ nodeKey, image, previewUrl }: ImageViewProps) {
             onError={() => setLoadFailed(true)}
             onClick={(e) => {
               e.stopPropagation();
-              if (!uploading) setSelected(true);
+              if (!uploading) activate();
             }}
             onDoubleClick={(e) => {
               e.stopPropagation();
@@ -182,7 +215,7 @@ export function ImageView({ nodeKey, image, previewUrl }: ImageViewProps) {
           </div>
         )}
 
-        {isSelected && !uploading && (
+        {active && !uploading && (
           <>
             <div className={styles.bar} contentEditable={false}>
               {PRESETS.map((preset) => (

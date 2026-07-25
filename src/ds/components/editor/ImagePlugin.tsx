@@ -54,21 +54,8 @@ export function ImagePlugin() {
   useEffect(() => {
     if (!config) return;
 
-    /** 1 枚ぶんのアップロード。未確定ノード → 実体確定、の順に進む */
-    const upload = async (file: File) => {
-      const previewUrl = URL.createObjectURL(file);
-      let inserted: NodeKey | undefined;
-      editor.update(() => {
-        const node = $createImageNode(null, previewUrl);
-        $insertNodeToNearestRoot(node);
-        inserted = node.getKey();
-      });
-      const key = inserted;
-      if (key === undefined) {
-        URL.revokeObjectURL(previewUrl);
-        return;
-      }
-
+    /** アップロードを待ち、挿入済みのノードを確定させる (失敗したら取り除く) */
+    const finish = async (key: NodeKey, file: File, previewUrl: string) => {
       try {
         const result = await config.onUploadImage(file);
         // 画面を離れたあとに解決することもあるので、ノードの生存を確認してから書き込む
@@ -94,9 +81,23 @@ export function ImagePlugin() {
       }
     };
 
+    /** 1 枚ぶんの挿入。まず未確定ノードを置き、そこからアップロードを走らせる */
+    const insertOne = (file: File) => {
+      const previewUrl = URL.createObjectURL(file);
+      editor.update(() => {
+        const node = $createImageNode(null, previewUrl);
+        $insertNodeToNearestRoot(node);
+        // キーの取得と後続処理はこのクロージャの中で行う。
+        // dispatchCommand の内側は既に editor.update の最中で、
+        // ネストした editor.update は遅延実行されるため、
+        // 呼び出しの直後にキーを読もうとすると undefined になる。
+        void finish(node.getKey(), file, previewUrl);
+      });
+    };
+
     const insertFiles = (files: File[]): boolean => {
       if (files.length === 0) return false;
-      for (const file of files.slice(0, config.maxImagesPerInsert)) void upload(file);
+      for (const file of files.slice(0, config.maxImagesPerInsert)) insertOne(file);
       return true;
     };
 
