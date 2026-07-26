@@ -24,22 +24,10 @@
   display: none;
 }
 
-/* 本文だけのときは領域いっぱいに広げ、どこをタップしても書き始められるようにする */
+/* 領域いっぱいに広げ、どこをタップしても書き始められるようにする */
 .content {
   outline: none;
   min-height: 100%;
-}
-
-/* footer が下に続くときは本文を伸ばさない (footer が画面外へ押し出されるため) */
-.bodyWithFooter .content {
-  min-height: 0;
-}
-
-/* 本文の末尾に添える表示 (OGP カードなど)。編集対象ではないので選択させない */
-.footer {
-  margin-top: var(--space-4);
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 .placeholder {

@@ -1,7 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import {
+  createBookmarkBlock,
   createEditorBlock,
+  LinkPreviewCard,
   RichTextEditor,
   type EditorBlock,
   type EditorImage,
@@ -49,6 +51,7 @@ function initialBlocks(): EditorBlock[] {
     createEditorBlock('h3', 'メモ'),
     createEditorBlock('p', '「### 」で H3、「--- 」で仕切り線を挿入できる。'),
     linkBlock(),
+    createBookmarkBlock('https://example.com/articles/kata'),
   ];
 }
 
@@ -75,7 +78,7 @@ function RichTextEditorPage() {
   return (
     <Doc
       title="RichTextEditor"
-      lede="Lexical ベースのブロックエディタ。見出し (H1/H2/H3) / 箇条書き / チェックボックス / 仕切り線 / ネスト / 画像 / テキストリンクに対応。外部とは EditorBlock[] でやり取りし、Lexical 依存は内部に閉じている。"
+      lede="Lexical ベースのブロックエディタ。見出し (H1/H2/H3) / 箇条書き / チェックボックス / 仕切り線 / ネスト / 画像 / リンクに対応。リンクは「URL のまま / テキストリンク / カード」の 3 通りから選べる。外部とは EditorBlock[] でやり取りし、Lexical 依存は内部に閉じている。"
     >
       <Demo>
         {/* エディタ自体は枠を持たないので、デモでは高さ付きの枠ボックスに収める */}
@@ -96,6 +99,15 @@ function RichTextEditorPage() {
               placeholder="入力してください"
               resolveImageUrl={images.resolve}
               onUploadImage={images.upload}
+              renderBookmark={(bookmark) => (
+                <LinkPreviewCard
+                  preview={{
+                    url: bookmark.url,
+                    title: '型 (kata) — 個人開発のためのデザインシステム',
+                    description: 'カードの中身 (OGP の取得) はアプリ側の責務。ここではダミーを返している。',
+                  }}
+                />
+              )}
             />
           )}
         </div>
@@ -115,6 +127,8 @@ function RichTextEditorPage() {
     const { id, width, height } = await uploadToServer(file);
     return { id, naturalWidth: width, naturalHeight: height };
   }}
+  // カード表示の中身。OGP の取得はアプリ側で行い、見た目だけ返す
+  renderBookmark={({ url }) => <LinkPreviewCard preview={ogpOf(url)} />}
 />`}</Code>
       <PropsTable
         rows={[
@@ -137,9 +151,9 @@ function RichTextEditorPage() {
           { name: 'onImageError', type: '(error: unknown) => void', desc: 'アップロード失敗の通知' },
           { name: 'maxImagesPerInsert', type: 'number', def: '8', desc: '1 回に受け付ける最大枚数' },
           {
-            name: 'footer',
-            type: 'ReactNode',
-            desc: '本文の末尾 (スクロール領域の中) に添える表示。OGP カードなど編集対象でないものを置く',
+            name: 'renderBookmark',
+            type: '(bookmark: EditorBookmark) => ReactNode',
+            desc: 'カード表示 (bookmark ブロック) の中身。未指定なら URL だけの素朴なカードになる',
           },
         ]}
       />

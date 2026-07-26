@@ -33,7 +33,7 @@ src/
 | オーバーレイ | `Modal` / `ConfirmDialog`(`useConfirm`) / `Toast`(`useToast`) |
 | ナビ | `SideNav`(アコーディオン対応・ルーター非依存) |
 | チャート | `BarChart` / `LineChart` / `Sparkline` |
-| エディタ | `RichTextEditor`(Lexical・テキストリンク/画像対応) |
+| エディタ | `RichTextEditor`(Lexical・リンク 3 表示/画像対応) |
 
 lib: `cn()` / `AppearanceProvider` ・ `useAppearance` / 日付ユーティリティ (`today` ほか)。
 

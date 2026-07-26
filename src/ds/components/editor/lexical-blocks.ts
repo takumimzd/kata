@@ -20,10 +20,17 @@ import {
   $isTextNode,
 } from 'lexical';
 import type { ElementNode, LexicalNode } from 'lexical';
+import { $createBookmarkNode, $isBookmarkNode } from './BookmarkNode';
 import { $createImageNode, $isImageNode } from './ImageNode';
 import { LINK_ATTRIBUTES } from './link';
 import type { EditorBlock, EditorBlockType, EditorSpan } from './types';
-import { createEditorBlock, createImageBlock, hasInlineFormat, spansToText } from './types';
+import {
+  createBookmarkBlock,
+  createEditorBlock,
+  createImageBlock,
+  hasInlineFormat,
+  spansToText,
+} from './types';
 
 function isListBlock(type: EditorBlockType): boolean {
   return type === 'li' || type === 'todo';
@@ -114,8 +121,9 @@ function inlineBlock(
 function $createLeaf(block: EditorBlock): LexicalNode {
   const type = block.type;
   if (type === 'hr') return $createHorizontalRuleNode();
-  // image は $blocksToNodes 側で block.image の有無を確認済み
+  // image / bookmark は $blocksToNodes 側で中身の有無を確認済み
   if (type === 'image' && block.image) return $createImageNode(block.image);
+  if (type === 'bookmark' && block.bookmark) return $createBookmarkNode(block.bookmark.url);
   if (type === 'h1' || type === 'h2' || type === 'h3') {
     const node = $createHeadingNode(type as HeadingTagType);
     $appendInline(node, block);
@@ -195,6 +203,11 @@ export function $blocksToNodes(blocks: EditorBlock[]): LexicalNode[] {
       i += 1;
       continue;
     }
+    if (block.type === 'bookmark' && !block.bookmark) {
+      // URL を持たないブックマークは復元できないので捨てる
+      i += 1;
+      continue;
+    }
     if (isListBlock(block.type)) {
       const start = i;
       while (i < blocks.length && isListBlock(blocks[i]?.type ?? 'p')) i += 1;
@@ -241,6 +254,10 @@ function $appendBlock(node: LexicalNode, out: EditorBlock[]): void {
     // アップロード中 (未確定) の画像は出力しない。
     // こうしておくと利用側の自動保存が「まだ実体のない画像」を保存せずに済む。
     if (image) out.push(createImageBlock(image));
+    return;
+  }
+  if ($isBookmarkNode(node)) {
+    out.push(createBookmarkBlock(node.getUrl()));
     return;
   }
   if ($isListNode(node)) {

@@ -1,4 +1,5 @@
 import { $isLinkNode, $toggleLink } from '@lexical/link';
+import { $insertNodeToNearestRoot } from '@lexical/utils';
 import {
   $isListItemNode,
   INSERT_CHECK_LIST_COMMAND,
@@ -15,7 +16,9 @@ import { $findMatchingParent, $getNearestNodeOfType, mergeRegister } from '@lexi
 import {
   $createParagraphNode,
   $getSelection,
+  $isParagraphNode,
   $isRangeSelection,
+  $isTextNode,
   $setSelection,
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
@@ -32,8 +35,10 @@ import { Icon, type IconName } from '../Icon';
 import { cn } from '../../lib/cn';
 import { useImageConfig } from './ImageContext';
 import { INSERT_IMAGES_COMMAND } from './ImagePlugin';
+import { $createBookmarkNode } from './BookmarkNode';
 import { LinkDialog } from './LinkDialog';
-import { LINK_ATTRIBUTES, normalizeLinkUrl } from './link';
+import type { LinkDisplay } from './LinkDialog';
+import { LINK_ATTRIBUTES, normalizeLinkUrl, urlAt } from './link';
 import styles from './EditorToolbar.module.css';
 
 type ActiveType = 'p' | 'h1' | 'h2' | 'h3' | 'li' | 'todo';
@@ -74,6 +79,56 @@ function $selectedLinkUrl(): string | null {
   return $isLinkNode(node) ? node.getURL() : null;
 }
 
+/**
+ * キャレットが乗っている「素の URL」(リンクを張っていない URL 文字列)。
+ * 何もせず書いた URL からでも表示を選べるようにするために見る。
+ */
+function $plainUrlAtCaret(): string | null {
+  const selection = $getSelection();
+  if (!$isRangeSelection(selection) || !selection.isCollapsed()) return null;
+  const node = selection.anchor.getNode();
+  if (!$isTextNode(node)) return null;
+  if ($findMatchingParent(node, $isLinkNode) !== null) return null;
+  return urlAt(node.getTextContent(), selection.anchor.offset)?.url ?? null;
+}
+
+/**
+ * 表示を変える対象 (リンク全体 / キャレット上の素の URL) を選択状態にする。
+ * どちらでもなければ、いま選ばれている範囲をそのまま対象にする。
+ */
+function $selectLinkTarget(): void {
+  const selection = $getSelection();
+  if (!$isRangeSelection(selection)) return;
+  const link = $findMatchingParent(selection.anchor.getNode(), $isLinkNode);
+  if ($isLinkNode(link)) {
+    link.select(0, link.getChildrenSize());
+    return;
+  }
+  if (!selection.isCollapsed()) return;
+  const node = selection.anchor.getNode();
+  if (!$isTextNode(node)) return;
+  const match = urlAt(node.getTextContent(), selection.anchor.offset);
+  if (match) node.select(match.start, match.end);
+}
+
+/** 対象を消し、その位置にブックマーク (カード) ブロックを置く */
+function $replaceWithBookmark(url: string): void {
+  const selection = $getSelection();
+  if (!$isRangeSelection(selection)) return;
+  const top = selection.anchor.getNode().getTopLevelElement();
+  selection.removeText();
+  const bookmark = $createBookmarkNode(url);
+  // 対象だけの段落だったならその段落ごと差し替える (空行を残さない)
+  if ($isParagraphNode(top) && top.getTextContentSize() === 0) {
+    top.replace(bookmark);
+  } else {
+    $insertNodeToNearestRoot(bookmark);
+  }
+  // カードの後ろは必ず書ける行にしておく
+  if (bookmark.getNextSibling() === null) bookmark.insertAfter($createParagraphNode());
+  bookmark.selectNext();
+}
+
 /** 書式トグルとネスト階層の変更を行う補助バー */
 export function EditorToolbar() {
   const [editor] = useLexicalComposerContext();
@@ -86,9 +141,11 @@ export function EditorToolbar() {
   const [italic, setItalic] = useState(false);
   // 選択位置に掛かっているリンクの URL (掛かっていなければ null)
   const [linkUrl, setLinkUrl] = useState<string | null>(null);
+  // キャレットが乗っている素の URL (リンクを張っていない URL 文字列)
+  const [plainUrl, setPlainUrl] = useState<string | null>(null);
   // テキストが選ばれているか (選択範囲があるときだけ新しいリンクを張れる)
   const [hasSelection, setHasSelection] = useState(false);
-  const [linkDialogUrl, setLinkDialogUrl] = useState<string | null>(null);
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   // ダイアログを開くとエディタからフォーカスが外れるので、開く直前の選択を控えておく
   const savedSelectionRef = useRef<BaseSelection | null>(null);
   // 画像機能が有効なときだけ画像ボタンを出す
@@ -104,6 +161,7 @@ export function EditorToolbar() {
         setBold(range?.hasFormat('bold') === true);
         setItalic(range?.hasFormat('italic') === true);
         setLinkUrl($selectedLinkUrl());
+        setPlainUrl($plainUrlAtCaret());
         setHasSelection(range !== null && !range.isCollapsed());
       });
     read();
@@ -162,7 +220,7 @@ export function EditorToolbar() {
       const selection = $getSelection();
       savedSelectionRef.current = selection ? selection.clone() : null;
     });
-    setLinkDialogUrl(linkUrl ?? '');
+    setLinkDialogOpen(true);
   };
 
   /** ダイアログを開いたときの選択に戻してから変更を当てる */
@@ -172,18 +230,38 @@ export function EditorToolbar() {
       if (saved) $setSelection(saved.clone());
       run();
     });
-    setLinkDialogUrl(null);
+    setLinkDialogOpen(false);
     editor.focus();
   };
 
-  const applyLink = (raw: string) => {
+  const applyLink = (raw: string, display: LinkDisplay) => {
     const url = normalizeLinkUrl(raw);
     if (url === null) return;
-    withSavedSelection(() => $toggleLink(url, LINK_ATTRIBUTES));
+    withSavedSelection(() => {
+      $selectLinkTarget();
+      const selection = $getSelection();
+      if (!$isRangeSelection(selection)) return;
+      if (display === 'card') {
+        $replaceWithBookmark(url);
+        return;
+      }
+      if (display === 'url') {
+        // リンクを外し、見えている文字列を URL そのものに置き換える
+        $toggleLink(null);
+        const after = $getSelection();
+        if ($isRangeSelection(after)) after.insertText(url);
+        return;
+      }
+      // 対象が無い (どこも選ばれていない) ときは何もしない
+      if (!selection.isCollapsed()) $toggleLink(url, LINK_ATTRIBUTES);
+    });
   };
 
   const removeLink = () => {
-    withSavedSelection(() => $toggleLink(null));
+    withSavedSelection(() => {
+      $selectLinkTarget();
+      $toggleLink(null);
+    });
   };
 
   const pickImages = (fileList: FileList | null) => {
@@ -258,7 +336,7 @@ export function EditorToolbar() {
           className={cn(styles.button, linkUrl !== null && styles.buttonOn)}
           aria-label="リンクを設定"
           aria-pressed={linkUrl !== null}
-          disabled={!hasSelection && linkUrl === null}
+          disabled={!hasSelection && linkUrl === null && plainUrl === null}
           onMouseDown={(e) => e.preventDefault()}
           onClick={openLinkDialog}
         >
@@ -334,13 +412,14 @@ export function EditorToolbar() {
           <Icon name="indent" size={20} />
         </button>
       </div>
-      {linkDialogUrl !== null && (
+      {linkDialogOpen && (
         <LinkDialog
-          initialUrl={linkDialogUrl}
+          initialUrl={linkUrl ?? plainUrl ?? ''}
+          initialDisplay={linkUrl !== null ? 'link' : plainUrl !== null ? 'url' : 'link'}
           canRemove={linkUrl !== null}
           onApply={applyLink}
           onRemove={removeLink}
-          onClose={() => setLinkDialogUrl(null)}
+          onClose={() => setLinkDialogOpen(false)}
         />
       )}
     </div>
