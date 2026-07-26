@@ -58,6 +58,8 @@ export {
   type EditorImage,
   type EditorSpan,
   type ImageUploadResult,
+  isValidLinkUrl,
+  normalizeLinkUrl,
 } from './components/editor';
 
 // --- 単体 (components/ 直下) ---
@@ -82,6 +84,7 @@ export { Badge, type BadgeVariant } from './components/Badge';
 export { Chip, ChipGroup } from './components/Chip';
 export { ProgressBar, type ProgressTone } from './components/ProgressBar';
 export { Card, type CardPadding } from './components/Card';
+export { LinkPreviewCard, type LinkPreview } from './components/LinkPreviewCard';
 export { Text, type TextVariant } from './components/Text';
 export { SectionTitle } from './components/SectionTitle';
 export { PageTitle } from './components/PageTitle';

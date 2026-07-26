@@ -28,12 +28,12 @@ src/
 | 分類 | コンポーネント |
 |---|---|
 | ボタン | `Button` / `IconButton` |
-| 表示 | `Icon` / `SectionTitle` |
+| 表示 | `Icon` / `SectionTitle` / `LinkPreviewCard`(OGP カード) |
 | 入力 | `Field` / `Input` / `Stepper` / `DatePicker` / `SearchBox` / `PinPad` |
 | オーバーレイ | `Modal` / `ConfirmDialog`(`useConfirm`) / `Toast`(`useToast`) |
 | ナビ | `SideNav`(アコーディオン対応・ルーター非依存) |
 | チャート | `BarChart` / `LineChart` / `Sparkline` |
-| エディタ | `RichTextEditor`(Lexical) |
+| エディタ | `RichTextEditor`(Lexical・テキストリンク/画像対応) |
 
 lib: `cn()` / `AppearanceProvider` ・ `useAppearance` / 日付ユーティリティ (`today` ほか)。
 

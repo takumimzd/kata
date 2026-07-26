@@ -32,6 +32,11 @@ export interface EditorSpan {
   text: string;
   bold?: boolean;
   italic?: boolean;
+  /**
+   * リンク先 URL。設定された断片はリンクとして表示され、常に別タブで開く。
+   * 隣り合う同じ URL の断片は 1 つのリンクとして復元される。
+   */
+  link?: string;
 }
 
 /**
@@ -66,7 +71,9 @@ export function spansToText(spans: EditorSpan[]): string {
 
 /** 装飾が 1 つでも付いているか (spans を持たせるかの判断に使う) */
 export function hasInlineFormat(spans: EditorSpan[]): boolean {
-  return spans.some((span) => span.bold === true || span.italic === true);
+  return spans.some(
+    (span) => span.bold === true || span.italic === true || span.link !== undefined,
+  );
 }
 
 let uidCounter = 0;

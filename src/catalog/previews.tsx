@@ -193,6 +193,36 @@ const previews: Record<string, () => ReactNode> = {
       <div style={{ height: 3, background: 'var(--fill-1)', width: '68%', borderRadius: 2 }} />
     </div>
   ),
+  'link-preview-card': () => (
+    <div
+      style={{
+        width: 128,
+        background: 'var(--surface)',
+        border: '1px solid var(--line-2)',
+        borderRadius: 10,
+        overflow: 'hidden',
+        boxShadow: 'var(--shadow-sm)',
+      }}
+    >
+      <div style={{ height: 44, background: 'var(--accent-soft)' }} />
+      <div style={{ padding: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <div style={{ height: 5, background: 'var(--fill-2)', width: '78%', borderRadius: 2 }} />
+        <div style={{ height: 3, background: 'var(--fill-1)', width: '92%', borderRadius: 2 }} />
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            marginTop: 2,
+            color: 'var(--text-faint)',
+          }}
+        >
+          <Icon name="link" size={11} />
+          <div style={{ height: 3, background: 'var(--fill-1)', width: 44, borderRadius: 2 }} />
+        </div>
+      </div>
+    </div>
+  ),
   badge: () => (
     <div style={{ display: 'flex', gap: 6 }}>
       <Badge variant="accent">完了</Badge>
