@@ -6,7 +6,10 @@ export {
   type EditorBlockType,
   type EditorImage,
   type EditorSpan,
+  type EditorBookmark,
   type ImageUploadResult,
+  createBookmarkBlock,
+  findUrlsInText,
   isValidLinkUrl,
   normalizeLinkUrl,
 } from './RichTextEditor';

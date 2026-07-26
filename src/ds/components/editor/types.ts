@@ -1,5 +1,14 @@
 /** エディタが扱うブロックの書式種別 */
-export type EditorBlockType = 'p' | 'h1' | 'h2' | 'h3' | 'hr' | 'li' | 'todo' | 'image';
+export type EditorBlockType =
+  | 'p'
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'hr'
+  | 'li'
+  | 'todo'
+  | 'image'
+  | 'bookmark';
 
 /** li / todo のネスト階層の最大深さ */
 export const MAX_INDENT = 6;
@@ -25,6 +34,15 @@ export interface EditorImage {
    */
   widthPct: number;
   alt: string;
+}
+
+/**
+ * リンクをカード (OGP) として置くブロックの中身。
+ * カードに何を描くかは OGP の取得が要るのでアプリ側の責務で、
+ * ここは URL しか持たない (RichTextEditor の renderBookmark に委ねる)。
+ */
+export interface EditorBookmark {
+  url: string;
 }
 
 /** 文字装飾を持つ本文の断片 */
@@ -57,6 +75,8 @@ export interface EditorBlock {
   indent: number;
   /** type === 'image' のときだけ入る */
   image?: EditorImage;
+  /** type === 'bookmark' のときだけ入る */
+  bookmark?: EditorBookmark;
   /**
    * 装飾つきの本文。装飾が 1 つも無いブロックでは持たない
    * (既存データをそのまま読めるようにするため任意項目にしてある)。
@@ -103,6 +123,16 @@ export function createEditorBlock(
  */
 export function createImageBlock(image: EditorImage): EditorBlock {
   return { id: uid(), type: 'image', text: '', checked: false, indent: 0, image };
+}
+
+/**
+ * ブックマーク (OGP カード) ブロックを作る。
+ * text に URL を入れておくのは、利用側のタイトル・プレビュー・検索が
+ * text だけを見ても「何のリンクか」を失わないようにするため
+ * (画像と違い、URL は読める情報なので隠す理由がない)。
+ */
+export function createBookmarkBlock(url: string): EditorBlock {
+  return { id: uid(), type: 'bookmark', text: url, checked: false, indent: 0, bookmark: { url } };
 }
 
 /** 表示幅を有効範囲に丸める */

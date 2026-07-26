@@ -1,0 +1,52 @@
+/* Lexical が作る入れ物 (createDOM)。ブロック 1 つぶんの余白を上下に取る */
+.host {
+  margin: var(--space-3) 0;
+}
+
+/* カード本体 + メニューボタンの重ね合わせ */
+.card {
+  position: relative;
+  /* 本文の行幅いっぱいだと重いので、添え物として少し狭める */
+  max-width: 420px;
+}
+
+.menuButton {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius);
+  color: var(--text-dim);
+  background: color-mix(in oklab, var(--surface) 88%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: var(--shadow-sm);
+}
+.menuButton:active {
+  transform: scale(0.92);
+}
+
+/* OGP が取れないときの素の見た目 */
+.fallback {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.fallbackUrl {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  /* メニューボタンと重ならないよう右を空ける */
+  padding-right: var(--space-6);
+}

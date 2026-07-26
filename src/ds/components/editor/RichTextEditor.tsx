@@ -41,6 +41,9 @@ import {
 import { useEffect, useMemo, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { cn } from '../../lib/cn';
+import { BookmarkConfigContext } from './BookmarkContext';
+import type { BookmarkConfig } from './BookmarkContext';
+import { BookmarkNode } from './BookmarkNode';
 import { EditorToolbar } from './EditorToolbar';
 import { ImageConfigContext } from './ImageContext';
 import type { ImageConfig, ImageUploadResult } from './ImageContext';
@@ -50,13 +53,19 @@ import { ImagePlugin } from './ImagePlugin';
 import { $blocksToNodes, $nodesToBlocks } from './lexical-blocks';
 import { isValidLinkUrl, LINK_ATTRIBUTES, normalizeLinkUrl } from './link';
 import styles from './RichTextEditor.module.css';
-import type { EditorBlock, EditorImage } from './types';
+import type { EditorBlock, EditorBookmark, EditorImage } from './types';
 import { MAX_INDENT } from './types';
 
-export type { EditorBlock, EditorBlockType, EditorImage, EditorSpan } from './types';
+export type {
+  EditorBlock,
+  EditorBlockType,
+  EditorBookmark,
+  EditorImage,
+  EditorSpan,
+} from './types';
 export type { ImageUploadResult } from './ImageContext';
-export { MAX_INDENT, createEditorBlock } from './types';
-export { isValidLinkUrl, normalizeLinkUrl } from './link';
+export { MAX_INDENT, createBookmarkBlock, createEditorBlock } from './types';
+export { findUrlsInText, isValidLinkUrl, normalizeLinkUrl } from './link';
 
 /** 1 回の操作で受け付ける画像の既定枚数 */
 const DEFAULT_MAX_IMAGES_PER_INSERT = 8;
@@ -193,10 +202,11 @@ interface RichTextEditorProps {
   /** 1 回の操作で受け付ける最大枚数 (既定 8) */
   maxImagesPerInsert?: number;
   /**
-   * 本文の末尾 (スクロール領域の中) に添える表示。
-   * リンクの OGP カードのような「本文から導かれるが編集対象ではないもの」を置く。
+   * ブックマーク (OGP カード) ブロックの中身を描く。
+   * OGP の取得はアプリ側の責務なので、URL からカードの見た目を返してもらう。
+   * 未指定のときは URL だけの素朴なカードになる。
    */
-  footer?: ReactNode;
+  renderBookmark?: (bookmark: EditorBookmark) => ReactNode;
 }
 
 /** 編集状態の変化を EditorBlock[] へ書き戻す */
@@ -293,11 +303,11 @@ function AutoFocusEndPlugin({ enabled }: { enabled: boolean }) {
 }
 
 /** 本文 (スクロール領域)。下の余白クリックで末尾にフォーカスする */
-function EditorBody({ placeholder, footer }: { placeholder: string; footer?: ReactNode }) {
+function EditorBody({ placeholder }: { placeholder: string }) {
   const [editor] = useLexicalComposerContext();
   return (
     <div
-      className={cn(styles.body, Boolean(footer) && styles.bodyWithFooter)}
+      className={styles.body}
       onMouseDown={(e) => {
         // 本文 (contenteditable) より下の余白をタップしたときだけ末尾にフォーカス
         // する。横方向の余白 (行の右側など) はブラウザ既定のキャレット配置に任せて、
@@ -326,7 +336,6 @@ function EditorBody({ placeholder, footer }: { placeholder: string; footer?: Rea
         }
         ErrorBoundary={LexicalErrorBoundary}
       />
-      {footer ? <div className={styles.footer}>{footer}</div> : null}
     </div>
   );
 }
@@ -392,7 +401,7 @@ export function RichTextEditor({
   onUploadImage,
   onImageError,
   maxImagesPerInsert = DEFAULT_MAX_IMAGES_PER_INSERT,
-  footer,
+  renderBookmark,
 }: RichTextEditorProps) {
   // 初期状態の構築はマウント時の value のみを使う (以後は Lexical が真実の状態)
   const initialBlocksRef = useRef(value);
@@ -402,6 +411,7 @@ export function RichTextEditor({
   // 未指定なら ImagePlugin もツールバーの画像ボタンも出ないため、
   // これまでどおりテキスト専用のエディタとして動く。
   const imageEnabled = resolveImageUrl !== undefined && onUploadImage !== undefined;
+  const bookmarkEnabled = renderBookmark !== undefined;
   // ハンドラは ref 越しに呼ぶ。呼び出し側がインラインの関数を渡しても
   // context の同一性が保たれ、プラグインの再登録が起きない。
   const handlersRef = useRef({ resolveImageUrl, onUploadImage, onImageError });
@@ -421,11 +431,27 @@ export function RichTextEditor({
     };
   }, [imageEnabled, maxImagesPerInsert]);
 
+  // カードの描画も同じく ref 越しに呼び、context の同一性を保つ
+  const renderBookmarkRef = useRef(renderBookmark);
+  renderBookmarkRef.current = renderBookmark;
+  const bookmarkConfig = useMemo<BookmarkConfig | null>(() => {
+    if (!bookmarkEnabled) return null;
+    return { renderBookmark: (bookmark) => renderBookmarkRef.current?.(bookmark) ?? null };
+  }, [bookmarkEnabled]);
+
   const initialConfig = useMemo<InitialConfigType>(
     () => ({
       namespace,
       theme,
-      nodes: [HeadingNode, ListNode, ListItemNode, HorizontalRuleNode, ImageNode, LinkNode],
+      nodes: [
+        HeadingNode,
+        ListNode,
+        ListItemNode,
+        HorizontalRuleNode,
+        ImageNode,
+        LinkNode,
+        BookmarkNode,
+      ],
       onError: (error: Error) => {
         throw error;
       },
@@ -441,28 +467,30 @@ export function RichTextEditor({
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <ImageConfigContext.Provider value={imageConfig}>
-        {/* ドロップは本文だけでなくエディタ全体で受ける (下部の余白に落としても入る) */}
-        <div ref={editorRef} className={cn(styles.editor, className)}>
-          <EditorToolbar />
-          <EditorBody placeholder={placeholder} footer={footer} />
-          <ImageDropZone containerRef={editorRef} />
-        </div>
-        <HistoryPlugin />
-        <ListPlugin />
-        {/* リンクは行き先を問わず別タブで開く (書きかけのメモを離れないため) */}
-        <LinkPlugin validateUrl={isValidLinkUrl} attributes={LINK_ATTRIBUTES} />
-        <ClickableLinkPlugin newTab />
-        {/* チェックボックスのトグル時に li にフォーカスを移さない (モバイルで
-            意図しないスクロールが走るのを避ける) */}
-        <CheckListPlugin disableTakeFocusOnClick />
-        <HorizontalRulePlugin />
-        <TabIndentationPlugin maxIndent={MAX_INDENT} $canIndent={$selectionInList} />
-        <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-        <SyncPlugin onChange={onChange} />
-        <AutoFocusEndPlugin enabled={autoFocusEnd ?? false} />
-        <ChecklistCaretFix />
-        <KeepCaretVisiblePlugin />
-        <ImagePlugin />
+        <BookmarkConfigContext.Provider value={bookmarkConfig}>
+          {/* ドロップは本文だけでなくエディタ全体で受ける (下部の余白に落としても入る) */}
+          <div ref={editorRef} className={cn(styles.editor, className)}>
+            <EditorToolbar />
+            <EditorBody placeholder={placeholder} />
+            <ImageDropZone containerRef={editorRef} />
+          </div>
+          <HistoryPlugin />
+          <ListPlugin />
+          {/* リンクは行き先を問わず別タブで開く (書きかけのメモを離れないため) */}
+          <LinkPlugin validateUrl={isValidLinkUrl} attributes={LINK_ATTRIBUTES} />
+          <ClickableLinkPlugin newTab />
+          {/* チェックボックスのトグル時に li にフォーカスを移さない (モバイルで
+              意図しないスクロールが走るのを避ける) */}
+          <CheckListPlugin disableTakeFocusOnClick />
+          <HorizontalRulePlugin />
+          <TabIndentationPlugin maxIndent={MAX_INDENT} $canIndent={$selectionInList} />
+          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+          <SyncPlugin onChange={onChange} />
+          <AutoFocusEndPlugin enabled={autoFocusEnd ?? false} />
+          <ChecklistCaretFix />
+          <KeepCaretVisiblePlugin />
+          <ImagePlugin />
+        </BookmarkConfigContext.Provider>
       </ImageConfigContext.Provider>
     </LexicalComposer>
   );
