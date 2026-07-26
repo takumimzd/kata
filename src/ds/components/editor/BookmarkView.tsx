@@ -61,7 +61,18 @@ export function BookmarkView({ nodeKey, url }: BookmarkViewProps) {
     });
 
   return (
-    <div className={styles.card}>
+    <div
+      className={styles.card}
+      onPointerDown={(e) => {
+        // タッチでカードに触れたときは本文へフォーカスを移さない。
+        // 移るとモバイルでソフトキーボードが開き、読むだけのカードなのに
+        // 画面が半分隠れてしまう。マウスでは既定の挙動を残す
+        // (キャレット移動や Delete / Backspace での削除を活かすため)。
+        if (e.pointerType === 'mouse') return;
+        e.preventDefault();
+        editor.getRootElement()?.blur();
+      }}
+    >
       {config ? config.renderBookmark({ url }) : <FallbackCard url={url} />}
       {/* カードは <a> なので、メニューのボタンは中に入れず上に重ねる */}
       <button
