@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@lexical/link':
+        specifier: ^0.45.0
+        version: 0.45.0
       '@lexical/list':
         specifier: ^0.45.0
         version: 0.45.0

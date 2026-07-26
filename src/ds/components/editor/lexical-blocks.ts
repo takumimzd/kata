@@ -1,3 +1,4 @@
+import { $createLinkNode, $isLinkNode, LinkNode } from '@lexical/link';
 import {
   $createListItemNode,
   $createListNode,
@@ -20,6 +21,7 @@ import {
 } from 'lexical';
 import type { ElementNode, LexicalNode } from 'lexical';
 import { $createImageNode, $isImageNode } from './ImageNode';
+import { LINK_ATTRIBUTES } from './link';
 import type { EditorBlock, EditorBlockType, EditorSpan } from './types';
 import { createEditorBlock, createImageBlock, hasInlineFormat, spansToText } from './types';
 
@@ -34,11 +36,23 @@ function $appendInline(node: ElementNode, block: EditorBlock): void {
     if (block.text) node.append($createTextNode(block.text));
     return;
   }
+  // 直前に開いたリンク。続けて同じ URL の断片が来たら 1 つにまとめる
+  let openLink: { url: string; node: LinkNode } | null = null;
   for (const span of spans) {
     if (!span.text) continue;
     const text = $createTextNode(span.text);
     if (span.bold) text.toggleFormat('bold');
     if (span.italic) text.toggleFormat('italic');
+    if (span.link !== undefined) {
+      if (openLink === null || openLink.url !== span.link) {
+        const link = $createLinkNode(span.link, LINK_ATTRIBUTES);
+        node.append(link);
+        openLink = { url: span.link, node: link };
+      }
+      openLink.node.append(text);
+      continue;
+    }
+    openLink = null;
     node.append(text);
   }
 }
@@ -47,7 +61,7 @@ function $appendInline(node: ElementNode, block: EditorBlock): void {
 function pushSpan(out: EditorSpan[], span: EditorSpan): void {
   if (span.text === '') return;
   const last = out[out.length - 1];
-  if (last && last.bold === span.bold && last.italic === span.italic) {
+  if (last && last.bold === span.bold && last.italic === span.italic && last.link === span.link) {
     last.text += span.text;
     return;
   }
@@ -64,6 +78,19 @@ function $spansOf(node: ElementNode): EditorSpan[] {
       if (child.hasFormat('bold')) span.bold = true;
       if (child.hasFormat('italic')) span.italic = true;
       pushSpan(out, span);
+      continue;
+    }
+    // リンクは要素なので、中の断片を link 付きで取り出す
+    if ($isLinkNode(child)) {
+      const url = child.getURL();
+      for (const inner of child.getChildren()) {
+        const span: EditorSpan = { text: inner.getTextContent(), link: url };
+        if ($isTextNode(inner)) {
+          if (inner.hasFormat('bold')) span.bold = true;
+          if (inner.hasFormat('italic')) span.italic = true;
+        }
+        pushSpan(out, span);
+      }
       continue;
     }
     // 改行など装飾を持たない要素は、テキストとしてだけ拾う

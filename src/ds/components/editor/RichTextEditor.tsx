@@ -1,3 +1,4 @@
+import { $createLinkNode, $isLinkNode, LinkNode } from '@lexical/link';
 import { $isListItemNode, ListItemNode, ListNode } from '@lexical/list';
 import {
   BOLD_ITALIC_STAR,
@@ -6,7 +7,7 @@ import {
   ITALIC_STAR,
   UNORDERED_LIST,
 } from '@lexical/markdown';
-import type { ElementTransformer } from '@lexical/markdown';
+import type { ElementTransformer, TextMatchTransformer } from '@lexical/markdown';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
@@ -19,6 +20,8 @@ import {
   HorizontalRuleNode,
 } from '@lexical/react/LexicalHorizontalRuleNode';
 import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin';
+import { ClickableLinkPlugin } from '@lexical/react/LexicalClickableLinkPlugin';
+import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
@@ -29,12 +32,14 @@ import type { HeadingTagType } from '@lexical/rich-text';
 import type { InitialConfigType } from '@lexical/react/LexicalComposer';
 import { $findMatchingParent } from '@lexical/utils';
 import {
+  $createTextNode,
   $getNearestNodeFromDOMNode,
   $getRoot,
   $getSelection,
   $isRangeSelection,
 } from 'lexical';
 import { useEffect, useMemo, useRef } from 'react';
+import type { ReactNode } from 'react';
 import { cn } from '../../lib/cn';
 import { EditorToolbar } from './EditorToolbar';
 import { ImageConfigContext } from './ImageContext';
@@ -43,6 +48,7 @@ import { ImageDropZone } from './ImageDropZone';
 import { ImageNode } from './ImageNode';
 import { ImagePlugin } from './ImagePlugin';
 import { $blocksToNodes, $nodesToBlocks } from './lexical-blocks';
+import { isValidLinkUrl, LINK_ATTRIBUTES, normalizeLinkUrl } from './link';
 import styles from './RichTextEditor.module.css';
 import type { EditorBlock, EditorImage } from './types';
 import { MAX_INDENT } from './types';
@@ -50,6 +56,7 @@ import { MAX_INDENT } from './types';
 export type { EditorBlock, EditorBlockType, EditorImage, EditorSpan } from './types';
 export type { ImageUploadResult } from './ImageContext';
 export { MAX_INDENT, createEditorBlock } from './types';
+export { isValidLinkUrl, normalizeLinkUrl } from './link';
 
 /** 1 回の操作で受け付ける画像の既定枚数 */
 const DEFAULT_MAX_IMAGES_PER_INSERT = 8;
@@ -97,9 +104,37 @@ const HORIZONTAL_RULE: ElementTransformer = {
 };
 
 /**
+ * `[表示テキスト](URL)` をテキストリンクに変換するトランスフォーマー。
+ * @lexical/markdown の LINK を使わず自前で持つのは、必ず別タブで開く属性を
+ * 付けたいのと、http(s) 以外のスキームを弾きたいため。
+ */
+const LINK: TextMatchTransformer = {
+  dependencies: [LinkNode],
+  export: (node) => {
+    if (!$isLinkNode(node)) return null;
+    return `[${node.getTextContent()}](${node.getURL()})`;
+  },
+  importRegExp: /\[([^[\]]+)\]\(([^()\s]+)\)/,
+  regExp: /\[([^[\]]+)\]\(([^()\s]+)\)$/,
+  replace: (textNode, match) => {
+    const label = match[1] ?? '';
+    const url = normalizeLinkUrl(match[2] ?? '');
+    // リンクにできない URL のときは書いた通りの文字列のまま残す
+    if (url === null) return;
+    const link = $createLinkNode(url, LINK_ATTRIBUTES);
+    const inner = $createTextNode(label);
+    inner.setFormat(textNode.getFormat());
+    link.append(inner);
+    textNode.replace(link);
+  },
+  trigger: ')',
+  type: 'text-match',
+};
+
+/**
  * マークダウン風ショートカット:
  * 見出し (H1/H2/H3) / 箇条書き / チェックボックス / 仕切り線 と、
- * 文字装飾 (`**太字**` `*斜体*`) を有効化。
+ * 文字装飾 (`**太字**` `*斜体*`)、テキストリンク (`[表示テキスト](URL)`) を有効化。
  * アンダースコア版 (`__` `_`) は普通の文章で誤爆しやすいので入れない。
  */
 const TRANSFORMERS = [
@@ -110,6 +145,7 @@ const TRANSFORMERS = [
   BOLD_ITALIC_STAR,
   BOLD_STAR,
   ITALIC_STAR,
+  LINK,
 ];
 
 /** Tab でのインデントはリスト / チェックボックス内のみ許可する (段落は対象外) */
@@ -123,6 +159,7 @@ const theme = {
   paragraph: styles.paragraph,
   heading: { h1: styles.h1, h2: styles.h2, h3: styles.h3 },
   text: { bold: styles.bold, italic: styles.italic },
+  link: styles.link,
   hr: styles.hr,
   hrSelected: styles.hrSelected,
   list: {
@@ -155,6 +192,11 @@ interface RichTextEditorProps {
   onImageError?: (error: unknown) => void;
   /** 1 回の操作で受け付ける最大枚数 (既定 8) */
   maxImagesPerInsert?: number;
+  /**
+   * 本文の末尾 (スクロール領域の中) に添える表示。
+   * リンクの OGP カードのような「本文から導かれるが編集対象ではないもの」を置く。
+   */
+  footer?: ReactNode;
 }
 
 /** 編集状態の変化を EditorBlock[] へ書き戻す */
@@ -251,11 +293,11 @@ function AutoFocusEndPlugin({ enabled }: { enabled: boolean }) {
 }
 
 /** 本文 (スクロール領域)。下の余白クリックで末尾にフォーカスする */
-function EditorBody({ placeholder }: { placeholder: string }) {
+function EditorBody({ placeholder, footer }: { placeholder: string; footer?: ReactNode }) {
   const [editor] = useLexicalComposerContext();
   return (
     <div
-      className={styles.body}
+      className={cn(styles.body, Boolean(footer) && styles.bodyWithFooter)}
       onMouseDown={(e) => {
         // 本文 (contenteditable) より下の余白をタップしたときだけ末尾にフォーカス
         // する。横方向の余白 (行の右側など) はブラウザ既定のキャレット配置に任せて、
@@ -284,6 +326,7 @@ function EditorBody({ placeholder }: { placeholder: string }) {
         }
         ErrorBoundary={LexicalErrorBoundary}
       />
+      {footer ? <div className={styles.footer}>{footer}</div> : null}
     </div>
   );
 }
@@ -349,6 +392,7 @@ export function RichTextEditor({
   onUploadImage,
   onImageError,
   maxImagesPerInsert = DEFAULT_MAX_IMAGES_PER_INSERT,
+  footer,
 }: RichTextEditorProps) {
   // 初期状態の構築はマウント時の value のみを使う (以後は Lexical が真実の状態)
   const initialBlocksRef = useRef(value);
@@ -381,7 +425,7 @@ export function RichTextEditor({
     () => ({
       namespace,
       theme,
-      nodes: [HeadingNode, ListNode, ListItemNode, HorizontalRuleNode, ImageNode],
+      nodes: [HeadingNode, ListNode, ListItemNode, HorizontalRuleNode, ImageNode, LinkNode],
       onError: (error: Error) => {
         throw error;
       },
@@ -400,11 +444,14 @@ export function RichTextEditor({
         {/* ドロップは本文だけでなくエディタ全体で受ける (下部の余白に落としても入る) */}
         <div ref={editorRef} className={cn(styles.editor, className)}>
           <EditorToolbar />
-          <EditorBody placeholder={placeholder} />
+          <EditorBody placeholder={placeholder} footer={footer} />
           <ImageDropZone containerRef={editorRef} />
         </div>
         <HistoryPlugin />
         <ListPlugin />
+        {/* リンクは行き先を問わず別タブで開く (書きかけのメモを離れないため) */}
+        <LinkPlugin validateUrl={isValidLinkUrl} attributes={LINK_ATTRIBUTES} />
+        <ClickableLinkPlugin newTab />
         {/* チェックボックスのトグル時に li にフォーカスを移さない (モバイルで
             意図しないスクロールが走るのを避ける) */}
         <CheckListPlugin disableTakeFocusOnClick />

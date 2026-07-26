@@ -7,4 +7,6 @@ export {
   type EditorImage,
   type EditorSpan,
   type ImageUploadResult,
+  isValidLinkUrl,
+  normalizeLinkUrl,
 } from './RichTextEditor';

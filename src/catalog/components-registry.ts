@@ -53,6 +53,7 @@ export const COMPONENTS: CompEntry[] = [
   entry('page-title', 'PageTitle', 'ページ見出し h1', 'root'),
   entry('section-title', 'SectionTitle', 'ヘアライン罫の見出し', 'root'),
   entry('card', 'Card', 'サーフェス容器', 'root'),
+  entry('link-preview-card', 'LinkPreviewCard', 'リンクの OGP カード', 'root'),
   entry('badge', 'Badge', '状態ラベル', 'root'),
   entry('chip', 'Chip', '角丸の小ボタン・タグ', 'root'),
   entry('progress-bar', 'ProgressBar', '進捗バー', 'root'),

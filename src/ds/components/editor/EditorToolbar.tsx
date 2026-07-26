@@ -1,3 +1,4 @@
+import { $isLinkNode, $toggleLink } from '@lexical/link';
 import {
   $isListItemNode,
   INSERT_CHECK_LIST_COMMAND,
@@ -15,6 +16,7 @@ import {
   $createParagraphNode,
   $getSelection,
   $isRangeSelection,
+  $setSelection,
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   COMMAND_PRIORITY_LOW,
@@ -24,11 +26,14 @@ import {
   REDO_COMMAND,
   UNDO_COMMAND,
 } from 'lexical';
+import type { BaseSelection } from 'lexical';
 import { useEffect, useRef, useState } from 'react';
 import { Icon, type IconName } from '../Icon';
 import { cn } from '../../lib/cn';
 import { useImageConfig } from './ImageContext';
 import { INSERT_IMAGES_COMMAND } from './ImagePlugin';
+import { LinkDialog } from './LinkDialog';
+import { LINK_ATTRIBUTES, normalizeLinkUrl } from './link';
 import styles from './EditorToolbar.module.css';
 
 type ActiveType = 'p' | 'h1' | 'h2' | 'h3' | 'li' | 'todo';
@@ -61,6 +66,14 @@ function $activeType(): ActiveType {
   return 'p';
 }
 
+/** 選択位置にかかっているリンクの URL (無ければ null。editorState.read 内で呼ぶ) */
+function $selectedLinkUrl(): string | null {
+  const selection = $getSelection();
+  if (!$isRangeSelection(selection)) return null;
+  const node = $findMatchingParent(selection.anchor.getNode(), $isLinkNode);
+  return $isLinkNode(node) ? node.getURL() : null;
+}
+
 /** 書式トグルとネスト階層の変更を行う補助バー */
 export function EditorToolbar() {
   const [editor] = useLexicalComposerContext();
@@ -71,6 +84,13 @@ export function EditorToolbar() {
   // 毎回新しいオブジェクトになり、変化が無くても再描画されてしまう。
   const [bold, setBold] = useState(false);
   const [italic, setItalic] = useState(false);
+  // 選択位置に掛かっているリンクの URL (掛かっていなければ null)
+  const [linkUrl, setLinkUrl] = useState<string | null>(null);
+  // テキストが選ばれているか (選択範囲があるときだけ新しいリンクを張れる)
+  const [hasSelection, setHasSelection] = useState(false);
+  const [linkDialogUrl, setLinkDialogUrl] = useState<string | null>(null);
+  // ダイアログを開くとエディタからフォーカスが外れるので、開く直前の選択を控えておく
+  const savedSelectionRef = useRef<BaseSelection | null>(null);
   // 画像機能が有効なときだけ画像ボタンを出す
   const imageConfig = useImageConfig();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -83,6 +103,8 @@ export function EditorToolbar() {
         const range = $isRangeSelection(selection) ? selection : null;
         setBold(range?.hasFormat('bold') === true);
         setItalic(range?.hasFormat('italic') === true);
+        setLinkUrl($selectedLinkUrl());
+        setHasSelection(range !== null && !range.isCollapsed());
       });
     read();
     return mergeRegister(
@@ -132,6 +154,36 @@ export function EditorToolbar() {
 
   const changeIndent = (dir: 1 | -1) => {
     editor.dispatchCommand(dir > 0 ? INDENT_CONTENT_COMMAND : OUTDENT_CONTENT_COMMAND, undefined);
+  };
+
+  /** 開く直前の選択を控えてからリンク設定ダイアログを出す */
+  const openLinkDialog = () => {
+    editor.getEditorState().read(() => {
+      const selection = $getSelection();
+      savedSelectionRef.current = selection ? selection.clone() : null;
+    });
+    setLinkDialogUrl(linkUrl ?? '');
+  };
+
+  /** ダイアログを開いたときの選択に戻してから変更を当てる */
+  const withSavedSelection = (run: () => void) => {
+    editor.update(() => {
+      const saved = savedSelectionRef.current;
+      if (saved) $setSelection(saved.clone());
+      run();
+    });
+    setLinkDialogUrl(null);
+    editor.focus();
+  };
+
+  const applyLink = (raw: string) => {
+    const url = normalizeLinkUrl(raw);
+    if (url === null) return;
+    withSavedSelection(() => $toggleLink(url, LINK_ATTRIBUTES));
+  };
+
+  const removeLink = () => {
+    withSavedSelection(() => $toggleLink(null));
   };
 
   const pickImages = (fileList: FileList | null) => {
@@ -199,6 +251,18 @@ export function EditorToolbar() {
           onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic')}
         >
           I
+        </button>
+        {/* 選択したテキストにリンクを張る。リンクの上にキャレットがあるときは編集・解除 */}
+        <button
+          type="button"
+          className={cn(styles.button, linkUrl !== null && styles.buttonOn)}
+          aria-label="リンクを設定"
+          aria-pressed={linkUrl !== null}
+          disabled={!hasSelection && linkUrl === null}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={openLinkDialog}
+        >
+          <Icon name="link" size={20} />
         </button>
         <span className={styles.divider} aria-hidden="true" />
         {LISTS.map((item) => (
@@ -270,6 +334,15 @@ export function EditorToolbar() {
           <Icon name="indent" size={20} />
         </button>
       </div>
+      {linkDialogUrl !== null && (
+        <LinkDialog
+          initialUrl={linkDialogUrl}
+          canRemove={linkUrl !== null}
+          onApply={applyLink}
+          onRemove={removeLink}
+          onClose={() => setLinkDialogUrl(null)}
+        />
+      )}
     </div>
   );
 }

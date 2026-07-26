@@ -48,7 +48,21 @@ function initialBlocks(): EditorBlock[] {
     createEditorBlock('hr'),
     createEditorBlock('h3', 'メモ'),
     createEditorBlock('p', '「### 」で H3、「--- 」で仕切り線を挿入できる。'),
+    linkBlock(),
   ];
+}
+
+/** テキストリンクを含む段落 (spans に link を持たせると 1 つのリンクとして復元される) */
+function linkBlock(): EditorBlock {
+  const spans = [
+    { text: 'リンクは ' },
+    { text: '[表示テキスト](URL)', link: 'https://example.com' },
+    { text: ' か、テキストを選んでツールバーの鎖アイコンから。' },
+  ];
+  return {
+    ...createEditorBlock('p', spans.map((s) => s.text).join('')),
+    spans,
+  };
 }
 
 function RichTextEditorPage() {
@@ -61,7 +75,7 @@ function RichTextEditorPage() {
   return (
     <Doc
       title="RichTextEditor"
-      lede="Lexical ベースのブロックエディタ。見出し (H1/H2/H3) / 箇条書き / チェックボックス / 仕切り線 / ネスト / 画像に対応。外部とは EditorBlock[] でやり取りし、Lexical 依存は内部に閉じている。"
+      lede="Lexical ベースのブロックエディタ。見出し (H1/H2/H3) / 箇条書き / チェックボックス / 仕切り線 / ネスト / 画像 / テキストリンクに対応。外部とは EditorBlock[] でやり取りし、Lexical 依存は内部に閉じている。"
     >
       <Demo>
         {/* エディタ自体は枠を持たないので、デモでは高さ付きの枠ボックスに収める */}
@@ -122,6 +136,11 @@ function RichTextEditorPage() {
           },
           { name: 'onImageError', type: '(error: unknown) => void', desc: 'アップロード失敗の通知' },
           { name: 'maxImagesPerInsert', type: 'number', def: '8', desc: '1 回に受け付ける最大枚数' },
+          {
+            name: 'footer',
+            type: 'ReactNode',
+            desc: '本文の末尾 (スクロール領域の中) に添える表示。OGP カードなど編集対象でないものを置く',
+          },
         ]}
       />
     </Doc>
