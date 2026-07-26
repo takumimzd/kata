@@ -205,6 +205,10 @@ interface RichTextEditorProps {
    * ブックマーク (OGP カード) ブロックの中身を描く。
    * OGP の取得はアプリ側の責務なので、URL からカードの見た目を返してもらう。
    * 未指定のときは URL だけの素朴なカードになる。
+   *
+   * この関数の参照が変わると表示中のカードが描き直される
+   * (OGP が後から届いたときに反映させるため)。毎回作り直したくなければ
+   * 呼び出し側で useCallback に包む。
    */
   renderBookmark?: (bookmark: EditorBookmark) => ReactNode;
 }
@@ -411,7 +415,6 @@ export function RichTextEditor({
   // 未指定なら ImagePlugin もツールバーの画像ボタンも出ないため、
   // これまでどおりテキスト専用のエディタとして動く。
   const imageEnabled = resolveImageUrl !== undefined && onUploadImage !== undefined;
-  const bookmarkEnabled = renderBookmark !== undefined;
   // ハンドラは ref 越しに呼ぶ。呼び出し側がインラインの関数を渡しても
   // context の同一性が保たれ、プラグインの再登録が起きない。
   const handlersRef = useRef({ resolveImageUrl, onUploadImage, onImageError });
@@ -431,13 +434,13 @@ export function RichTextEditor({
     };
   }, [imageEnabled, maxImagesPerInsert]);
 
-  // カードの描画も同じく ref 越しに呼び、context の同一性を保つ
-  const renderBookmarkRef = useRef(renderBookmark);
-  renderBookmarkRef.current = renderBookmark;
-  const bookmarkConfig = useMemo<BookmarkConfig | null>(() => {
-    if (!bookmarkEnabled) return null;
-    return { renderBookmark: (bookmark) => renderBookmarkRef.current?.(bookmark) ?? null };
-  }, [bookmarkEnabled]);
+  // 画像のハンドラと違い、こちらは ref に隠さず参照をそのまま context に流す。
+  // カードの中身は OGP の取得結果で後から変わるので、renderBookmark が
+  // 新しくなったことを描画中のカードへ伝える必要がある。
+  const bookmarkConfig = useMemo<BookmarkConfig | null>(
+    () => (renderBookmark ? { renderBookmark } : null),
+    [renderBookmark],
+  );
 
   const initialConfig = useMemo<InitialConfigType>(
     () => ({
