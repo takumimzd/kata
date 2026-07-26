@@ -9,6 +9,11 @@ import type { EditorBookmark } from './types';
  */
 export interface BookmarkConfig {
   renderBookmark: (bookmark: EditorBookmark) => ReactNode;
+  /**
+   * カードをテキストリンクに変えるときの表示テキスト (OGP のタイトルなど)。
+   * 取れなければ URL をそのまま出す。
+   */
+  resolveBookmarkTitle?: (bookmark: EditorBookmark) => string | undefined;
 }
 
 export const BookmarkConfigContext = createContext<BookmarkConfig | null>(null);

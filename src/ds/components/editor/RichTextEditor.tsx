@@ -211,6 +211,12 @@ interface RichTextEditorProps {
    * 呼び出し側で useCallback に包む。
    */
   renderBookmark?: (bookmark: EditorBookmark) => ReactNode;
+  /**
+   * カードをテキストリンクに変えるときの表示テキスト (OGP のタイトルなど)。
+   * 取れなければ URL をそのまま出す。renderBookmark と同じく参照が変わると
+   * カードが描き直される。
+   */
+  resolveBookmarkTitle?: (bookmark: EditorBookmark) => string | undefined;
 }
 
 /** 編集状態の変化を EditorBlock[] へ書き戻す */
@@ -406,6 +412,7 @@ export function RichTextEditor({
   onImageError,
   maxImagesPerInsert = DEFAULT_MAX_IMAGES_PER_INSERT,
   renderBookmark,
+  resolveBookmarkTitle,
 }: RichTextEditorProps) {
   // 初期状態の構築はマウント時の value のみを使う (以後は Lexical が真実の状態)
   const initialBlocksRef = useRef(value);
@@ -438,8 +445,8 @@ export function RichTextEditor({
   // カードの中身は OGP の取得結果で後から変わるので、renderBookmark が
   // 新しくなったことを描画中のカードへ伝える必要がある。
   const bookmarkConfig = useMemo<BookmarkConfig | null>(
-    () => (renderBookmark ? { renderBookmark } : null),
-    [renderBookmark],
+    () => (renderBookmark ? { renderBookmark, resolveBookmarkTitle } : null),
+    [renderBookmark, resolveBookmarkTitle],
   );
 
   const initialConfig = useMemo<InitialConfigType>(

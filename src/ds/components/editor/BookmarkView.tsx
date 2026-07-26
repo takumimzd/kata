@@ -45,16 +45,22 @@ export function BookmarkView({ nodeKey, url }: BookmarkViewProps) {
     setMenuOpen(false);
   };
 
-  /** カードをやめて、URL 1 行の段落に戻す (linked=true ならテキストリンクにする) */
+  /**
+   * カードをやめて 1 行の段落に戻す。
+   * テキストリンクにするときは、リンク先の名前 (OGP のタイトル) を表示テキストにする。
+   * 生の URL が並ぶより読めるため。名前が取れないときだけ URL をそのまま出す。
+   */
   const toParagraph = (linked: boolean) =>
     updateNode((node) => {
+      const target = node.getUrl();
       const paragraph = $createParagraphNode();
       if (linked) {
-        const link = $createLinkNode(node.getUrl(), LINK_ATTRIBUTES);
-        link.append($createTextNode(node.getUrl()));
+        const label = config?.resolveBookmarkTitle?.({ url: target })?.trim();
+        const link = $createLinkNode(target, LINK_ATTRIBUTES);
+        link.append($createTextNode(label ? label : target));
         paragraph.append(link);
       } else {
-        paragraph.append($createTextNode(node.getUrl()));
+        paragraph.append($createTextNode(target));
       }
       node.replace(paragraph);
       paragraph.selectEnd();
