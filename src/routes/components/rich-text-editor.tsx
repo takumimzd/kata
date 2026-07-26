@@ -39,6 +39,9 @@ function useDemoImageStore() {
   return { upload, resolve };
 }
 
+/** デモ用の OGP タイトル (カード表示とテキストリンク化で同じものを使う) */
+const DEMO_OGP_TITLE = '型 (kata) — 個人開発のためのデザインシステム';
+
 function initialBlocks(): EditorBlock[] {
   return [
     createEditorBlock('h1', '買い物メモ'),
@@ -103,11 +106,12 @@ function RichTextEditorPage() {
                 <LinkPreviewCard
                   preview={{
                     url: bookmark.url,
-                    title: '型 (kata) — 個人開発のためのデザインシステム',
+                    title: DEMO_OGP_TITLE,
                     description: 'カードの中身 (OGP の取得) はアプリ側の責務。ここではダミーを返している。',
                   }}
                 />
               )}
+              resolveBookmarkTitle={() => DEMO_OGP_TITLE}
             />
           )}
         </div>
@@ -129,6 +133,8 @@ function RichTextEditorPage() {
   }}
   // カード表示の中身。OGP の取得はアプリ側で行い、見た目だけ返す
   renderBookmark={({ url }) => <LinkPreviewCard preview={ogpOf(url)} />}
+  // カード → テキストリンクに変えるときの表示テキスト
+  resolveBookmarkTitle={({ url }) => ogpOf(url).title}
 />`}</Code>
       <PropsTable
         rows={[
@@ -154,6 +160,11 @@ function RichTextEditorPage() {
             name: 'renderBookmark',
             type: '(bookmark: EditorBookmark) => ReactNode',
             desc: 'カード表示 (bookmark ブロック) の中身。未指定なら URL だけの素朴なカードになる',
+          },
+          {
+            name: 'resolveBookmarkTitle',
+            type: '(bookmark: EditorBookmark) => string | undefined',
+            desc: 'カードをテキストリンクに変えるときの表示テキスト。取れなければ URL をそのまま出す',
           },
         ]}
       />
