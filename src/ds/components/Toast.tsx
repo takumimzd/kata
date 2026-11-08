@@ -1,6 +1,8 @@
 // ============================================================
 //  kata — Toast (Context + hook)
 //  アプリ全体で 1 つ。useToast().showToast(message) で表示。
+//  読み上げのため、ライブリージョン (role="status") は常に置いておき、
+//  中身だけを差し替える (後から足したリージョンは読まれないことがある)。
 // ============================================================
 import { createContext, useCallback, useContext, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
@@ -26,12 +28,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      {msg && (
-        <div className={styles.toast}>
-          <Icon name="check" size={16} />
-          {msg}
-        </div>
-      )}
+      <div role="status" aria-live="polite" aria-atomic="true">
+        {msg && (
+          <div className={styles.toast}>
+            <Icon name="check" size={16} />
+            {msg}
+          </div>
+        )}
+      </div>
     </ToastContext.Provider>
   );
 }

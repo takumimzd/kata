@@ -20,6 +20,8 @@ interface EmptyStateProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> 
   actions?: ReactNode;
   /** サイズ。既定は md。sm はカード内の小ブロック向け、lg はフルページ向け */
   size?: EmptyStateSize;
+  /** 見出しのレベル。ページの主見出しとして使うときは 1。既定は 3 */
+  headingLevel?: 1 | 2 | 3 | 4;
 }
 
 const SIZE: Record<EmptyStateSize, string | undefined> = {
@@ -34,13 +36,15 @@ export function EmptyState({
   message,
   actions,
   size = 'md',
+  headingLevel = 3,
   className,
   ...rest
 }: EmptyStateProps) {
+  const Heading = `h${headingLevel}` as const;
   return (
     <div className={cn(styles.root, SIZE[size], className)} {...rest}>
       {icon != null && <div className={styles.badge}>{icon}</div>}
-      <h3 className={styles.title}>{title}</h3>
+      <Heading className={styles.title}>{title}</Heading>
       {message != null && <p className={styles.message}>{message}</p>}
       {actions != null && <div className={styles.actions}>{actions}</div>}
     </div>
