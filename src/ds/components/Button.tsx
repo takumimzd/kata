@@ -2,7 +2,7 @@
 //  kata — Button
 //  variant でスタイルを切り替える。アイコンは children に渡す。
 // ============================================================
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { ButtonHTMLAttributes, ReactNode, Ref } from 'react';
 import { cn } from '../lib/cn';
 import styles from './Button.module.css';
 
@@ -13,6 +13,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   /** 横幅いっぱいに広げる */
   block?: boolean;
+  /** フォーカスを当てるときなどに使う */
+  ref?: Ref<HTMLButtonElement>;
   children: ReactNode;
 }
 

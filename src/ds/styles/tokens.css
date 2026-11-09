@@ -4,6 +4,10 @@
    - セマンティック命名 (--surface / --text / --text-dim / --line ...)。
    - 派生トークンは color-mix() で動的生成し、テーマ側では触らない。
    - --danger は危険操作の赤系、--clay は中性の強調色。
+   - 文字色はどの面 (bg / surface / fill / *-soft) の上でも 4.5:1 以上になるようにする。
+     --text-faint は 4.5:1 に届かないので、読ませたい文字には使わない
+     (アイコン・区切り・プレースホルダ以外の補足は --text-dim)。
+     --danger-text / --accent-text は *-soft の上に置く小さな文字用。
    ============================================================ */
 
 :root {
@@ -14,13 +18,14 @@
   --surface-2: #efeff1;
   --surface-3: #e3e3e6;
   --text: #232427;
-  --text-dim: #66686e;
+  --text-dim: #5c5e64;
   --text-faint: #9c9ea6;
   --accent: #3a6157;
   --accent-2: #487469;
   --clay: #34363a;
   --on-accent: #fbfbfc;
-  --danger: #c0564f;
+  --danger: #bd534c;
+  --on-danger: #ffffff;
   --glow: 0.05;
   --shadow: 0 10px 34px rgba(40, 45, 55, 0.13);
   --shadow-sm: 0 5px 18px rgba(35, 31, 26, 0.07);
@@ -31,6 +36,9 @@
   --accent-line: color-mix(in srgb, var(--accent) 32%, transparent);
   --clay-soft: color-mix(in srgb, var(--clay) 12%, transparent);
   --danger-soft: color-mix(in srgb, var(--danger) 12%, transparent);
+  /* *-soft の上に置く小さな文字用。文字色側へ寄せて、どちらのテーマでもコントラストを上げる */
+  --danger-text: color-mix(in srgb, var(--danger) 70%, var(--text));
+  --accent-text: color-mix(in srgb, var(--accent) 80%, var(--text));
   --danger-line: color-mix(in srgb, var(--danger) 34%, transparent);
   --line: color-mix(in srgb, var(--text) 8%, transparent);
   --line-2: color-mix(in srgb, var(--text) 15%, transparent);
@@ -82,6 +90,8 @@
   --clay: #b6b0a6;
   --on-accent: #15201a;
   --danger: #db7a72;
+  /* 明るい赤の上は白だと読みにくいので、濃い文字にする */
+  --on-danger: #1e1514;
   --glow: 0.08;
   --shadow: 0 16px 42px rgba(0, 0, 0, 0.5);
   --shadow-sm: 0 5px 18px rgba(0, 0, 0, 0.32);

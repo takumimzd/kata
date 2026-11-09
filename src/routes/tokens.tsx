@@ -23,7 +23,7 @@ const SURFACES: ColorRow[] = [
 
 const FOREGROUND: ColorRow[] = [
   { name: '本文', varName: '--text', hexKiri: '#232427', hexSumi: '#ece9e3' },
-  { name: '副文', varName: '--text-dim', hexKiri: '#66686e', hexSumi: '#9b968c' },
+  { name: '副文', varName: '--text-dim', hexKiri: '#5c5e64', hexSumi: '#9b968c' },
   { name: '薄字', varName: '--text-faint', hexKiri: '#9c9ea6', hexSumi: '#6a655c' },
 ];
 
@@ -38,9 +38,12 @@ const ACCENTS: ColorRow[] = [
 const SEMANTIC: ColorRow[] = [
   { name: 'clay', varName: '--clay', hexKiri: '#34363a', hexSumi: '#b6b0a6' },
   { name: 'clay soft', varName: '--clay-soft', hexKiri: '12% mix', hexSumi: '12% mix' },
-  { name: 'danger', varName: '--danger', hexKiri: '#c0564f', hexSumi: '#db7a72' },
+  { name: 'danger', varName: '--danger', hexKiri: '#bd534c', hexSumi: '#db7a72' },
+  { name: 'on danger', varName: '--on-danger', hexKiri: '#ffffff', hexSumi: '#1e1514' },
   { name: 'danger soft', varName: '--danger-soft', hexKiri: '12% mix', hexSumi: '12% mix' },
   { name: 'danger line', varName: '--danger-line', hexKiri: '34% mix', hexSumi: '34% mix' },
+  { name: 'danger text', varName: '--danger-text', hexKiri: '70% mix', hexSumi: '70% mix' },
+  { name: 'accent text', varName: '--accent-text', hexKiri: '80% mix', hexSumi: '80% mix' },
   { name: 'line', varName: '--line', hexKiri: '8% mix', hexSumi: '8% mix' },
   { name: 'line 2', varName: '--line-2', hexKiri: '15% mix', hexSumi: '15% mix' },
   { name: 'fill 1', varName: '--fill-1', hexKiri: '5% mix', hexSumi: '5% mix' },
@@ -218,7 +221,7 @@ function TokensPage() {
               <span className={styles.pairVar}>--text-dim</span>
             </div>
             <div className={styles.pairCard}>
-              <span className={styles.pairName}>text-faint on surface</span>
+              <span className={styles.pairName}>text-faint on surface (本文には使わない)</span>
               <span className={styles.pairSample} style={{ color: 'var(--text-faint)' }}>
                 Aa 型 kata 123
               </span>
@@ -237,7 +240,7 @@ function TokensPage() {
         </div>
 
         <div className={styles.subSection}>
-          <Sub n="04" title="セマンティック・罫線・塗り" en="semantic" meta="9 派生" />
+          <Sub n="04" title="セマンティック・罫線・塗り" en="semantic" meta="11 派生" />
           <div className={`${styles.colgrid} ${styles.colSm}`}>
             {SEMANTIC.map((row) => (
               <ColorPanel key={row.varName} row={row} />
