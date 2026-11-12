@@ -38,6 +38,7 @@ export type IconName =
   | 'folder'
   | 'pin'
   | 'more'
+  | 'grip'
   | 'list'
   | 'todo'
   | 'indent'
@@ -217,6 +218,16 @@ const PATHS: Record<IconName, ReactNode> = {
       <circle cx="12" cy="5" r="1.7" fill="currentColor" stroke="none" />
       <circle cx="12" cy="12" r="1.7" fill="currentColor" stroke="none" />
       <circle cx="12" cy="19" r="1.7" fill="currentColor" stroke="none" />
+    </>
+  ),
+  // つかんで動かせることを示す 2 列 × 3 段の点
+  grip: (
+    <>
+      {[9, 15].flatMap((cx) =>
+        [6, 12, 18].map((cy) => (
+          <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="1.5" fill="currentColor" stroke="none" />
+        )),
+      )}
     </>
   ),
   list: (

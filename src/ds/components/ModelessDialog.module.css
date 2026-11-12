@@ -1,0 +1,96 @@
+/* 背景を覆わない浮動パネル。Modal (50) より下、メニュー類より上に重ねる */
+.dialog {
+  position: fixed;
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: pop 0.18s ease;
+}
+.dialog:focus {
+  outline: none;
+}
+/* ドラッグ中は文字の選択や、下の iframe などへのポインタの吸い込みを止める */
+.dragging {
+  user-select: none;
+}
+.dragging .body {
+  pointer-events: none;
+}
+
+.head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
+  cursor: grab;
+  touch-action: none;
+}
+.dragging .head {
+  cursor: grabbing;
+}
+.grip {
+  flex: none;
+  color: var(--text-faint);
+}
+.title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+/* 右下のつまみ。斜めの 2 本線で「引っぱれる」ことを示す */
+.resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  background:
+    linear-gradient(135deg, transparent 0 55%, var(--text-faint) 55% 62%, transparent 62% 72%,
+      var(--text-faint) 72% 79%, transparent 79%);
+  cursor: nwse-resize;
+  touch-action: none;
+  opacity: 0.7;
+}
+.resize:hover,
+.resize:focus-visible {
+  opacity: 1;
+}
+.resize:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+@keyframes pop {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dialog {
+    animation: none;
+  }
+}
