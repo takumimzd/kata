@@ -91,6 +91,6 @@ import { Button, Icon } from 'kata';
 1. `src/ds/components/<Name>/` に `Name.tsx` / `Name.module.css` / `index.ts` を作る（色・余白はトークン `var(--…)` を使い生の hex を書かない）。
 2. `src/ds/index.ts` から `export` して公開 API に追加する。
 3. カタログに載せる: `src/catalog/components-registry.ts` に 1 行追加し、`src/routes/components/<slug>.tsx` を作る（`Doc` + `Demo` + `Code` + `PropsTable`）。ナビと一覧には registry から自動で並ぶ。
-4. `pnpm typecheck` / `pnpm lint` / `pnpm build` が通ることを確認する。
+4. `pnpm typecheck` / `pnpm lint` / `pnpm build` が通ることを確認する（PR と main への push では GitHub Actions の `.github/workflows/ci.yml` でも同じものを回す）。
 
 > 設計思想・トークンの使い方・規約の詳細はカタログの「特徴」ページにまとめている。
