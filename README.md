@@ -30,7 +30,7 @@ src/
 | ボタン | `Button` / `IconButton` |
 | 表示 | `Icon` / `SectionTitle` / `LinkPreviewCard`(OGP カード) |
 | 入力 | `Field` / `Input` / `Stepper` / `DatePicker` / `SearchBox` / `PinPad` |
-| オーバーレイ | `Modal` / `ConfirmDialog`(`useConfirm`) / `Toast`(`useToast`) |
+| オーバーレイ | `Modal` / `ModelessDialog`(移動・リサイズ可) / `ConfirmDialog`(`useConfirm`) / `Toast`(`useToast`) |
 | ナビ | `SideNav`(アコーディオン対応・ルーター非依存) |
 | チャート | `BarChart` / `LineChart` / `Sparkline` |
 | エディタ | `RichTextEditor`(Lexical・リンク 3 表示/画像対応) |

@@ -92,6 +92,7 @@ export { Text, type TextVariant } from './components/Text';
 export { SectionTitle } from './components/SectionTitle';
 export { PageTitle } from './components/PageTitle';
 export { Modal } from './components/Modal';
+export { ModelessDialog, type ModelessDialogSize } from './components/ModelessDialog';
 export { Menu, MenuItem } from './components/Menu';
 export { ConfirmProvider, useConfirm, type ConfirmOptions } from './components/ConfirmDialog';
 export { ToastProvider, useToast } from './components/Toast';

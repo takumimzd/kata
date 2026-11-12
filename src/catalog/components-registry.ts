@@ -64,6 +64,7 @@ export const COMPONENTS: CompEntry[] = [
   entry('pin-pad', 'PinPad', 'パスコード入力', 'root'),
   entry('icon-color-picker', 'IconColorPicker', 'アイコンと色のピッカー', 'root'),
   entry('modal', 'Modal', 'ボトムシート', 'root'),
+  entry('modeless-dialog', 'ModelessDialog', '背景を覆わない移動・リサイズできるダイアログ', 'root'),
   entry('menu', 'Menu', 'ドロップダウンメニュー', 'root'),
   entry('confirm-dialog', 'ConfirmDialog', 'useConfirm() 確認ダイアログ', 'root'),
   entry('toast', 'Toast', 'useToast() トースト', 'root'),
